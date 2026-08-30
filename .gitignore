@@ -53,3 +53,6 @@ qdrant_storage/
 
 # Uploads
 uploads/
+
+# TypeScript build cache
+*.tsbuildinfo
