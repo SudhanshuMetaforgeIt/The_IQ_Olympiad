@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+dist/
+build/
+out/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Turbo
+.turbo/
+
+# Testing
+coverage/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Python build
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# MongoDB local data
+mongodb-data/
+
+# Redis local data
+redis-data/
+
+# Qdrant local data
+qdrant_storage/
+
+# Uploads
+uploads/
