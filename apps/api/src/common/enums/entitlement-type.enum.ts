@@ -1,0 +1,7 @@
+export enum EntitlementType {
+  FREE_MOCK_TEST_ATTEMPTS = 'FREE_MOCK_TEST_ATTEMPTS',
+  PAID_MOCK_TEST_ATTEMPTS = 'PAID_MOCK_TEST_ATTEMPTS',
+  PREMIUM_ACCESS = 'PREMIUM_ACCESS',
+}
+
+export const ENTITLEMENT_TYPES = Object.values(EntitlementType);
