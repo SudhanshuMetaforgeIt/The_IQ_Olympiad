@@ -12,24 +12,24 @@ export default function HeroSection() {
           {/* Left Column: Hero Copy */}
           <div className="lg:col-span-6 flex flex-col items-start text-left">
             {/* Small Badge */}
-            <span className="text-xs sm:text-sm font-black text-purple-900 tracking-wider uppercase mb-4">
+            <span className="text-micro font-bold text-purple-900 tracking-wider uppercase mb-4">
               FOR CLASSES 7 TO 12
             </span>
 
             {/* Main Headline */}
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-[1.15] mb-6">
+            <h1 className="text-display font-bold text-slate-900 tracking-tight mb-6">
               WELCOME TO{" "}
               <span className="whitespace-nowrap bg-gradient-to-r from-purple-700 via-purple-600 to-fuchsia-600 bg-clip-text text-transparent">
                 INTELLIQUEST 2026
               </span>
               <br />
-              <span className="text-xl sm:text-2xl lg:text-3xl italic font-extrabold inline-block pr-2 bg-gradient-to-r from-purple-600 via-fuchsia-600 to-pink-600 bg-clip-text text-transparent mt-3">
+              <span className="text-h1 italic font-extrabold inline-block pr-2 bg-gradient-to-r from-purple-600 via-fuchsia-600 to-pink-600 bg-clip-text text-transparent mt-3">
                 Where Curious Minds Become Future Leaders...
               </span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-sm sm:text-base text-slate-600 font-medium leading-relaxed max-w-xl mb-8">
+            <p className="text-body-lg text-slate-600 font-regular leading-relaxed max-w-xl mb-8">
               India&apos;s next-generation intellectual challenge platform
               <br />
               designed to discover, develop and celebrate young talent....
@@ -40,7 +40,7 @@ export default function HeroSection() {
               <Link href="/signup">
                 <button
                   type="button"
-                  className="flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-700 via-purple-600 to-fuchsia-600 px-8 py-3.5 text-xs sm:text-sm font-extrabold text-white shadow-lg shadow-purple-600/30 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                  className="flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-700 via-purple-600 to-fuchsia-600 px-8 py-3.5 text-button font-medium text-white shadow-lg shadow-purple-600/30 hover:scale-105 active:scale-95 transition-all cursor-pointer"
                 >
                   Start Learning →
                 </button>
@@ -49,7 +49,7 @@ export default function HeroSection() {
               <Link href="/olympiads">
                 <button
                   type="button"
-                  className="flex items-center gap-2 rounded-full border border-purple-200/90 bg-purple-50/50 px-7 py-3.5 text-xs sm:text-sm font-extrabold text-purple-950 hover:bg-purple-100/70 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm"
+                  className="flex items-center gap-2 rounded-full border border-purple-200/90 bg-purple-50/50 px-7 py-3.5 text-button font-medium text-purple-950 hover:bg-purple-100/70 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-sm"
                 >
                   Explore Olympiads ✨
                 </button>
@@ -57,12 +57,12 @@ export default function HeroSection() {
             </div>
 
             {/* Trust Badges Checklist */}
-            <div className="flex flex-wrap items-center gap-6 text-xs sm:text-sm font-bold text-slate-600">
+            <div className="flex flex-wrap items-center gap-6 text-body-sm font-semibold text-slate-600">
               <div className="flex items-center gap-1.5">
-                <span className="text-purple-600 font-black">✓</span> Trusted learning
+                <span className="text-purple-600 font-bold">✓</span> Trusted learning
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-purple-600 font-black">✓</span> Expert-designed
+                <span className="text-purple-600 font-bold">✓</span> Expert-designed
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-purple-600 font-black">✓</span> Safe & ad-free

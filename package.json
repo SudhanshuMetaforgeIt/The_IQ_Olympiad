@@ -2,7 +2,7 @@
   "name": "the-iq-olympiad",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@11.24.0",
+  "packageManager": "pnpm@10.2.0",
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
@@ -12,6 +12,7 @@
     "clean": "turbo clean"
   },
   "devDependencies": {
+    "pnpm": "^10.2.0",
     "turbo": "^2.0.0"
   }
 }

@@ -3,7 +3,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
 
-export default function SchoolAdminSignupPage() {
+interface SchoolAdminSignupPageProps {
+  onSwitchRole?: (role: "student" | "school") => void;
+}
+
+export default function SchoolAdminSignupPage({ onSwitchRole }: SchoolAdminSignupPageProps = {}) {
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   const [verificationMethod, setVerificationMethod] = useState<"email" | "mobile">("email");
   const [showPassword, setShowPassword] = useState(false);
@@ -88,8 +92,8 @@ export default function SchoolAdminSignupPage() {
 
   const handleFinalSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert("IQ Coordinator Account Successfully Created!");
     console.log("Final Registration Data:", formData);
+    window.location.href = "/dashboard/school-admin";
   };
 
   return (

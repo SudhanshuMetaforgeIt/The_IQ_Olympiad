@@ -1,3 +1,7 @@
+"use client";
+
+import { DashboardPanel } from "./_components/pannel/Dashboard";
+
 export default function SchoolAdminDashboardPage() {
-  return <h1>School Admin Dashboard</h1>;
+  return <DashboardPanel />;
 }

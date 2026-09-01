@@ -1,15 +1,29 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import SchoolAdminSignupPage from "./schooladmin_signup";
 
-export default function StudentSignupPage() {
-  const [activeRole, setActiveRole] = useState<"student" | "school">("student");
+function StudentSignupContent() {
+  const searchParams = useSearchParams();
+  const roleParam = searchParams.get("role");
+
+  const [activeRole, setActiveRole] = useState<"student" | "school">(
+    roleParam === "school" ? "school" : "student"
+  );
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(true);
+
+  useEffect(() => {
+    if (roleParam === "school") {
+      setActiveRole("school");
+    } else if (roleParam === "student") {
+      setActiveRole("student");
+    }
+  }, [roleParam]);
 
   const [formData, setFormData] = useState({
     parentName: "",
@@ -26,7 +40,7 @@ export default function StudentSignupPage() {
   });
 
   if (activeRole === "school") {
-    return <SchoolAdminSignupPage />;
+    return <SchoolAdminSignupPage onSwitchRole={(role: "student" | "school") => setActiveRole(role)} />;
   }
 
   const formatMobileNumber = (val: string): string => {
@@ -509,5 +523,13 @@ export default function StudentSignupPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function StudentSignupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center text-sm font-semibold text-slate-500">Loading...</div>}>
+      <StudentSignupContent />
+    </Suspense>
   );
 }

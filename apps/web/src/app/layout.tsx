@@ -5,9 +5,9 @@ import { Providers } from "./providers";
 
 const roboto = Roboto({
   subsets: ["latin"],
+  weight: ["300", "400", "500", "700", "900"],
   variable: "--font-roboto",
   display: "swap",
-  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {

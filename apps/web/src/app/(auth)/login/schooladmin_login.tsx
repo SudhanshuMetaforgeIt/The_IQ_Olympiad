@@ -63,20 +63,7 @@ export default function SchoolAdminLoginPage({ onSwitchRole }: SchoolAdminLoginP
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (phone.length !== 10) {
-      alert("Please enter a valid 10-digit phone number starting with 6, 7, 8, or 9.");
-      return;
-    }
-    if (!otpSent) {
-      alert("Please click 'Send OTP' to receive your verification code.");
-      return;
-    }
-    if (otp.length !== 6) {
-      alert("Please enter the 6-digit OTP code.");
-      return;
-    }
-    console.log("School Admin Login Submitted:", { phone, otp, activeRole });
-    alert("School Admin Login Successful!");
+    window.location.href = "/dashboard/school-admin";
   };
 
   return (
@@ -153,11 +140,11 @@ export default function SchoolAdminLoginPage({ onSwitchRole }: SchoolAdminLoginP
               
               {/* Phone Number Input */}
               <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1.5">
+                <label className="block text-caption font-medium text-gray-500 mb-1.5">
                   Phone Number
                 </label>
                 <div className="flex gap-2">
-                  <div className="flex items-center gap-1.5 px-3.5 py-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-700">
+                  <div className="flex items-center gap-1.5 px-3.5 py-3 rounded-xl bg-slate-50 border border-slate-200 text-body font-bold text-slate-700">
                     <span>+91</span>
                     <svg className="w-3.5 h-3.5 fill-slate-400" viewBox="0 0 24 24">
                       <path d="M7 10l5 5 5-5z" />
@@ -172,7 +159,7 @@ export default function SchoolAdminLoginPage({ onSwitchRole }: SchoolAdminLoginP
                     pattern="[6-9][0-9]{9}"
                     title="Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9"
                     required
-                    className="w-full px-4 py-3.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 outline-none transition"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-body font-medium text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 outline-none transition"
                   />
                 </div>
 
@@ -181,7 +168,7 @@ export default function SchoolAdminLoginPage({ onSwitchRole }: SchoolAdminLoginP
                   <button
                     type="button"
                     onClick={handleSendOtp}
-                    className="text-xs font-extrabold text-violet-600 hover:text-violet-800 flex items-center gap-1.5 transition cursor-pointer"
+                    className="text-caption font-bold text-violet-600 hover:text-violet-800 flex items-center gap-1.5 transition cursor-pointer"
                   >
                     <span>{otpSent ? "Resend OTP" : "Send OTP"}</span>
                     <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
@@ -193,7 +180,7 @@ export default function SchoolAdminLoginPage({ onSwitchRole }: SchoolAdminLoginP
 
               {/* Enter OTP Input */}
               <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1.5">
+                <label className="block text-caption font-medium text-gray-500 mb-1.5">
                   Enter OTP
                 </label>
                 <div className="relative">
@@ -204,7 +191,7 @@ export default function SchoolAdminLoginPage({ onSwitchRole }: SchoolAdminLoginP
                     placeholder="Enter 6-digit OTP"
                     maxLength={6}
                     required
-                    className="w-full px-4 py-3.5 pr-11 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 outline-none transition"
+                    className="w-full px-4 py-3 pr-11 rounded-xl bg-slate-50 border border-slate-200 text-body font-medium text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 outline-none transition tabular-nums"
                   />
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 size-7 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">
                     <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -214,7 +201,7 @@ export default function SchoolAdminLoginPage({ onSwitchRole }: SchoolAdminLoginP
                 </div>
 
                 {/* Resend Countdown */}
-                <p className="text-xs font-medium text-slate-500 mt-2">
+                <p className="text-caption font-medium text-gray-500 mt-2">
                   Didn&apos;t receive OTP?{" "}
                   <button
                     type="button"
@@ -234,7 +221,7 @@ export default function SchoolAdminLoginPage({ onSwitchRole }: SchoolAdminLoginP
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 text-white font-extrabold text-base flex items-center justify-center gap-3 shadow-xl shadow-violet-600/30 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer"
+                className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 text-white text-button font-bold flex items-center justify-center gap-3 shadow-xl shadow-violet-600/30 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer"
               >
                 Log in as School Admin
                 <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
