@@ -1,7 +1,5 @@
+import StudentLoginPage from "./student_login";
+
 export default function LoginPage() {
-  return (
-    <main>
-      <h1>Login</h1>
-    </main>
-  );
+  return <StudentLoginPage />;
 }
