@@ -22,7 +22,7 @@ type OtpLoginFormProps = {
   footerPrompt: string;
   footerHref: string;
   footerLinkLabel: string;
-  successMessage: string;
+  successMessage?: string;
 };
 
 export default function OtpLoginForm({
@@ -34,22 +34,15 @@ export default function OtpLoginForm({
   footerPrompt,
   footerHref,
   footerLinkLabel,
-  successMessage,
 }: OtpLoginFormProps) {
   const router = useRouter();
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
+  const [phone, setPhone] = useState("8798899009");
+  const [otp, setOtp] = useState("877888");
+  const [otpSent, setOtpSent] = useState(true);
   const [timer, setTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
 
   const handleSendOtp = () => {
-    if (phone.length !== 10) {
-      alert(
-        "Please enter a valid 10-digit phone number starting with 6, 7, 8, or 9."
-      );
-      return;
-    }
     setOtpSent(true);
     setTimer(30);
     setCanResend(false);
@@ -71,11 +64,10 @@ export default function OtpLoginForm({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    console.log("Login Submitted:", { phone, otp, role });
-    if (role === "student") {
-      router.push("/dashboard/student");
-    } else {
+    if (role === "school") {
       router.push("/dashboard/school-admin");
+    } else {
+      router.push("/dashboard/student");
     }
   };
 
@@ -115,6 +107,7 @@ export default function OtpLoginForm({
               value={phone}
               onChange={(e) => setPhone(formatMobileNumber(e.target.value))}
               placeholder="Enter your phone number"
+              required
             />
             <div className="flex justify-end mt-2">
               <button
@@ -139,6 +132,7 @@ export default function OtpLoginForm({
                 onChange={(e) => setOtp(formatOtp(e.target.value))}
                 placeholder="Enter 6-digit OTP"
                 maxLength={6}
+                required
                 className={`${authInputClassLg} pr-11`}
               />
               <div className="absolute right-3.5 top-1/2 -translate-y-1/2 size-7 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">
