@@ -1,7 +1,8 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { AuthSubmitButton, PhoneInput, formatMobileNumber } from "../../common";
+import { useRouter } from "next/navigation";
+import { PhoneInput, formatMobileNumber } from "../../common";
 import type { SchoolSignupFormData } from "./types";
 
 type StepVerifyActivateProps = {
@@ -25,8 +26,22 @@ export default function StepVerifyActivate({
   onBack,
   onSubmit,
 }: StepVerifyActivateProps) {
+  const router = useRouter();
+
+  const handleCreateAccount = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (typeof onSubmit === "function") {
+      onSubmit(e as any);
+    }
+    if (typeof window !== "undefined") {
+      window.location.href = "/dashboard/school-admin";
+    } else {
+      router.push("/dashboard/school-admin");
+    }
+  };
+
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-10 border border-violet-500 ring-2 ring-violet-500/20 shadow-xl transition-all">
+    <div className="bg-white rounded-3xl p-6 sm:p-10 border border-violet-500 ring-2 ring-violet-500/20 shadow-xl transition-all font-sans">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-black tracking-widest text-violet-700 bg-violet-50 border border-violet-100 px-3.5 py-1 rounded-full uppercase">
           STEP 3 OF 3
@@ -85,8 +100,7 @@ export default function StepVerifyActivate({
             {formData.officialEmail || "admin@school.com"}
           </p>
           <p className="text-xs font-medium text-slate-500">
-            Please check your inbox and click on the link to verify your
-            account.
+            Please check your inbox and click on the link to verify your account.
           </p>
           <button
             type="button"
@@ -134,7 +148,7 @@ export default function StepVerifyActivate({
         </div>
       )}
 
-      <form onSubmit={onSubmit} className="space-y-4">
+      <div className="space-y-4">
         <div className="flex gap-4">
           <button
             type="button"
@@ -143,18 +157,18 @@ export default function StepVerifyActivate({
           >
             ← Back
           </button>
-          <AuthSubmitButton
-            className="w-2/3 text-base font-black"
-            icon={
-              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-              </svg>
-            }
+          <button
+            type="button"
+            onClick={handleCreateAccount}
+            className="w-2/3 py-4 px-4 rounded-2xl bg-gradient-to-r from-purple-700 to-fuchsia-600 text-white font-black text-base shadow-lg shadow-purple-600/30 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
           >
-            Create IQ Coordinator Account
-          </AuthSubmitButton>
+            <span>Create IQ Coordinator Account</span>
+            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+              <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+            </svg>
+          </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

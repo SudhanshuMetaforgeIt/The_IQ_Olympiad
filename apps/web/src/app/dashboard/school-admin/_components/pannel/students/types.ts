@@ -37,4 +37,5 @@ export interface StudentFormData {
   previousSchool: string;
   transportRequired: string;
   medicalCondition: string;
+  photoUrl?: string;
 }

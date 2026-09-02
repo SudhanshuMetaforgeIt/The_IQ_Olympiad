@@ -29,15 +29,15 @@ export function ExamRegistrationStats({
             : "border-slate-200/80 hover:border-purple-300"
         }`}
       >
-        <div className="w-14 h-14 rounded-full bg-purple-100/90 text-purple-600 flex items-center justify-center shrink-0">
-          <Users className="w-7 h-7" />
+        <div className="w-16 h-16 rounded-2xl bg-purple-100/90 text-[#6332ec] flex items-center justify-center shrink-0">
+          <Users className="w-8 h-8 stroke-[2]" />
         </div>
         <div>
-          <p className="text-secondary font-medium text-slate-500">Total Registrations</p>
-          <h2 className="text-stat font-bold text-slate-900 tabular-nums">
+          <p className="text-base sm:text-lg font-semibold text-slate-600">Total Registrations</p>
+          <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tabular-nums tracking-tight mt-0.5">
             {totalRegistrationsCount.toLocaleString()}
           </h2>
-          <p className="text-caption font-normal text-slate-400 mt-0.5">Across all exams</p>
+          <p className="text-xs sm:text-sm font-normal text-slate-400 mt-1">Across all exams</p>
         </div>
       </div>
 
@@ -50,15 +50,15 @@ export function ExamRegistrationStats({
             : "border-slate-200/80 hover:border-amber-300"
         }`}
       >
-        <div className="w-14 h-14 rounded-full bg-amber-100/90 text-amber-600 flex items-center justify-center shrink-0">
-          <Clock className="w-7 h-7" />
+        <div className="w-16 h-16 rounded-2xl bg-amber-100/90 text-amber-600 flex items-center justify-center shrink-0">
+          <Clock className="w-8 h-8 stroke-[2]" />
         </div>
         <div>
-          <p className="text-secondary font-medium text-slate-500">Registration Pending</p>
-          <h2 className="text-stat font-bold text-slate-900 tabular-nums">
+          <p className="text-base sm:text-lg font-semibold text-slate-600">Registration Pending</p>
+          <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tabular-nums tracking-tight mt-0.5">
             {pendingCount.toLocaleString()}
           </h2>
-          <p className="text-caption font-normal text-slate-400 mt-0.5">Yet to be completed</p>
+          <p className="text-xs sm:text-sm font-medium text-amber-600 mt-1">Yet to be completed</p>
         </div>
       </div>
 
@@ -71,15 +71,15 @@ export function ExamRegistrationStats({
             : "border-slate-200/80 hover:border-purple-300"
         }`}
       >
-        <div className="w-14 h-14 rounded-full bg-purple-100/90 text-purple-600 flex items-center justify-center shrink-0">
-          <Calendar className="w-7 h-7" />
+        <div className="w-16 h-16 rounded-2xl bg-purple-100/90 text-[#6332ec] flex items-center justify-center shrink-0">
+          <Calendar className="w-8 h-8 stroke-[2]" />
         </div>
         <div>
-          <p className="text-secondary font-medium text-slate-500">Registration Closed</p>
-          <h2 className="text-stat font-bold text-slate-900 tabular-nums">
+          <p className="text-base sm:text-lg font-semibold text-slate-600">Registration Closed</p>
+          <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tabular-nums tracking-tight mt-0.5">
             {closedCount.toLocaleString()}
           </h2>
-          <p className="text-caption font-normal text-slate-400 mt-0.5">Closed exams</p>
+          <p className="text-xs sm:text-sm font-normal text-slate-400 mt-1">Closed exams</p>
         </div>
       </div>
     </div>

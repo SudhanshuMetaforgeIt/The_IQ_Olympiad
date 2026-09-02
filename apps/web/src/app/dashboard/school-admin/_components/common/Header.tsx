@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft, Bell, Mail, ChevronDown, Menu, User, Plus } from "lucide-react";
 import { SchoolProfile } from "../../_types/dashboard";
+import { NotificationDropdown } from "./NotificationDropdown";
 
 interface HeaderProps {
   profile: SchoolProfile;
@@ -15,6 +16,19 @@ export function Header({ profile, onToggleSidebar, onBack }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [selectedYear, setSelectedYear] = useState("2025 - 2026");
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(5);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleBack = () => {
     if (onBack) {
@@ -22,16 +36,25 @@ export function Header({ profile, onToggleSidebar, onBack }: HeaderProps) {
       return;
     }
 
+    if (typeof window !== "undefined") {
+      const event = new CustomEvent("school-admin-back-click", { cancelable: true });
+      const wasNotCancelled = window.dispatchEvent(event);
+
+      if (!wasNotCancelled) {
+        return;
+      }
+    }
+
     if (pathname && pathname !== "/dashboard/school-admin" && pathname.startsWith("/dashboard/school-admin")) {
-      router.push("/dashboard/school-admin");
+      if (typeof window !== "undefined" && window.history.length > 2) {
+        router.back();
+      } else {
+        router.push("/dashboard/school-admin");
+      }
       return;
     }
 
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      router.back();
-    } else {
-      router.push("/dashboard/school-admin");
-    }
+    router.push("/dashboard/school-admin");
   };
 
   const getBreadcrumb = () => {
@@ -78,7 +101,6 @@ export function Header({ profile, onToggleSidebar, onBack }: HeaderProps) {
           <Menu className="w-5 h-5" />
         </button>
 
-        {/* Back Button (Top Left) */}
         <button
           onClick={handleBack}
           className="p-2 text-slate-600 hover:text-purple-700 hover:bg-purple-50 active:scale-95 rounded-full transition-all border border-slate-200 cursor-pointer shadow-xs"
@@ -96,9 +118,8 @@ export function Header({ profile, onToggleSidebar, onBack }: HeaderProps) {
         </div>
       </div>
 
-      {/* Right Controls (Academic Year, Notifications, Profile) */}
+      {/* Right Controls */}
       <div className="flex items-center space-x-4 self-end md:self-auto">
-        {/* Academic Year Dropdown */}
         <div className="relative">
           <div className="flex flex-col text-right pr-7">
             <span className="text-[10px] uppercase font-bold text-slate-400">Academic Year</span>
@@ -115,15 +136,31 @@ export function Header({ profile, onToggleSidebar, onBack }: HeaderProps) {
           <ChevronDown className="w-4 h-4 text-slate-500 absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
 
-        {/* Notification Bell with Badge 5 */}
-        <button className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors border border-slate-200 cursor-pointer">
-          <Bell className="w-5 h-5" />
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-extrabold rounded-full flex items-center justify-center border-2 border-white tabular-nums">
-            5
-          </span>
-        </button>
+        {/* Notification Bell Button & Popover Dropdown */}
+        <div className="relative" ref={notifRef}>
+          <button
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors border border-slate-200 cursor-pointer"
+            aria-label="View Notifications"
+          >
+            <Bell className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-extrabold rounded-full flex items-center justify-center border-2 border-white tabular-nums">
+                {unreadCount}
+              </span>
+            )}
+          </button>
 
-        {/* Messaging Icon with Badge 3 */}
+          {showNotifications && (
+            <NotificationDropdown
+              onClose={() => setShowNotifications(false)}
+              unreadCount={unreadCount}
+              setUnreadCount={setUnreadCount}
+            />
+          )}
+        </div>
+
+        {/* Mail Icon */}
         <button className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors border border-slate-200 cursor-pointer">
           <Mail className="w-5 h-5" />
           <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-extrabold rounded-full flex items-center justify-center border-2 border-white tabular-nums">
@@ -131,7 +168,7 @@ export function Header({ profile, onToggleSidebar, onBack }: HeaderProps) {
           </span>
         </button>
 
-        {/* User Profile Badge */}
+        {/* Profile */}
         <div className="flex items-center space-x-2 pl-2">
           <div className="relative w-9 h-9 rounded-full bg-[#6B46C1] text-white flex items-center justify-center font-bold text-caption shadow-sm">
             <User className="w-5 h-5" />

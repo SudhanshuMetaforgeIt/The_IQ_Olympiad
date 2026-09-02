@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { ActiveCardType, ExamRegistrationRecord } from "./types";
 import { initialExamRegistrations, initialClosedExamsList } from "./mockData";
 import { ExamRegistrationStats } from "./ExamRegistrationStats";
@@ -8,8 +9,20 @@ import { ExamRegistrationFilters } from "./ExamRegistrationFilters";
 import { ExamRegistrationTable } from "./ExamRegistrationTable";
 import { ClosedExamsTable } from "./ClosedExamsTable";
 
-export function ExamRegistrationPanel() {
-  const [activeCard, setActiveCard] = useState<ActiveCardType>("all");
+function ExamRegistrationContent() {
+  const searchParams = useSearchParams();
+  const statusParam = searchParams.get("status");
+
+  const [activeCard, setActiveCard] = useState<ActiveCardType>(
+    statusParam === "pending" ? "pending" : "all"
+  );
+
+  useEffect(() => {
+    if (statusParam === "pending") {
+      setActiveCard("pending");
+    }
+  }, [statusParam]);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedExam, setSelectedExam] = useState("All Exams");
   const [selectedClass, setSelectedClass] = useState("All Classes");
@@ -28,7 +41,7 @@ export function ExamRegistrationPanel() {
 
     const matchesExam = selectedExam === "All Exams" || item.examName.includes(selectedExam);
     const matchesClass = selectedClass === "All Classes" || item.className === selectedClass;
-    
+
     let matchesStatus = selectedStatus === "All Status" || item.status === selectedStatus;
 
     if (activeCard === "pending") {
@@ -49,6 +62,38 @@ export function ExamRegistrationPanel() {
     return matchesSearch && matchesExam && matchesClass;
   });
 
+  // Real CSV File Downloader
+  const handleExportCSV = () => {
+    const dataToExport = filteredRegistrations.map((item) => ({
+      "Student Name": item.studentName,
+      "Student ID": item.studentId,
+      "Class": item.className,
+      "Exam Name": item.examName,
+      "Schedule": item.schedule,
+      "Registration Date": item.registrationDate,
+      "Status": item.status,
+    }));
+
+    if (!dataToExport.length) return;
+    const headers = Object.keys(dataToExport[0]);
+    const csvLines = [
+      headers.join(","),
+      ...dataToExport.map((row) =>
+        headers.map((h) => `"${String(row[h as keyof typeof row]).replace(/"/g, '""')}"`).join(",")
+      ),
+    ];
+
+    const blob = new Blob([csvLines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `exam_registrations_report_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6 w-full font-sans text-slate-900">
       {/* Top Metric Cards */}
@@ -60,7 +105,7 @@ export function ExamRegistrationPanel() {
         closedCount={12}
       />
 
-      {/* Filter and Search Bar */}
+      {/* Filter and Search Bar with Working Export */}
       <ExamRegistrationFilters
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -70,6 +115,7 @@ export function ExamRegistrationPanel() {
         setSelectedClass={setSelectedClass}
         selectedStatus={selectedStatus}
         setSelectedStatus={setSelectedStatus}
+        onExport={handleExportCSV}
       />
 
       {/* Data Table View */}
@@ -91,6 +137,14 @@ export function ExamRegistrationPanel() {
         />
       )}
     </div>
+  );
+}
+
+export function ExamRegistrationPanel() {
+  return (
+    <Suspense fallback={<div className="p-4 text-slate-500 font-semibold">Loading registrations...</div>}>
+      <ExamRegistrationContent />
+    </Suspense>
   );
 }
 

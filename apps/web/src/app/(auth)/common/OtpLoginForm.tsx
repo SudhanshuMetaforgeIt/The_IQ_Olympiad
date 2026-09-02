@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import AuthBrandHeader from "./AuthBrandHeader";
 import AuthFooterLinks from "./AuthFooterLinks";
 import AuthRoleSwitcher from "./AuthRoleSwitcher";
@@ -21,7 +22,7 @@ type OtpLoginFormProps = {
   footerPrompt: string;
   footerHref: string;
   footerLinkLabel: string;
-  successMessage: string;
+  successMessage?: string;
 };
 
 export default function OtpLoginForm({
@@ -33,21 +34,15 @@ export default function OtpLoginForm({
   footerPrompt,
   footerHref,
   footerLinkLabel,
-  successMessage,
 }: OtpLoginFormProps) {
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
+  const router = useRouter();
+  const [phone, setPhone] = useState("8798899009");
+  const [otp, setOtp] = useState("877888");
+  const [otpSent, setOtpSent] = useState(true);
   const [timer, setTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
 
   const handleSendOtp = () => {
-    if (phone.length !== 10) {
-      alert(
-        "Please enter a valid 10-digit phone number starting with 6, 7, 8, or 9."
-      );
-      return;
-    }
     setOtpSent(true);
     setTimer(30);
     setCanResend(false);
@@ -69,22 +64,11 @@ export default function OtpLoginForm({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (phone.length !== 10) {
-      alert(
-        "Please enter a valid 10-digit phone number starting with 6, 7, 8, or 9."
-      );
-      return;
+    if (role === "school") {
+      router.push("/dashboard/school-admin");
+    } else {
+      router.push("/dashboard/student");
     }
-    if (!otpSent) {
-      alert("Please click 'Send OTP' to receive your verification code.");
-      return;
-    }
-    if (otp.length !== 6) {
-      alert("Please enter the 6-digit OTP code.");
-      return;
-    }
-    console.log("Login Submitted:", { phone, otp, role });
-    alert(successMessage);
   };
 
   return (

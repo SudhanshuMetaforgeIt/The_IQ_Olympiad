@@ -27,15 +27,15 @@ export function StudentStatsCards({
             : "border-slate-200/80 hover:border-purple-300"
         }`}
       >
-        <div className="w-14 h-14 rounded-2xl bg-purple-100/90 text-purple-600 flex items-center justify-center shrink-0">
-          <Users className="w-7 h-7" />
+        <div className="w-16 h-16 rounded-2xl bg-purple-100/90 text-[#6332ec] flex items-center justify-center shrink-0">
+          <Users className="w-8 h-8 stroke-[2]" />
         </div>
         <div>
-          <p className="text-secondary font-medium text-slate-500">Total Students</p>
-          <h2 className="text-stat font-bold text-slate-900 tabular-nums">
+          <p className="text-base sm:text-lg font-semibold text-slate-600">Total Students</p>
+          <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tabular-nums tracking-tight mt-0.5">
             {totalCount.toLocaleString()}
           </h2>
-          <p className="text-caption font-normal text-slate-400 mt-0.5">All students in school</p>
+          <p className="text-xs sm:text-sm font-normal text-slate-400 mt-1">All students in school</p>
         </div>
       </div>
 
@@ -48,27 +48,27 @@ export function StudentStatsCards({
             : "border-slate-200/80 hover:border-emerald-300"
         }`}
       >
-        <div className="w-14 h-14 rounded-2xl bg-emerald-100/90 text-emerald-600 flex items-center justify-center shrink-0">
-          <ShieldCheck className="w-7 h-7" />
+        <div className="w-16 h-16 rounded-2xl bg-emerald-100/90 text-emerald-600 flex items-center justify-center shrink-0">
+          <ShieldCheck className="w-8 h-8 stroke-[2]" />
         </div>
         <div>
-          <p className="text-secondary font-medium text-slate-500">Total Registered Students</p>
-          <h2 className="text-stat font-bold text-slate-900 tabular-nums">
+          <p className="text-base sm:text-lg font-semibold text-slate-600">Total Registered Students</p>
+          <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tabular-nums tracking-tight mt-0.5">
             {registeredCount.toLocaleString()}
           </h2>
-          <p className="text-caption font-normal text-slate-400 mt-0.5">97.3% of total students</p>
+          <p className="text-xs sm:text-sm font-medium text-emerald-600 mt-1">97.3% of total students</p>
         </div>
       </div>
 
       {/* Card 3: Classes (Static Display Card) */}
       <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm flex items-center space-x-5">
-        <div className="w-14 h-14 rounded-2xl bg-purple-100/90 text-purple-600 flex items-center justify-center shrink-0">
-          <Calendar className="w-7 h-7" />
+        <div className="w-16 h-16 rounded-2xl bg-purple-100/90 text-[#6332ec] flex items-center justify-center shrink-0">
+          <Calendar className="w-8 h-8 stroke-[2]" />
         </div>
         <div>
-          <p className="text-secondary font-medium text-slate-500">Classes</p>
-          <h2 className="text-stat font-bold text-slate-900 tabular-nums">12</h2>
-          <p className="text-caption font-normal text-slate-400 mt-0.5">From Class 1 to 12</p>
+          <p className="text-base sm:text-lg font-semibold text-slate-600">Classes</p>
+          <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 tabular-nums tracking-tight mt-0.5">12</h2>
+          <p className="text-xs sm:text-sm font-normal text-slate-400 mt-1">From Class 1 to 12</p>
         </div>
       </div>
     </div>

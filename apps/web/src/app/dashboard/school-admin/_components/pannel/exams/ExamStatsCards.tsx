@@ -25,11 +25,10 @@ export function ExamStatsCards({
       {/* Card 1: Total Exams */}
       <div
         onClick={() => setActiveCard("all")}
-        className={`bg-white rounded-3xl p-6 border-2 transition-all duration-300 transform cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-98 flex items-center space-x-5 ${
-          activeCard === "all"
-            ? "border-purple-600 ring-4 ring-purple-500/15 shadow-md scale-[1.01]"
-            : "border-slate-200/80 hover:border-purple-300"
-        }`}
+        className={`bg-white rounded-3xl p-6 border-2 transition-all duration-300 transform cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-98 flex items-center space-x-5 ${activeCard === "all"
+          ? "border-purple-600 ring-4 ring-purple-500/15 shadow-md scale-[1.01]"
+          : "border-slate-200/80 hover:border-purple-300"
+          }`}
       >
         <div className="w-14 h-14 rounded-3xl bg-purple-100/90 text-purple-600 flex items-center justify-center shrink-0">
           <FileText className="w-7 h-7" />
@@ -44,11 +43,10 @@ export function ExamStatsCards({
       {/* Card 2: Active Exams */}
       <div
         onClick={() => setActiveCard("active")}
-        className={`bg-white rounded-3xl p-6 border-2 transition-all duration-300 transform cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-98 flex items-center space-x-5 ${
-          activeCard === "active"
-            ? "border-emerald-500 ring-4 ring-emerald-500/15 shadow-md scale-[1.01]"
-            : "border-slate-200/80 hover:border-emerald-300"
-        }`}
+        className={`bg-white rounded-3xl p-6 border-2 transition-all duration-300 transform cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-98 flex items-center space-x-5 ${activeCard === "active"
+          ? "border-emerald-500 ring-4 ring-emerald-500/15 shadow-md scale-[1.01]"
+          : "border-slate-200/80 hover:border-emerald-300"
+          }`}
       >
         <div className="w-14 h-14 rounded-3xl bg-emerald-100/90 text-emerald-600 flex items-center justify-center shrink-0">
           <UserCheck className="w-7 h-7" />
@@ -63,11 +61,10 @@ export function ExamStatsCards({
       {/* Card 3: Upcoming Exams */}
       <div
         onClick={() => setActiveCard("upcoming")}
-        className={`bg-white rounded-3xl p-6 border-2 transition-all duration-300 transform cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-98 flex items-center space-x-5 ${
-          activeCard === "upcoming"
-            ? "border-purple-500 ring-4 ring-purple-500/15 shadow-md scale-[1.01]"
-            : "border-slate-200/80 hover:border-purple-300"
-        }`}
+        className={`bg-white rounded-3xl p-6 border-2 transition-all duration-300 transform cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-98 flex items-center space-x-5 ${activeCard === "upcoming"
+          ? "border-purple-500 ring-4 ring-purple-500/15 shadow-md scale-[1.01]"
+          : "border-slate-200/80 hover:border-purple-300"
+          }`}
       >
         <div className="w-14 h-14 rounded-3xl bg-purple-100/90 text-purple-600 flex items-center justify-center shrink-0">
           <Calendar className="w-7 h-7" />
@@ -82,11 +79,10 @@ export function ExamStatsCards({
       {/* Card 4: Completed Exams */}
       <div
         onClick={() => setActiveCard("completed")}
-        className={`bg-white rounded-3xl p-6 border-2 transition-all duration-300 transform cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-98 flex items-center space-x-5 ${
-          activeCard === "completed"
-            ? "border-pink-500 ring-4 ring-pink-500/15 shadow-md scale-[1.01]"
-            : "border-slate-200/80 hover:border-pink-300"
-        }`}
+        className={`bg-white rounded-3xl p-6 border-2 transition-all duration-300 transform cursor-pointer hover:-translate-y-1 hover:shadow-md active:scale-98 flex items-center space-x-5 ${activeCard === "completed"
+          ? "border-pink-500 ring-4 ring-pink-500/15 shadow-md scale-[1.01]"
+          : "border-slate-200/80 hover:border-pink-300"
+          }`}
       >
         <div className="w-14 h-14 rounded-3xl bg-pink-100/90 text-pink-600 flex items-center justify-center shrink-0">
           <CheckSquare className="w-7 h-7" />

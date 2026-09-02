@@ -23,6 +23,7 @@ import { AppearedStudentsTable } from "./AppearedStudentsTable";
 import { QualifiedStudentsTable } from "./QualifiedStudentsTable";
 import { AvgScoreTable } from "./AvgScoreTable";
 import { MeritStudentsTable } from "./MeritStudentsTable";
+import { exportResultsToCSV } from "./exportUtils";
 
 export function ResultsPanel() {
   const [activeCard, setActiveCard] = useState<ActiveCardType>("merit");
@@ -39,15 +40,12 @@ export function ResultsPanel() {
     const matchesSearch =
       item.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.examName.toLowerCase().includes(searchTerm.toLowerCase());
-
     const matchesExam = selectedExam === "All Exams" || item.examName.includes(selectedExam);
     const matchesClass = selectedClass === "All Classes" || item.className === selectedClass;
     let matchesStatus = selectedStatus === "All Status" || item.resultStatus === selectedStatus;
-
     if (activeCard === "qualified" || activeCard === "merit") {
       matchesStatus = item.resultStatus === "Pass";
     }
-
     return matchesSearch && matchesExam && matchesClass && matchesStatus;
   });
 
@@ -55,11 +53,9 @@ export function ResultsPanel() {
     const matchesSearch =
       item.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.examName.toLowerCase().includes(searchTerm.toLowerCase());
-
     const matchesExam = selectedExam === "All Exams" || item.examName.includes(selectedExam);
     const matchesClass = selectedClass === "All Classes" || item.className === selectedClass;
-    let matchesStatus = selectedStatus === "All Status" || item.attendanceStatus === selectedStatus;
-
+    const matchesStatus = selectedStatus === "All Status" || item.attendanceStatus === selectedStatus;
     return matchesSearch && matchesExam && matchesClass && matchesStatus;
   });
 
@@ -111,58 +107,22 @@ export function ResultsPanel() {
 
   const renderDataTable = () => {
     if (activeCard === "appeared") {
-      return (
-        <AppearedStudentsTable
-          appearedStudents={filteredAppearedList}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          totalRecordsCount={1624}
-        />
-      );
+      return <AppearedStudentsTable appearedStudents={filteredAppearedList} currentPage={currentPage} setCurrentPage={setCurrentPage} totalRecordsCount={1624} />;
     }
     if (activeCard === "qualified") {
-      return (
-        <QualifiedStudentsTable
-          qualifiedStudents={filteredResults}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          totalRecordsCount={1418}
-        />
-      );
+      return <QualifiedStudentsTable qualifiedStudents={filteredResults} currentPage={currentPage} setCurrentPage={setCurrentPage} totalRecordsCount={1418} />;
     }
     if (activeCard === "avg_score") {
-      return (
-        <AvgScoreTable
-          results={filteredResults}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          totalRecordsCount={1624}
-        />
-      );
+      return <AvgScoreTable results={filteredResults} currentPage={currentPage} setCurrentPage={setCurrentPage} totalRecordsCount={1624} />;
     }
     if (activeCard === "merit") {
-      return (
-        <MeritStudentsTable
-          results={filteredResults}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          totalRecordsCount={1418}
-        />
-      );
+      return <MeritStudentsTable results={filteredResults} currentPage={currentPage} setCurrentPage={setCurrentPage} totalRecordsCount={1418} />;
     }
-    return (
-      <ResultsTable
-        results={filteredResults}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        totalRecordsCount={1624}
-      />
-    );
+    return <ResultsTable results={filteredResults} currentPage={currentPage} setCurrentPage={setCurrentPage} totalRecordsCount={1624} />;
   };
 
   return (
     <div className="space-y-6 w-full font-sans text-slate-900">
-      {/* Top Summary Metric Cards */}
       <ResultStatsCards
         activeCard={activeCard}
         setActiveCard={setActiveCard}
@@ -173,11 +133,7 @@ export function ResultsPanel() {
         meritStudentName="Aarav Sharma"
         meritStudentScore="99.2% in NSO"
       />
-
-      {/* Top 3 Visual Charts Row */}
       {renderTopChartsRow()}
-
-      {/* Filter and Search Bar */}
       <ResultsFilterBar
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -187,9 +143,8 @@ export function ResultsPanel() {
         setSelectedClass={setSelectedClass}
         selectedStatus={selectedStatus}
         setSelectedStatus={setSelectedStatus}
+        onExport={() => exportResultsToCSV(filteredResults, `IQ_Olympiad_${activeCard}_Results.csv`)}
       />
-
-      {/* Data Table */}
       {renderDataTable()}
     </div>
   );

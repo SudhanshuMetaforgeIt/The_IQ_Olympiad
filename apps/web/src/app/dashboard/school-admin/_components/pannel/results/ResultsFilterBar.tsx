@@ -58,7 +58,7 @@ export function ResultsFilterBar({
           <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
 
-        {/* All Classes Dropdown */}
+        {/* All Classes Dropdown (Classes 7, 8, 9, 10, 11, 12) */}
         <div className="relative">
           <select
             value={selectedClass}
@@ -66,10 +66,12 @@ export function ResultsFilterBar({
             className="appearance-none bg-slate-50 border border-slate-200 text-menu font-bold text-slate-700 py-2.5 pl-4 pr-9 rounded-full cursor-pointer hover:border-slate-300 focus:outline-none"
           >
             <option value="All Classes">All Classes</option>
-            <option value="VII">Class VII</option>
-            <option value="VIII">Class VIII</option>
-            <option value="IX">Class IX</option>
-            <option value="X">Class X</option>
+            <option value="Class 7">Class 7</option>
+            <option value="Class 8">Class 8</option>
+            <option value="Class 9">Class 9</option>
+            <option value="Class 10">Class 10</option>
+            <option value="Class 11">Class 11</option>
+            <option value="Class 12">Class 12</option>
           </select>
           <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>

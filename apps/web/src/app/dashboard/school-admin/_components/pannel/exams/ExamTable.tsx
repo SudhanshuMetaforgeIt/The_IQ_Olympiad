@@ -121,9 +121,8 @@ export function ExamTable({
           </button>
           <button
             onClick={() => setCurrentPage(1)}
-            className={`w-8 h-8 rounded-lg font-bold text-caption flex items-center justify-center cursor-pointer ${
-              currentPage === 1 ? "bg-[#6B46C1] text-white" : "text-slate-600 hover:bg-slate-50"
-            }`}
+            className={`w-8 h-8 rounded-lg font-bold text-caption flex items-center justify-center cursor-pointer ${currentPage === 1 ? "bg-[#6B46C1] text-white" : "text-slate-600 hover:bg-slate-50"
+              }`}
           >
             1
           </button>

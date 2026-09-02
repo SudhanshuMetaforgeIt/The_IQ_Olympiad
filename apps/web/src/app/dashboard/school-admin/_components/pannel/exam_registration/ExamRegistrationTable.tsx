@@ -39,71 +39,69 @@ export function ExamRegistrationTable({
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-slate-100 text-micro font-bold text-slate-400 uppercase tracking-wider">
-              <th className="py-4 px-6">STUDENT NAME</th>
-              <th className="py-4 px-4">STUDENT ID</th>
-              <th className="py-4 px-4">CLASS</th>
-              <th className="py-4 px-4">EXAM NAME</th>
-              <th className="py-4 px-4">SCHEDULE</th>
-              <th className="py-4 px-4">REGISTRATION DATE</th>
-              <th className="py-4 px-4">STATUS</th>
-              <th className="py-4 px-6 text-right">ACTION</th>
+            <tr className="border-b border-slate-200 text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/70">
+              <th className="py-4.5 px-6">STUDENT NAME</th>
+              <th className="py-4.5 px-4">STUDENT ID</th>
+              <th className="py-4.5 px-4">CLASS</th>
+              <th className="py-4.5 px-4">EXAM NAME</th>
+              <th className="py-4.5 px-4">SCHEDULE</th>
+              <th className="py-4.5 px-4">REGISTRATION DATE</th>
+              <th className="py-4.5 px-4">STATUS</th>
+              <th className="py-4.5 px-6 text-right">ACTION</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 text-table font-normal text-slate-700">
+          <tbody className="divide-y divide-slate-100 font-normal text-slate-700">
             {registrations.map((item) => (
               <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
                 {/* Student Name with Avatar */}
-                <td className="py-4 px-6">
+                <td className="py-4.5 px-6">
                   <div className="flex items-center space-x-3.5">
                     {item.avatarUrl ? (
                       <img
                         src={item.avatarUrl}
                         alt={item.studentName}
-                        className="w-9 h-9 rounded-full object-cover shadow-xs border border-slate-200 shrink-0"
+                        className="w-10 h-10 rounded-full object-cover shadow-xs border border-slate-200 shrink-0"
                       />
                     ) : (
-                      <div className={`w-9 h-9 rounded-full ${item.avatarBg} flex items-center justify-center font-bold text-caption shrink-0 border border-slate-200/60`}>
+                      <div className={`w-10 h-10 rounded-full ${item.avatarBg} flex items-center justify-center font-semibold text-xs shrink-0 border border-slate-200/60`}>
                         {item.studentName.slice(0, 2).toUpperCase()}
                       </div>
                     )}
-                    <div className="flex flex-col">
-                      <span className="font-bold text-slate-900 text-body">{item.studentName}</span>
-                    </div>
+                    <span className="font-semibold text-slate-900 text-sm sm:text-base">{item.studentName}</span>
                   </div>
                 </td>
 
                 {/* Student ID Column */}
-                <td className="py-4 px-4 font-bold text-purple-700 text-table tabular-nums">
+                <td className="py-4.5 px-4 font-semibold text-purple-700 text-sm sm:text-base tabular-nums">
                   {item.studentId}
                 </td>
 
                 {/* Class */}
-                <td className="py-4 px-4 font-bold text-slate-800 text-table">{item.className}</td>
+                <td className="py-4.5 px-4 font-normal text-slate-700 text-sm sm:text-base">{item.className}</td>
 
                 {/* Exam Name */}
-                <td className="py-4 px-4 font-bold text-slate-900 text-table">{item.examName}</td>
+                <td className="py-4.5 px-4 font-medium text-slate-900 text-sm sm:text-base">{item.examName}</td>
 
                 {/* Schedule */}
-                <td className="py-4 px-4 text-slate-600 text-table font-medium">{item.schedule}</td>
+                <td className="py-4.5 px-4 text-slate-600 text-sm sm:text-base font-normal">{item.schedule}</td>
 
                 {/* Registration Date */}
-                <td className="py-4 px-4 text-slate-500 text-table">{item.registrationDate}</td>
+                <td className="py-4.5 px-4 text-slate-500 text-sm sm:text-base font-normal">{item.registrationDate}</td>
 
                 {/* Status */}
-                <td className="py-4 px-4">
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-badge font-bold ${getStatusBadge(item.status)}`}>
+                <td className="py-4.5 px-4">
+                  <span className={`inline-flex items-center px-3.5 py-1 rounded-full text-xs sm:text-sm font-medium ${getStatusBadge(item.status)}`}>
                     {item.status}
                   </span>
                 </td>
 
                 {/* Action Buttons */}
-                <td className="py-4 px-6 text-right">
+                <td className="py-4.5 px-6 text-right">
                   <div className="flex items-center justify-end space-x-2">
-                    <button className="p-1.5 text-purple-600 hover:text-purple-900 hover:bg-purple-50 rounded-lg transition-colors" title="Edit Registration">
+                    <button className="p-2 text-purple-600 hover:text-purple-900 hover:bg-purple-50 rounded-xl transition-colors cursor-pointer" title="Edit Registration">
                       <Edit2 className="w-4 h-4" />
                     </button>
-                    <button className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors" title="View Details">
+                    <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer" title="View Details">
                       <Eye className="w-4 h-4" />
                     </button>
                   </div>
@@ -115,49 +113,49 @@ export function ExamRegistrationTable({
       </div>
 
       {/* TABLE PAGINATION FOOTER */}
-      <div className="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-secondary text-slate-500">
+      <div className="p-4.5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm sm:text-base font-normal text-slate-500">
         <div>
           Showing 1 to {registrations.length} of{" "}
-          <span className="font-bold text-purple-700">
+          <span className="font-semibold text-purple-700">
             {activeCard === "pending" ? "221" : totalRecordsCount.toLocaleString()}
           </span>{" "}
           {activeCard === "pending" ? "pending registrations" : "registrations"}
         </div>
 
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center space-x-1.5">
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 cursor-pointer"
+            className="w-9 h-9 rounded-xl border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={() => setCurrentPage(1)}
-            className={`w-8 h-8 rounded-lg font-bold text-caption flex items-center justify-center cursor-pointer ${
-              currentPage === 1 ? "bg-[#6B46C1] text-white" : "text-slate-600 hover:bg-slate-50"
+            className={`w-9 h-9 rounded-xl font-semibold text-sm sm:text-base flex items-center justify-center cursor-pointer ${
+              currentPage === 1 ? "bg-[#6332ec] text-white shadow-xs" : "text-slate-600 hover:bg-slate-50"
             }`}
           >
             1
           </button>
           <button
             onClick={() => setCurrentPage(2)}
-            className="w-8 h-8 rounded-lg font-medium text-caption text-slate-600 hover:bg-slate-50 flex items-center justify-center cursor-pointer"
+            className="w-9 h-9 rounded-xl font-medium text-sm sm:text-base text-slate-600 hover:bg-slate-50 flex items-center justify-center cursor-pointer"
           >
             2
           </button>
           <button
             onClick={() => setCurrentPage(3)}
-            className="w-8 h-8 rounded-lg font-medium text-caption text-slate-600 hover:bg-slate-50 flex items-center justify-center cursor-pointer"
+            className="w-9 h-9 rounded-xl font-medium text-sm sm:text-base text-slate-600 hover:bg-slate-50 flex items-center justify-center cursor-pointer"
           >
             3
           </button>
-          <span className="px-1 text-slate-400">...</span>
-          <button className="w-8 h-8 rounded-lg font-medium text-caption text-slate-600 hover:bg-slate-50 flex items-center justify-center cursor-pointer">
+          <span className="px-1.5 text-slate-400 font-medium">...</span>
+          <button className="w-9 h-9 rounded-xl font-medium text-sm sm:text-base text-slate-600 hover:bg-slate-50 flex items-center justify-center cursor-pointer">
             {activeCard === "pending" ? "28" : "203"}
           </button>
           <button
             onClick={() => setCurrentPage((p) => p + 1)}
-            className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 cursor-pointer"
+            className="w-9 h-9 rounded-xl border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 cursor-pointer"
           >
             <ChevronRight className="w-4 h-4" />
           </button>

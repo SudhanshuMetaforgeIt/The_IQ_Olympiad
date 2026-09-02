@@ -3,6 +3,7 @@
 import React from "react";
 import { Eye, Download, Award, ChevronLeft, ChevronRight } from "lucide-react";
 import { ResultRecord } from "./types";
+import { downloadStudentReport } from "./exportUtils";
 
 interface MeritStudentsTableProps {
   results: ResultRecord[];
@@ -26,37 +27,36 @@ export function MeritStudentsTable({
   ];
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden transition-all duration-300">
+    <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xs overflow-hidden font-sans">
       {/* Table Title */}
       <div className="px-6 pt-5 pb-3 border-b border-slate-100 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Award className="w-5 h-5 text-amber-500" />
-          <h3 className="font-bold text-slate-900 text-body">Merit & Rank Holders List</h3>
+          <h3 className="font-extrabold text-slate-900 text-base sm:text-lg">Merit & Rank Holders List</h3>
         </div>
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-slate-100 text-micro font-bold text-slate-400 uppercase tracking-wider">
-              <th className="py-4 px-6">RANK</th>
-              <th className="py-4 px-6">STUDENT NAME</th>
-              <th className="py-4 px-4">CLASS</th>
-              <th className="py-4 px-4">EXAM NAME</th>
-              <th className="py-4 px-4">MARKS OBTAINED</th>
-              <th className="py-4 px-4">TOTAL MARKS</th>
-              <th className="py-4 px-4">PERCENTAGE</th>
-              <th className="py-4 px-4">GRADE</th>
-              <th className="py-4 px-4">ACHIEVEMENT / MEDAL</th>
-              <th className="py-4 px-6 text-right">ACTION</th>
+            <tr className="border-b border-slate-200/80 text-xs font-black text-slate-600 uppercase tracking-wider bg-slate-50/70">
+              <th className="py-3.5 px-6">RANK</th>
+              <th className="py-3.5 px-6">STUDENT NAME</th>
+              <th className="py-3.5 px-4">CLASS</th>
+              <th className="py-3.5 px-4">EXAM NAME</th>
+              <th className="py-3.5 px-4">MARKS OBTAINED</th>
+              <th className="py-3.5 px-4">TOTAL MARKS</th>
+              <th className="py-3.5 px-4">PERCENTAGE</th>
+              <th className="py-3.5 px-4">GRADE</th>
+              <th className="py-3.5 px-4">ACHIEVEMENT / MEDAL</th>
+              <th className="py-3.5 px-6 text-right">ACTION</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 text-table font-normal text-slate-700">
+          <tbody className="divide-y divide-slate-100 text-xs sm:text-sm font-semibold text-slate-700">
             {meritList.map((item) => (
-              <tr key={item.id || item.rank} className="hover:bg-slate-50/80 transition-colors">
-                {/* Rank Badge */}
-                <td className="py-4 px-6">
-                  <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full font-black text-caption border ${
+              <tr key={item.id || item.rank} className="hover:bg-slate-50/70 transition-colors">
+                <td className="py-3.5 px-6">
+                  <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full font-black text-xs border ${
                     item.rank === 1 ? "bg-amber-400 text-slate-900 border-amber-500" :
                     item.rank === 2 ? "bg-slate-300 text-slate-900 border-slate-400" :
                     item.rank === 3 ? "bg-amber-700 text-white border-amber-800" :
@@ -66,8 +66,7 @@ export function MeritStudentsTable({
                   </span>
                 </td>
 
-                {/* Student Name with Profile Image */}
-                <td className="py-4 px-6">
+                <td className="py-3.5 px-6">
                   <div className="flex items-center space-x-3.5">
                     {item.avatarUrl ? (
                       <img
@@ -76,54 +75,46 @@ export function MeritStudentsTable({
                         className="w-9 h-9 rounded-full object-cover shadow-xs border border-slate-200 shrink-0"
                       />
                     ) : (
-                      <div className={`w-9 h-9 rounded-full ${item.avatarBg} flex items-center justify-center font-bold text-caption shrink-0 border border-slate-200/60`}>
+                      <div className={`w-9 h-9 rounded-full ${item.avatarBg} flex items-center justify-center font-bold text-xs shrink-0 border border-slate-200/60`}>
                         {item.studentName?.slice(0, 2).toUpperCase()}
                       </div>
                     )}
-                    <span className="font-bold text-slate-900 text-body">{item.studentName}</span>
+                    <span className="font-extrabold text-slate-900 text-xs sm:text-sm">{item.studentName}</span>
                   </div>
                 </td>
 
-                {/* Class */}
-                <td className="py-4 px-4 font-bold text-slate-800 text-table">{item.className}</td>
+                <td className="py-3.5 px-4 font-semibold text-slate-700 text-xs sm:text-sm">{item.className}</td>
+                <td className="py-3.5 px-4 font-bold text-slate-900 text-xs sm:text-sm">{item.examName}</td>
+                <td className="py-3.5 px-4 font-bold text-slate-900 text-xs sm:text-sm tabular-nums">{item.marksObtained}</td>
+                <td className="py-3.5 px-4 font-semibold text-slate-700 text-xs sm:text-sm tabular-nums">{item.totalMarks}</td>
+                <td className="py-3.5 px-4 font-bold text-purple-700 text-xs sm:text-sm tabular-nums">{item.percentage.toFixed(1)}%</td>
 
-                {/* Exam Name */}
-                <td className="py-4 px-4 font-bold text-slate-900 text-table">{item.examName}</td>
-
-                {/* Marks Obtained */}
-                <td className="py-4 px-4 font-extrabold text-slate-900 text-table tabular-nums">
-                  {item.marksObtained}
-                </td>
-
-                {/* Total Marks */}
-                <td className="py-4 px-4 font-medium text-slate-700 text-table tabular-nums">{item.totalMarks}</td>
-
-                {/* Percentage */}
-                <td className="py-4 px-4 font-extrabold text-purple-700 text-table tabular-nums">
-                  {item.percentage.toFixed(1)}%
-                </td>
-
-                {/* Grade */}
-                <td className="py-4 px-4">
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-badge font-bold ${item.gradeBg}`}>
+                <td className="py-3.5 px-4">
+                  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${item.gradeBg}`}>
                     {item.grade}
                   </span>
                 </td>
 
-                {/* Achievement Badge */}
-                <td className="py-4 px-4">
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-badge font-bold border ${item.medalBg}`}>
+                <td className="py-3.5 px-4">
+                  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border ${item.medalBg}`}>
                     {item.medal}
                   </span>
                 </td>
 
-                {/* Action Buttons */}
-                <td className="py-4 px-6 text-right">
+                <td className="py-3.5 px-6 text-right">
                   <div className="flex items-center justify-end space-x-2">
-                    <button className="p-1.5 text-purple-600 hover:text-purple-900 hover:bg-purple-50 rounded-lg transition-colors cursor-pointer" title="View Scorecard">
+                    <button
+                      onClick={() => downloadStudentReport(item.studentName, item.examName)}
+                      className="p-1.5 text-purple-600 hover:text-purple-900 hover:bg-purple-50 rounded-lg transition-colors cursor-pointer"
+                      title="View Scorecard"
+                    >
                       <Eye className="w-4 h-4" />
                     </button>
-                    <button className="p-1.5 text-purple-600 hover:text-purple-900 hover:bg-purple-50 rounded-lg transition-colors cursor-pointer" title="Download Merit Certificate">
+                    <button
+                      onClick={() => downloadStudentReport(item.studentName, item.examName)}
+                      className="p-1.5 text-purple-600 hover:text-purple-900 hover:bg-purple-50 rounded-lg transition-colors cursor-pointer"
+                      title="Download Merit Certificate"
+                    >
                       <Download className="w-4 h-4" />
                     </button>
                   </div>
@@ -135,7 +126,7 @@ export function MeritStudentsTable({
       </div>
 
       {/* TABLE PAGINATION FOOTER */}
-      <div className="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-secondary text-slate-500">
+      <div className="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm font-semibold text-slate-600">
         <div>
           Showing 1 to {meritList.length} of{" "}
           <span className="font-bold text-amber-600">{totalRecordsCount.toLocaleString()}</span> merit students
@@ -150,8 +141,8 @@ export function MeritStudentsTable({
           </button>
           <button
             onClick={() => setCurrentPage(1)}
-            className={`w-8 h-8 rounded-lg font-bold text-caption flex items-center justify-center cursor-pointer ${
-              currentPage === 1 ? "bg-[#6B46C1] text-white" : "text-slate-600 hover:bg-slate-50"
+            className={`w-8 h-8 rounded-lg font-bold text-xs sm:text-sm flex items-center justify-center cursor-pointer ${
+              currentPage === 1 ? "bg-[#6332ec] text-white" : "text-slate-600 hover:bg-slate-50"
             }`}
           >
             1
