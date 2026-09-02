@@ -1,26 +1,43 @@
 "use client";
 
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useState, Suspense } from "react";
-import StudentLoginPage from "./student_login";
-import SchoolAdminLoginPage from "./schooladmin_login";
+import type { AuthRole } from "../common";
+import StudentLoginForm from "./student-login/StudentLoginForm";
+import SchoolAdminLoginForm from "./school-login/SchoolAdminLoginForm";
 
-function LoginContent() {
+function LoginPageContent() {
   const searchParams = useSearchParams();
-  const initialRole = searchParams?.get("role") === "school" ? "school" : "student";
-  const [role, setRole] = useState<"student" | "school">(initialRole);
+  const roleParam = searchParams.get("role");
+  const [activeRole, setActiveRole] = useState<AuthRole>(
+    roleParam === "school" ? "school" : "student"
+  );
 
-  if (role === "school") {
-    return <SchoolAdminLoginPage onSwitchRole={(r: "student" | "school") => setRole(r)} />;
+  useEffect(() => {
+    if (roleParam === "school") {
+      setActiveRole("school");
+    } else if (roleParam === "student") {
+      setActiveRole("student");
+    }
+  }, [roleParam]);
+
+  if (activeRole === "school") {
+    return <SchoolAdminLoginForm onRoleChange={setActiveRole} />;
   }
 
-  return <StudentLoginPage />;
+  return <StudentLoginForm onRoleChange={setActiveRole} />;
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center font-bold text-slate-500">Loading...</div>}>
-      <LoginContent />
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center font-bold text-slate-500">
+          Loading login...
+        </div>
+      }
+    >
+      <LoginPageContent />
     </Suspense>
   );
 }
