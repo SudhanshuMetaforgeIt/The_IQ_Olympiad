@@ -43,21 +43,21 @@ export default function CertificatesPanel({
       <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
         <HeaderBar student={STUDENT_PROFILE} onSelectTab={onSelectTab} />
 
-        <main className="flex-1 p-4 md:p-8 space-y-6">
+        <main className="flex-1 p-4 md:p-6 space-y-4 sm:space-y-5">
           {/* Header Banner */}
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <span className="text-xs font-black text-violet-600 uppercase tracking-widest block mb-1">
+              <span className="text-[11px] font-black text-violet-600 uppercase tracking-widest block mb-0.5">
                 AWARDS & RECOGNITION
               </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                 {activeSubTab === "badges"
                   ? "My Badges & Honors 🏅"
                   : activeSubTab === "coupons"
                   ? "Coupon & Discount Codes 🏷️"
                   : "My Certificates 📜"}
               </h2>
-              <p className="text-sm font-medium text-slate-500 mt-1">
+              <p className="text-xs font-medium text-slate-500 mt-0.5">
                 {activeSubTab === "badges"
                   ? "Track your earned achievement badges and progress towards unlocking new milestones."
                   : activeSubTab === "coupons"
@@ -68,7 +68,7 @@ export default function CertificatesPanel({
           </div>
 
           {/* 3 Sub-Tabs Navigation (Certificates, My Badges, Coupon Codes) */}
-          <div className="flex items-center gap-2 p-1.5 bg-slate-200/70 rounded-2xl w-fit max-w-full overflow-x-auto">
+          <div className="flex items-center gap-1.5 p-1 bg-slate-200/70 rounded-xl w-fit max-w-full overflow-x-auto">
             {/* Certificates Tab */}
             <button
               type="button"
@@ -76,9 +76,9 @@ export default function CertificatesPanel({
                 setActiveSubTab("certificates");
                 onSelectTab?.("certificates", "certificates");
               }}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg font-black text-xs transition-all cursor-pointer whitespace-nowrap ${
                 activeSubTab === "certificates"
-                  ? "bg-white text-violet-700 shadow-xs"
+                  ? "bg-white text-violet-700 shadow-2xs"
                   : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
               }`}
             >
@@ -93,15 +93,15 @@ export default function CertificatesPanel({
                 setActiveSubTab("badges");
                 onSelectTab?.("certificates", "badges");
               }}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg font-black text-xs transition-all cursor-pointer whitespace-nowrap ${
                 activeSubTab === "badges"
-                  ? "bg-white text-violet-700 shadow-xs"
+                  ? "bg-white text-violet-700 shadow-2xs"
                   : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
               }`}
             >
               <span>🏅</span>
               <span>My Badges</span>
-              <span className="bg-violet-100 text-violet-700 text-[10px] px-2 py-0.5 rounded-full font-bold">
+              <span className="bg-violet-100 text-violet-700 text-[9px] px-1.5 py-0.5 rounded-full font-bold">
                 2
               </span>
             </button>
@@ -113,14 +113,17 @@ export default function CertificatesPanel({
                 setActiveSubTab("coupons");
                 onSelectTab?.("certificates", "coupons");
               }}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg font-black text-xs transition-all cursor-pointer whitespace-nowrap ${
                 activeSubTab === "coupons"
-                  ? "bg-white text-violet-700 shadow-xs"
+                  ? "bg-white text-violet-700 shadow-2xs"
                   : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
               }`}
             >
               <span>🏷️</span>
               <span>Coupon Codes</span>
+              <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1.5 py-0.5 rounded-full font-bold">
+                3
+              </span>
             </button>
           </div>
 

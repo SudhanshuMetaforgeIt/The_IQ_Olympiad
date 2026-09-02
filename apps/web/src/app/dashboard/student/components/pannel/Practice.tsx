@@ -54,14 +54,14 @@ export default function PracticePanel({ activeTab = "practice", onSelectTab }: P
       <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
         <HeaderBar student={STUDENT_PROFILE} onSelectTab={onSelectTab} />
 
-        <main className="flex-1 p-4 md:p-8 space-y-6">
+        <main className="flex-1 p-4 md:p-6 space-y-4 sm:space-y-5">
           {/* Header Title & Dropdown Controls */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight">
                 Practice
               </h1>
-              <p className="text-xs sm:text-sm font-medium text-slate-500 mt-0.5">
+              <p className="text-xs font-medium text-slate-500 mt-0.5">
                 Sharpen your skills with practice tests and mock tests.
               </p>
             </div>
@@ -134,7 +134,7 @@ export default function PracticePanel({ activeTab = "practice", onSelectTab }: P
 
           {/* Subject Practice Cards Grid */}
           <div
-            className={`grid gap-6 w-full ${filteredSubjects.length === 1
+            className={`grid gap-3.5 sm:gap-4 w-full ${filteredSubjects.length === 1
                 ? "grid-cols-1"
                 : "grid-cols-1 lg:grid-cols-2"
               }`}

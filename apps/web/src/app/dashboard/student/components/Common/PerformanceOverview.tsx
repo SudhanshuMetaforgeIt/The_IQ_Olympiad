@@ -8,11 +8,11 @@ interface PerformanceOverviewProps {
 
 export function PerformanceOverview({ metrics, onViewDetails }: PerformanceOverviewProps) {
   return (
-    <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-5 flex flex-col justify-between">
+    <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-100 shadow-2xs space-y-4 flex flex-col justify-between">
       <div>
         {/* Header with Filter Dropdown */}
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-bold text-slate-900">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm sm:text-base font-bold text-slate-900">
             Performance Overview
           </h3>
           <button
@@ -25,9 +25,9 @@ export function PerformanceOverview({ metrics, onViewDetails }: PerformanceOverv
         </div>
 
         {/* Bar Chart Visualization */}
-        <div className="relative pt-6 pb-2">
+        <div className="relative pt-4 pb-2">
           {/* Background Y-Axis Grid Lines */}
-          <div className="absolute inset-0 flex flex-col justify-between text-[10px] font-semibold text-slate-400 pointer-events-none pb-8">
+          <div className="absolute inset-0 flex flex-col justify-between text-[10px] font-semibold text-slate-400 pointer-events-none pb-7">
             <div className="flex items-center justify-between border-b border-slate-100 pb-0.5">
               <span>100%</span>
             </div>
@@ -46,23 +46,23 @@ export function PerformanceOverview({ metrics, onViewDetails }: PerformanceOverv
           </div>
 
           {/* Vertical Bars */}
-          <div className="relative h-44 flex items-end justify-around pl-8 z-10">
+          <div className="relative h-36 flex items-end justify-around pl-7 z-10">
             {metrics.map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col items-center gap-2 group h-full justify-end"
+                className="flex flex-col items-center gap-1.5 group h-full justify-end"
               >
                 {/* Score label above bar */}
-                <span className="text-xs font-bold text-slate-800 tracking-tight group-hover:scale-110 transition-transform">
+                <span className="text-[11px] sm:text-xs font-bold text-slate-800 tracking-tight group-hover:scale-110 transition-transform">
                   {item.percentage}%
                 </span>
                 {/* Bar Graphic */}
                 <div
-                  className={`w-10 rounded-t-xl ${item.barColorClass} transition-all duration-500 group-hover:brightness-110 shadow-sm`}
+                  className={`w-8 sm:w-9 rounded-t-xl ${item.barColorClass} transition-all duration-500 group-hover:brightness-110 shadow-2xs`}
                   style={{ height: `${item.percentage}%` }}
                 />
                 {/* Subject Label below bar */}
-                <span className="text-[11px] font-semibold text-slate-600 max-w-[70px] text-center leading-tight mt-1">
+                <span className="text-[10px] sm:text-[11px] font-semibold text-slate-600 max-w-[65px] text-center leading-tight mt-1 truncate">
                   {item.subject}
                 </span>
               </div>
@@ -75,7 +75,7 @@ export function PerformanceOverview({ metrics, onViewDetails }: PerformanceOverv
       <button
         type="button"
         onClick={onViewDetails}
-        className="w-full mt-4 bg-white border border-indigo-200 text-indigo-600 font-bold text-xs py-3 px-4 rounded-xl hover:bg-indigo-50/60 transition-colors text-center cursor-pointer"
+        className="w-full mt-2 bg-white border border-indigo-200 text-indigo-600 font-bold text-xs py-2.5 px-4 rounded-xl hover:bg-indigo-50/60 transition-colors text-center cursor-pointer shadow-2xs"
       >
         Detailed Performance
       </button>

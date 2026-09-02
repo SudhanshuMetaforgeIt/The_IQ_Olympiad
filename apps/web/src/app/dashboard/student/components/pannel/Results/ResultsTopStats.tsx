@@ -5,12 +5,12 @@ import { RESULTS_TOP_METRICS } from "./mockResultsData";
 
 export function ResultsTopStats() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4">
       {/* 1. National Rank Card */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs flex items-center gap-5 hover:shadow-md transition-shadow">
-        <div className="w-16 h-16 rounded-2xl bg-purple-50/80 border border-purple-100 flex items-center justify-center shrink-0">
+      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-2xs flex items-center gap-4 hover:shadow-md transition-shadow">
+        <div className="size-12 rounded-xl bg-purple-50/80 border border-purple-100 flex items-center justify-center shrink-0">
           <svg
-            className="w-9 h-9 text-purple-600"
+            className="w-6 h-6 text-purple-600"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -29,20 +29,20 @@ export function ResultsTopStats() {
         </div>
 
         <div className="flex-1 min-w-0">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
             National Rank
           </span>
-          <div className="flex items-baseline gap-1.5 mt-0.5">
-            <span className="text-3xl font-black text-slate-900 tracking-tight">
+          <div className="flex items-baseline gap-1 mt-0.5">
+            <span className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
               {RESULTS_TOP_METRICS.nationalRank.toLocaleString()}
             </span>
-            <span className="text-xs font-medium text-slate-400">
+            <span className="text-[11px] font-medium text-slate-400">
               / {RESULTS_TOP_METRICS.totalStudents.toLocaleString()} Students
             </span>
           </div>
 
-          <div className="mt-2.5">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-violet-50 text-violet-700 border border-violet-100">
+          <div className="mt-1.5">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-violet-50 text-violet-700 border border-violet-100">
               Top {RESULTS_TOP_METRICS.topPercentage}%
             </span>
           </div>
@@ -50,18 +50,11 @@ export function ResultsTopStats() {
       </div>
 
       {/* 2. Percentage Card */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs flex items-center gap-5 hover:shadow-md transition-shadow">
+      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-2xs flex items-center gap-4 hover:shadow-md transition-shadow">
         {/* Pie Chart SVG Graphic */}
-        <div className="w-16 h-16 shrink-0 relative flex items-center justify-center">
-          <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-            {/* Background circle */}
-            <circle
-              cx="18"
-              cy="18"
-              r="15.9155"
-              fill="#E0E7FF"
-            />
-            {/* Primary Slice (Violet/Blue) */}
+        <div className="size-12 shrink-0 relative flex items-center justify-center">
+          <svg className="size-12 transform -rotate-90" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="15.9155" fill="#E0E7FF" />
             <circle
               cx="18"
               cy="18"
@@ -72,7 +65,6 @@ export function ResultsTopStats() {
               strokeDasharray="60 40"
               strokeDashoffset="0"
             />
-            {/* Secondary Slice (Purple) */}
             <circle
               cx="18"
               cy="18"
@@ -87,20 +79,20 @@ export function ResultsTopStats() {
         </div>
 
         <div className="flex-1 min-w-0">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
             Percentage
           </span>
           <div className="flex items-baseline mt-0.5">
-            <span className="text-3xl font-black text-slate-900 tracking-tight">
+            <span className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
               {RESULTS_TOP_METRICS.percentage}%
             </span>
           </div>
 
           <div className="flex items-center gap-1.5 mt-1">
-            <span className="text-xs font-bold text-emerald-600 flex items-center gap-0.5">
+            <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-0.5">
               <span>↑</span> {RESULTS_TOP_METRICS.improvementPercentage}% improvement
             </span>
-            <span className="text-[11px] font-medium text-slate-400">
+            <span className="text-[10px] font-medium text-slate-400">
               vs last month
             </span>
           </div>
@@ -108,25 +100,14 @@ export function ResultsTopStats() {
       </div>
 
       {/* 3. Medals Earned Card */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs flex items-center gap-5 hover:shadow-md transition-shadow">
-        {/* Ribbon Star Medal Graphic */}
-        <div className="w-16 h-16 shrink-0 flex items-center justify-center">
-          <svg className="w-14 h-14" viewBox="0 0 64 64" fill="none">
-            {/* Ribbon Tails */}
-            <path
-              d="M22 28L12 56L26 48L32 56L28 28H22Z"
-              fill="#F59E0B"
-            />
-            <path
-              d="M42 28L52 56L38 48L32 56L36 28H42Z"
-              fill="#D97706"
-            />
-            {/* Medal Outer Circle */}
+      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-2xs flex items-center gap-4 hover:shadow-md transition-shadow">
+        <div className="size-12 shrink-0 flex items-center justify-center">
+          <svg className="size-11" viewBox="0 0 64 64" fill="none">
+            <path d="M22 28L12 56L26 48L32 56L28 28H22Z" fill="#F59E0B" />
+            <path d="M42 28L52 56L38 48L32 56L36 28H42Z" fill="#D97706" />
             <circle cx="32" cy="24" r="18" fill="#FBBF24" stroke="#F59E0B" strokeWidth="2" />
-            {/* Medal Inner Ring */}
             <circle cx="32" cy="24" r="14" fill="#F59E0B" opacity="0.2" />
             <circle cx="32" cy="24" r="13" stroke="#F59E0B" strokeWidth="1.5" strokeDasharray="3 2" />
-            {/* Star Center */}
             <path
               d="M32 15L34.5 20.5L40.5 21.2L36 25.3L37.2 31.2L32 28.2L26.8 31.2L28 25.3L23.5 21.2L29.5 20.5L32 15Z"
               fill="#FFFFFF"
@@ -135,16 +116,16 @@ export function ResultsTopStats() {
         </div>
 
         <div className="flex-1 min-w-0">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
             Medals Earned
           </span>
           <div className="flex items-baseline mt-0.5">
-            <span className="text-3xl font-black text-slate-900 tracking-tight">
+            <span className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
               {RESULTS_TOP_METRICS.totalMedals}
             </span>
           </div>
 
-          <div className="border-t border-slate-100 mt-2 pt-2 flex items-center gap-3 text-xs font-semibold text-slate-600">
+          <div className="border-t border-slate-100 mt-1.5 pt-1.5 flex items-center gap-2.5 text-[11px] font-semibold text-slate-600">
             <span className="flex items-center gap-1">
               <span className="text-amber-500 font-bold">{RESULTS_TOP_METRICS.goldMedals} Gold</span>
             </span>

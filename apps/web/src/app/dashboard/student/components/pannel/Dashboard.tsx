@@ -56,7 +56,7 @@ export default function StudentDashboard({ activeTab = "dashboard", onSelectTab 
         <HeaderBar student={STUDENT_PROFILE} onSelectTab={onSelectTab} />
 
         {/* Scrollable Dashboard Body */}
-        <main className="flex-1 p-6 md:p-8 space-y-6">
+        <main className="flex-1 p-4 md:p-6 space-y-4 sm:space-y-5">
           {/* Multi-Step Exam Flow Mode */}
           {activeExamStep === "instructions" && (
             <div className="space-y-4">
@@ -99,14 +99,14 @@ export default function StudentDashboard({ activeTab = "dashboard", onSelectTab 
               />
 
               {/* Main Grid: Left Analytics & Right Achievements */}
-              <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 sm:gap-5 items-stretch">
                 {/* Left 8 Columns */}
-                <div className="xl:col-span-8 space-y-6">
+                <div className="xl:col-span-8 space-y-4 sm:space-y-5">
                   {/* Quick Stats Grid */}
                   <StatsRow stats={DASHBOARD_STATS} onSelectTab={onSelectTab} />
 
                   {/* 2-Column Grid (Recent Results & Performance Overview) */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
                     <RecentResults
                       results={RECENT_RESULTS}
                       onViewAll={() => onSelectTab?.("results")}

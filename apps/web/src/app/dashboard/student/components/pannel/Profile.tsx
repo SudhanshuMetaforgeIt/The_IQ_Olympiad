@@ -69,10 +69,10 @@ export default function StudentProfilePanel({
       <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
         <HeaderBar student={STUDENT_PROFILE} onSelectTab={onSelectTab} />
 
-        <main className="flex-1 p-4 md:p-8 space-y-6">
+        <main className="flex-1 p-4 md:p-6 space-y-4 sm:space-y-5">
           {/* Toast Notification */}
           {toastMessage && (
-            <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl border border-slate-700 text-xs sm:text-sm font-bold flex items-center gap-3 animate-fade-in">
+            <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-xl border border-slate-700 text-xs sm:text-sm font-bold flex items-center gap-2.5 animate-fade-in">
               <span className="text-emerald-400 text-base">✓</span>
               <span>{toastMessage}</span>
             </div>
@@ -80,16 +80,16 @@ export default function StudentProfilePanel({
 
           {/* Top Title Bar */}
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight">
               Profile Information
             </h1>
-            <p className="text-xs sm:text-sm font-medium text-slate-500 mt-0.5">
+            <p className="text-xs font-medium text-slate-500 mt-0.5">
               View and manage your personal, academic, and identity information.
             </p>
           </div>
 
           {/* Top Row: 2 Columns (Personal Information & Academic Information) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 items-stretch">
             {/* 1. Personal Information */}
             <PersonalInformationCard
               profile={profileData}
@@ -105,7 +105,7 @@ export default function StudentProfilePanel({
           </div>
 
           {/* Bottom Row: 3 Columns (Identity Information, Security, Activity Summary) */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 items-stretch">
             {/* 3. Identity Information */}
             <IdentityInformationCard
               profile={profileData}

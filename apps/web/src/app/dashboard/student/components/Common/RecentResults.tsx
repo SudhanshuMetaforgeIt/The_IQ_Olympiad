@@ -10,11 +10,11 @@ interface RecentResultsProps {
 
 export function RecentResults({ results, onViewAll, onSelectResult }: RecentResultsProps) {
   return (
-    <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-5 flex flex-col justify-between">
+    <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-100 shadow-2xs space-y-4 flex flex-col justify-between">
       <div>
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-bold text-slate-900">Recent Results</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm sm:text-base font-bold text-slate-900">Recent Results</h3>
           <button
             type="button"
             onClick={onViewAll}
@@ -25,7 +25,7 @@ export function RecentResults({ results, onViewAll, onSelectResult }: RecentResu
         </div>
 
         {/* Results List */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           {results.map((item) => (
             <ResultItemRow
               key={item.id}
@@ -40,7 +40,7 @@ export function RecentResults({ results, onViewAll, onSelectResult }: RecentResu
       <button
         type="button"
         onClick={onViewAll}
-        className="w-full mt-4 bg-white border border-violet-200 text-violet-600 font-bold text-xs py-3 px-4 rounded-xl hover:bg-violet-50/60 transition-colors text-center cursor-pointer"
+        className="w-full mt-2 bg-white border border-violet-200 text-violet-600 font-bold text-xs py-2.5 px-4 rounded-xl hover:bg-violet-50/60 transition-colors text-center cursor-pointer shadow-2xs"
       >
         View All Results
       </button>
@@ -52,11 +52,11 @@ function ResultItemRow({ item, onClick }: { item: ExamResultItem; onClick?: () =
   const getSubjectIcon = () => {
     switch (item.subjectIcon) {
       case "science":
-        return <FlaskIcon className="w-5 h-5 text-emerald-600" />;
+        return <FlaskIcon className="w-4.5 h-4.5 text-emerald-600" />;
       case "math":
-        return <MathCalcIcon className="w-5 h-5 text-indigo-600" />;
+        return <MathCalcIcon className="w-4.5 h-4.5 text-indigo-600" />;
       default:
-        return <TrophyLogoIcon className="w-5 h-5 text-indigo-600" />;
+        return <TrophyLogoIcon className="w-4.5 h-4.5 text-indigo-600" />;
     }
   };
 
@@ -73,25 +73,25 @@ function ResultItemRow({ item, onClick }: { item: ExamResultItem; onClick?: () =
   return (
     <div
       onClick={onClick}
-      className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50/60 border border-slate-100 hover:border-violet-200 hover:bg-violet-50/20 transition-all cursor-pointer"
+      className="flex items-center justify-between p-3 rounded-2xl bg-slate-50/60 border border-slate-100 hover:border-violet-200 hover:bg-violet-50/20 transition-all cursor-pointer"
     >
-      <div className="flex items-center gap-3.5">
-        <div className={`p-3 rounded-xl ${getIconBg()} shrink-0`}>
+      <div className="flex items-center gap-3">
+        <div className={`p-2.5 rounded-xl ${getIconBg()} shrink-0`}>
           {getSubjectIcon()}
         </div>
         <div>
-          <h4 className="text-sm font-bold text-slate-900 leading-snug">
+          <h4 className="text-xs sm:text-sm font-bold text-slate-900 leading-snug">
             {item.title}
           </h4>
-          <p className="text-xs text-slate-500 font-medium mt-0.5">
+          <p className="text-[11px] text-slate-500 font-medium mt-0.5">
             {item.completedDate}
           </p>
-          <div className="flex items-center gap-2 mt-1.5">
-            <span className="text-xs font-semibold text-slate-600 flex items-center gap-1">
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-[11px] font-semibold text-slate-600 flex items-center gap-1">
               <span>🏆</span> Rank: {item.rank}
             </span>
             <span
-              className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${getBadgeStyle()}`}
+              className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md border ${getBadgeStyle()}`}
             >
               {item.badgeName}
             </span>
@@ -101,10 +101,10 @@ function ResultItemRow({ item, onClick }: { item: ExamResultItem; onClick?: () =
 
       {/* Percentage Score */}
       <div className="text-right pl-2">
-        <span className="text-xl font-extrabold text-emerald-600 block">
+        <span className="text-lg sm:text-xl font-extrabold text-emerald-600 block">
           {item.scorePercentage}%
         </span>
-        <span className="text-[10px] font-semibold text-slate-400 block uppercase">
+        <span className="text-[9px] font-semibold text-slate-400 block uppercase">
           Score
         </span>
       </div>

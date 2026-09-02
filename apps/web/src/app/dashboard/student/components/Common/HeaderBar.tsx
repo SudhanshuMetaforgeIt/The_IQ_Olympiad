@@ -160,14 +160,14 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
   };
 
   return (
-    <header className="flex items-center justify-between py-4 px-6 sm:px-8 bg-transparent shrink-0">
+    <header className="flex items-center justify-between py-3 px-4 sm:px-6 bg-transparent shrink-0">
       {/* Welcome Title */}
       <div>
-        <span className="text-xs font-semibold text-slate-500">Welcome back,</span>
-        <h1 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2 tracking-tight">
-          {studentName} <span className="animate-bounce inline-block text-xl">👋</span>
+        <span className="text-[11px] font-semibold text-slate-500">Welcome back,</span>
+        <h1 className="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-1.5 tracking-tight leading-tight">
+          {studentName} <span className="animate-bounce inline-block text-base">👋</span>
         </h1>
-        <p className="text-xs font-semibold text-slate-400 mt-0.5">
+        <p className="text-[11px] font-semibold text-slate-400 mt-0.5">
           {student.grade} • {student.school}
         </p>
       </div>
