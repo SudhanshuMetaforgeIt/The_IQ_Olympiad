@@ -102,18 +102,8 @@ export function CertificatePreviewModal({
               </p>
             </div>
 
-            {/* Seal & Signatures Row */}
-            <div className="pt-6 border-t border-amber-200/60 flex flex-col sm:flex-row items-center justify-between gap-6">
-              {/* Left Signature */}
-              <div className="text-center sm:text-left space-y-1">
-                <div className="font-serif italic text-base text-slate-800 border-b border-slate-300 pb-0.5 px-4 font-bold">
-                  Dr. A. K. Verma
-                </div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
-                  Chief Academic Officer
-                </span>
-              </div>
-
+            {/* Seal Row */}
+            <div className="pt-6 border-t border-amber-200/60 flex items-center justify-center">
               {/* Center Official Gold Seal Badge */}
               <div className="size-20 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 text-amber-950 flex flex-col items-center justify-center p-2 border-4 border-white shadow-md shadow-amber-500/30">
                 <span className="text-lg leading-none">🏆</span>
@@ -121,16 +111,6 @@ export function CertificatePreviewModal({
                   OFFICIAL SEAL
                 </span>
                 <span className="text-[7px] font-extrabold text-amber-900">VERIFIED</span>
-              </div>
-
-              {/* Right Signature */}
-              <div className="text-center sm:text-right space-y-1">
-                <div className="font-serif italic text-base text-slate-800 border-b border-slate-300 pb-0.5 px-4 font-bold">
-                  Prof. Sarah Jenkins
-                </div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
-                  President, Olympiad Council
-                </span>
               </div>
             </div>
 

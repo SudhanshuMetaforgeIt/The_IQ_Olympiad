@@ -31,22 +31,22 @@ export const DASHBOARD_STATS: StatItem[] = [
   {
     id: "stat-registered",
     title: "Registered Exams",
-    value: 4,
-    subtext: "All Time",
+    value: 1,
+    subtext: "1 Upcoming",
     iconType: "registered",
   },
   {
     id: "stat-completed",
     title: "Completed Exams",
-    value: 2,
-    subtext: "All Time",
+    value: 3,
+    subtext: "3 All Time",
     iconType: "completed",
   },
   {
     id: "stat-rank",
     title: "Current Rank",
-    value: 18,
-    subtext: "School Rank",
+    value: 982,
+    subtext: "National Rank",
     iconType: "rank",
   },
   {
@@ -58,7 +58,81 @@ export const DASHBOARD_STATS: StatItem[] = [
   },
 ];
 
+export interface CompletedExamItem {
+  id: string;
+  title: string;
+  subject: string;
+  category: string;
+  completedDate: string;
+  score: number;
+  totalMarks: number;
+  percentage: number;
+  rank: number;
+  rankType: string;
+  award: string;
+  badgeVariant: "gold" | "silver" | "bronze";
+  certificateId: string;
+}
+
+export const COMPLETED_EXAMS_LIST: CompletedExamItem[] = [
+  {
+    id: "comp-math-2025",
+    title: "National Mathematics Olympiad 2025",
+    subject: "Mathematics",
+    category: "Math & Numerical Logic",
+    completedDate: "15 Apr 2025",
+    score: 90,
+    totalMarks: 100,
+    percentage: 90,
+    rank: 18,
+    rankType: "School Rank",
+    award: "Gold Medal 🏆",
+    badgeVariant: "gold",
+    certificateId: "IQ-2025-NMO-44120",
+  },
+  {
+    id: "comp-sci-2025",
+    title: "National Science Olympiad 2025",
+    subject: "Science",
+    category: "Physics & Chemistry",
+    completedDate: "20 May 2025",
+    score: 86,
+    totalMarks: 100,
+    percentage: 86,
+    rank: 12,
+    rankType: "National Rank",
+    award: "Gold Medal 🏆",
+    badgeVariant: "gold",
+    certificateId: "IQ-2026-NSO-88492",
+  },
+  {
+    id: "comp-cyber-2025",
+    title: "National Cyber Olympiad 2025",
+    subject: "Computer Science",
+    category: "IT & Computing",
+    completedDate: "10 Nov 2025",
+    score: 84,
+    totalMarks: 100,
+    percentage: 84,
+    rank: 14,
+    rankType: "School Rank",
+    award: "Silver Medal 🥈",
+    badgeVariant: "silver",
+    certificateId: "IQ-2025-NCO-12984",
+  },
+];
+
 export const RECENT_RESULTS: ExamResultItem[] = [
+  {
+    id: "res-math-2025",
+    title: "Mathematics Olympiad 2025",
+    completedDate: "Completed on 15 Apr 2025",
+    rank: 18,
+    badgeName: "Gold Medal",
+    badgeVariant: "gold",
+    scorePercentage: 90,
+    subjectIcon: "math",
+  },
   {
     id: "res-sci-2025",
     title: "Science Olympiad 2025",
@@ -68,16 +142,6 @@ export const RECENT_RESULTS: ExamResultItem[] = [
     badgeVariant: "gold",
     scorePercentage: 86,
     subjectIcon: "science",
-  },
-  {
-    id: "res-math-2025",
-    title: "Mathematics Olympiad 2025",
-    completedDate: "Completed on 15 Apr 2025",
-    rank: 18,
-    badgeName: "Silver Medal",
-    badgeVariant: "silver",
-    scorePercentage: 78,
-    subjectIcon: "math",
   },
 ];
 
@@ -91,7 +155,7 @@ export const PERFORMANCE_METRICS: PerformanceSubjectMetric[] = [
   {
     id: "perf-math",
     subject: "Mathematics",
-    percentage: 78,
+    percentage: 90,
     barColorClass: "bg-indigo-600",
   },
   {

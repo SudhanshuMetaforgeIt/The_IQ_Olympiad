@@ -10,13 +10,14 @@ import { ExamLiveInterfaceStep } from "../Commonn/ExamLiveInterfaceStep";
 
 interface MyExamsPanelProps {
   activeTab?: string;
-  onSelectTab?: (tabId: string) => void;
+  initialSubtab?: "upcoming" | "completed";
+  onSelectTab?: (tabId: string, subtabId?: string) => void;
 }
 
 export default function MyExamsPanel({ activeTab = "exams", onSelectTab }: MyExamsPanelProps) {
   const [examStep, setExamStep] = useState<"instructions" | "proctoring" | "live_exam">("instructions");
 
-  // If in live exam workspace step (Image 3), render full screen workspace layout!
+  // If in live exam workspace step, render full screen workspace layout
   if (examStep === "live_exam") {
     return (
       <ExamLiveInterfaceStep
@@ -26,16 +27,16 @@ export default function MyExamsPanel({ activeTab = "exams", onSelectTab }: MyExa
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC] font-sans antialiased text-slate-900">
+    <div className="flex h-screen overflow-hidden bg-[#F8FAFC] font-sans antialiased text-slate-900">
       {/* Sidebar Navigation */}
       <Sidebar student={STUDENT_PROFILE} activeTab={activeTab} onSelectTab={onSelectTab} />
 
       {/* Main Container */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <HeaderBar student={STUDENT_PROFILE} />
+      <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
+        <HeaderBar student={STUDENT_PROFILE} onSelectTab={onSelectTab} />
 
-        {/* Main Area - fills remaining height */}
-        <main className="flex-1 p-4 md:p-6 flex flex-col overflow-hidden">
+        {/* Main Area */}
+        <main className="flex-1 p-4 md:p-6 flex flex-col">
           {examStep === "instructions" && (
             <ExamInstructionsStep
               onStartExam={() => setExamStep("proctoring")}

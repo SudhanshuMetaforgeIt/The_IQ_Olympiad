@@ -1,6 +1,6 @@
 import React from "react";
 
-export type FilterTab = "all" | "upcoming" | "ongoing" | "completed";
+export type FilterTab = "all" | "registered" | "upcoming" | "ongoing" | "completed";
 
 export interface OlympiadExam {
   id: number;

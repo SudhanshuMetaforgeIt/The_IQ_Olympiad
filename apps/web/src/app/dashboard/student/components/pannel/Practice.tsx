@@ -16,15 +16,26 @@ interface PanelProps {
   onSelectTab?: (tabId: string) => void;
 }
 
+const SUBJECT_FILTER_OPTIONS = [
+  { id: "all", label: "All Subjects" },
+  { id: "science", label: "Science" },
+  { id: "math", label: "Mathematics" },
+  { id: "english", label: "English" },
+  { id: "gk", label: "General Knowledge" },
+];
+
 export default function PracticePanel({ activeTab = "practice", onSelectTab }: PanelProps) {
   const [selectedSubjectFilter, setSelectedSubjectFilter] = useState("all");
-  const [selectedClass, setSelectedClass] = useState("Class 8");
+  const [isSubjectDropdownOpen, setIsSubjectDropdownOpen] = useState(false);
   const [activePracticeSubject, setActivePracticeSubject] = useState<PracticeSubject | null>(null);
 
   const filteredSubjects = PRACTICE_SUBJECTS.filter((subj) => {
     if (selectedSubjectFilter === "all") return true;
     return subj.id === selectedSubjectFilter;
   });
+
+  const currentSubjectLabel =
+    SUBJECT_FILTER_OPTIONS.find((opt) => opt.id === selectedSubjectFilter)?.label ?? "All Subjects";
 
   // If student is currently taking a practice test, show the interactive Practice Test Interface
   if (activePracticeSubject) {
@@ -40,56 +51,80 @@ export default function PracticePanel({ activeTab = "practice", onSelectTab }: P
     <div className="flex h-screen overflow-hidden bg-[#F8FAFC] font-sans antialiased text-slate-900">
       <Sidebar student={STUDENT_PROFILE} activeTab={activeTab} onSelectTab={onSelectTab} />
 
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
         <HeaderBar student={STUDENT_PROFILE} />
 
-        <main className="flex-1 p-3.5 sm:p-5 lg:p-6 flex flex-col justify-between gap-3 overflow-y-auto">
+        <main className="flex-1 p-4 md:p-8 space-y-6">
           {/* Header Title & Dropdown Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 shrink-0">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
             <div>
               <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
                 Practice
               </h1>
-              <p className="text-xs sm:text-sm font-medium text-slate-500">
+              <p className="text-xs sm:text-sm font-medium text-slate-500 mt-0.5">
                 Sharpen your skills with practice tests and mock tests.
               </p>
             </div>
 
-            {/* Filter Dropdowns */}
+            {/* Filter Dropdown */}
             <div className="flex items-center gap-2.5">
               {/* All Subjects Dropdown */}
               <div className="relative">
                 <button
                   type="button"
-                  className="flex items-center gap-2 px-3.5 py-1.5 sm:py-2 rounded-xl border border-slate-200/90 bg-white text-slate-700 font-bold text-xs sm:text-sm shadow-xs hover:bg-slate-50 transition cursor-pointer"
+                  onClick={() => setIsSubjectDropdownOpen(!isSubjectDropdownOpen)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200/90 bg-white text-slate-700 font-bold text-xs sm:text-sm shadow-2xs hover:border-violet-300 hover:bg-slate-50 transition cursor-pointer min-w-[150px] justify-between"
                 >
-                  <svg className="w-3.5 h-3.5 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polygon points="12 2 2 7 12 12 22 7 12 2" />
-                    <polyline points="2 17 12 22 22 17" />
-                    <polyline points="2 12 12 17 22 12" />
-                  </svg>
-                  <span>All Subjects</span>
-                  <svg className="w-3 h-3 text-slate-400 ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-3.5 h-3.5 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                      <polyline points="2 17 12 22 22 17" />
+                      <polyline points="2 12 12 17 22 12" />
+                    </svg>
+                    <span>{currentSubjectLabel}</span>
+                  </div>
+                  <svg
+                    className={`w-3 h-3 text-slate-400 ml-1 transition-transform ${isSubjectDropdownOpen ? "rotate-180" : ""
+                      }`}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                  >
                     <path d="M6 9l6 6 6-6" />
                   </svg>
                 </button>
-              </div>
 
-              {/* Class Dropdown */}
-              <div className="relative">
-                <button
-                  type="button"
-                  className="flex items-center gap-2 px-3.5 py-1.5 sm:py-2 rounded-xl border border-slate-200/90 bg-white text-slate-700 font-bold text-xs sm:text-sm shadow-xs hover:bg-slate-50 transition cursor-pointer"
-                >
-                  <svg className="w-3.5 h-3.5 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                    <path d="M6 12v5c3 3 9 3 12 0v-5" />
-                  </svg>
-                  <span>Class 8</span>
-                  <svg className="w-3 h-3 text-slate-400 ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M6 9l6 6 6-6" />
-                  </svg>
-                </button>
+                {/* Dropdown Menu */}
+                {isSubjectDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-20"
+                      onClick={() => setIsSubjectDropdownOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-1.5 w-48 bg-white rounded-xl shadow-lg border border-slate-100 py-1.5 z-30 divide-y divide-slate-50">
+                      {SUBJECT_FILTER_OPTIONS.map((option) => (
+                        <button
+                          key={option.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedSubjectFilter(option.id);
+                            setIsSubjectDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-3.5 py-2 text-xs font-medium transition flex items-center justify-between hover:bg-violet-50 hover:text-violet-700 cursor-pointer ${selectedSubjectFilter === option.id
+                              ? "text-violet-700 font-bold bg-violet-50/50"
+                              : "text-slate-700"
+                            }`}
+                        >
+                          {option.label}
+                          {selectedSubjectFilter === option.id && (
+                            <span className="text-violet-600 font-bold">✓</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -97,8 +132,13 @@ export default function PracticePanel({ activeTab = "practice", onSelectTab }: P
           {/* Top 10 Free Practice Tests Progress Banner */}
           <PracticeProgressBanner />
 
-          {/* 2x2 Grid of Subject Practice Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5 flex-1 min-h-0">
+          {/* Subject Practice Cards Grid */}
+          <div
+            className={`grid gap-6 w-full ${filteredSubjects.length === 1
+                ? "grid-cols-1"
+                : "grid-cols-1 lg:grid-cols-2"
+              }`}
+          >
             {filteredSubjects.map((subject) => (
               <PracticeCard
                 key={subject.id}

@@ -18,7 +18,7 @@ import {
 interface SidebarProps {
   student?: StudentProfile;
   activeTab?: string;
-  onSelectTab?: (tabId: string) => void;
+  onSelectTab?: (tabId: string, subtabId?: string) => void;
 }
 
 interface NavItem {
@@ -39,28 +39,31 @@ const NAV_ITEMS: NavItem[] = [
   { id: "logout", label: "Logout", icon: LogoutIcon },
 ];
 
-export function Sidebar({ student, activeTab = "dashboard", onSelectTab }: SidebarProps) {
+export function Sidebar({ activeTab = "dashboard", onSelectTab }: SidebarProps) {
   return (
-    <aside className="w-64 bg-[#090E24] text-white flex flex-col justify-between p-5 shrink-0 min-h-screen">
+    <aside className="w-64 md:w-72 bg-[#090E24] text-white flex flex-col justify-between p-5 shrink-0 h-screen sticky top-0 overflow-y-auto select-none z-30 border-r border-slate-800/40">
       {/* Top Section */}
       <div className="space-y-6">
         {/* Logo & Portal Title */}
-        <div className="flex items-center gap-3 px-2 pt-2 cursor-pointer" onClick={() => onSelectTab?.("dashboard")}>
-          <div className="p-2 bg-gradient-to-tr from-amber-500 to-yellow-300 rounded-xl text-[#090E24] shadow-lg shadow-amber-500/20">
+        <div
+          className="flex items-center gap-3 px-2 pt-1 cursor-pointer group"
+          onClick={() => onSelectTab?.("dashboard")}
+        >
+          <div className="size-11 bg-gradient-to-tr from-amber-500 to-yellow-300 rounded-2xl text-[#090E24] shadow-lg shadow-amber-500/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
             <TrophyLogoIcon className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="font-extrabold text-base tracking-wide leading-tight text-white">
+            <h1 className="font-black text-base sm:text-lg tracking-wide leading-tight text-white">
               IQ OLYMPIAD
             </h1>
-            <p className="text-[10px] tracking-widest text-slate-400 font-semibold uppercase">
+            <p className="text-[11px] tracking-widest text-slate-400 font-extrabold uppercase mt-0.5">
               STUDENT PORTAL
             </p>
           </div>
         </div>
 
         {/* Navigation Items */}
-        <nav className="space-y-1">
+        <nav className="space-y-1.5">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -75,13 +78,13 @@ export function Sidebar({ student, activeTab = "dashboard", onSelectTab }: Sideb
                     onSelectTab(item.id);
                   }
                 }}
-                className={`w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+                className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[15px] sm:text-base font-bold transition-all cursor-pointer ${
                   isActive
-                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30 font-bold"
-                    : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
+                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/35 font-extrabold"
+                    : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
                 }`}
               >
-                <Icon className="w-5 h-5 shrink-0" />
+                <Icon className="w-5 h-5 sm:w-5.5 sm:h-5.5 shrink-0" />
                 <span>{item.label}</span>
               </button>
             );
@@ -90,7 +93,7 @@ export function Sidebar({ student, activeTab = "dashboard", onSelectTab }: Sideb
       </div>
 
       {/* Bottom Illustration (Stacked Books & Trophy) */}
-      <div className="pt-6 px-2 flex justify-center">
+      <div className="pt-6 pb-2 px-2 flex justify-center">
         <div className="relative w-full max-w-[170px] flex flex-col items-center">
           {/* Trophy Illustration */}
           <div className="w-12 h-12 bg-amber-400 rounded-2xl flex items-center justify-center text-slate-900 shadow-md transform translate-y-2 z-10">
