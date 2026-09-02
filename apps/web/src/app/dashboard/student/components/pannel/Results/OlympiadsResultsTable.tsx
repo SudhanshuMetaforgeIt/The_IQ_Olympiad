@@ -2,7 +2,7 @@
 
 import React from "react";
 import type { OlympiadResultRecord } from "./types";
-import { FlaskIcon, MathCalcIcon } from "../../Commonn/icons";
+import { FlaskIcon, MathCalcIcon } from "../../Common/icons";
 import { ResultsFilters } from "./ResultsFilters";
 
 interface OlympiadsResultsTableProps {

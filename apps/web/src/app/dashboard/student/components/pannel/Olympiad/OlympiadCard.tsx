@@ -2,7 +2,7 @@
 
 import React from "react";
 import type { OlympiadExam } from "./types";
-import type { ExamRegistrationData } from "../../Commonn/ExamRegistrationModal";
+import type { ExamRegistrationData } from "../../Common/ExamRegistrationModal";
 
 interface OlympiadCardProps {
   exam: OlympiadExam;

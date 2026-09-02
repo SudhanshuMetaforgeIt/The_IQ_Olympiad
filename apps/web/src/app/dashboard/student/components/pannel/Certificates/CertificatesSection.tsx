@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import type { CertificateItem } from "../../../types";
-import { MOCK_CERTIFICATES } from "../../Commonn/mockData";
-import { CertificatePreviewModal } from "../../Commonn/CertificatePreviewModal";
+import { MOCK_CERTIFICATES } from "../../Common/mockData";
+import { CertificatePreviewModal } from "../../Common/CertificatePreviewModal";
 import { CertificateCard } from "./CertificateCard";
 import { CertificatesFilter } from "./CertificatesFilter";
 

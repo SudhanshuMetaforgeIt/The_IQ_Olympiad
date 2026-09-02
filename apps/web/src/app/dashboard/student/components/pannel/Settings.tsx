@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { STUDENT_PROFILE } from "../Commonn/mockData";
-import { Sidebar } from "../Commonn/Sidebar";
-import { HeaderBar } from "../Commonn/HeaderBar";
+import { STUDENT_PROFILE } from "../Common/mockData";
+import { Sidebar } from "../Common/Sidebar";
+import { HeaderBar } from "../Common/HeaderBar";
 import {
   HelpAndSupportModal,
   ChatbotPanel,

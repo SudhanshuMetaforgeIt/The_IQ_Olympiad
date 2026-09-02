@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import Image from "next/image";
 import type { StudentProfile } from "../../types";
 import { BellIcon } from "./icons";
 
@@ -71,9 +70,35 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
 export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
+  const [avatarUrl, setAvatarUrl] = useState<string>(student.avatarUrl);
+  const [studentName, setStudentName] = useState<string>(student.name);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const unreadCount = notifications.filter((n) => n.isUnread).length;
+
+  // Sync updated avatar and name from localStorage & custom events in real time
+  useEffect(() => {
+    const syncProfile = () => {
+      if (typeof window !== "undefined") {
+        const savedAvatar = localStorage.getItem("student_custom_avatar");
+        if (savedAvatar) {
+          setAvatarUrl(savedAvatar);
+        }
+        const savedName = localStorage.getItem("student_custom_name");
+        if (savedName) {
+          setStudentName(savedName);
+        }
+      }
+    };
+
+    syncProfile();
+    window.addEventListener("student_profile_updated", syncProfile);
+    window.addEventListener("storage", syncProfile);
+    return () => {
+      window.removeEventListener("student_profile_updated", syncProfile);
+      window.removeEventListener("storage", syncProfile);
+    };
+  }, [student.avatarUrl, student.name]);
 
   // Click outside to close dropdown
   useEffect(() => {
@@ -140,7 +165,7 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
       <div>
         <span className="text-xs font-semibold text-slate-500">Welcome back,</span>
         <h1 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2 tracking-tight">
-          {student.name} <span className="animate-bounce inline-block text-xl">👋</span>
+          {studentName} <span className="animate-bounce inline-block text-xl">👋</span>
         </h1>
         <p className="text-xs font-semibold text-slate-400 mt-0.5">
           {student.grade} • {student.school}
@@ -247,26 +272,35 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
           )}
         </div>
 
-        {/* User Profile */}
-        <div className="flex items-center gap-3">
-          <Image
-            src={student.avatarUrl}
-            alt={student.name}
-            width={44}
-            height={44}
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-white shadow-sm ring-2 ring-violet-500/20"
-            unoptimized
-          />
+        {/* User Profile (Clickable to navigate to Profile) */}
+        <button
+          type="button"
+          onClick={() => onSelectTab?.("profile")}
+          className="flex items-center gap-3 p-1 sm:pr-2.5 rounded-2xl hover:bg-white hover:shadow-xs transition-all cursor-pointer border border-transparent hover:border-slate-200/80 group text-left"
+          title="View Student Profile"
+        >
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={avatarUrl}
+              alt={studentName}
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-white shadow-sm ring-2 ring-violet-500/20 group-hover:ring-violet-500/60 transition-all"
+            />
+          ) : (
+            <div className="size-10 sm:size-11 rounded-full bg-violet-600 text-white font-black flex items-center justify-center text-sm border-2 border-white shadow-sm ring-2 ring-violet-500/20">
+              {studentName.charAt(0)}
+            </div>
+          )}
           <div className="hidden sm:block text-left">
-            <div className="flex items-center gap-1 font-extrabold text-slate-900 text-sm">
-              <span>{student.name}</span>
-              <svg className="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <div className="flex items-center gap-1 font-extrabold text-slate-900 text-sm group-hover:text-violet-700 transition-colors">
+              <span>{studentName}</span>
+              <svg className="w-4 h-4 text-slate-600 group-hover:text-violet-700 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path d="M6 9l6 6 6-6" />
               </svg>
             </div>
             <p className="text-xs font-semibold text-slate-400">{student.grade}</p>
           </div>
-        </div>
+        </button>
       </div>
     </header>
   );

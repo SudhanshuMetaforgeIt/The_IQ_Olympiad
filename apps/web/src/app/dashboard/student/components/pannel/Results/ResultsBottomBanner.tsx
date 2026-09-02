@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { LightbulbIcon } from "../../Commonn/icons";
+import { LightbulbIcon } from "../../Common/icons";
 
 export function ResultsBottomBanner() {
   return (

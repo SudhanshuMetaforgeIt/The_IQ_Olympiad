@@ -2,7 +2,7 @@
 
 import React from "react";
 import type { OlympiadResultRecord } from "./types";
-import { FlaskIcon, MathCalcIcon, TrophyLogoIcon } from "../../Commonn/icons";
+import { FlaskIcon, MathCalcIcon, TrophyLogoIcon } from "../../Common/icons";
 
 interface OlympiadScorecardModalProps {
   isOpen: boolean;

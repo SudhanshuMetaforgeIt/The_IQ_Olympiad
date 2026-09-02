@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronDownIcon } from "../../Commonn/icons";
+import { ChevronDownIcon } from "../../Common/icons";
 
 interface ResultsFiltersProps {
   selectedSubject: string;

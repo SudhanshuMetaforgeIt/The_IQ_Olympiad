@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { STUDENT_PROFILE } from "../Commonn/mockData";
-import { Sidebar } from "../Commonn/Sidebar";
-import { HeaderBar } from "../Commonn/HeaderBar";
+import { STUDENT_PROFILE } from "../Common/mockData";
+import { Sidebar } from "../Common/Sidebar";
+import { HeaderBar } from "../Common/HeaderBar";
 import { PRACTICE_SUBJECTS } from "./Practice/practiceData";
 import { PracticeCard } from "./Practice/PracticeCard";
 import { PracticeProgressBanner } from "./Practice/PracticeProgressBanner";
@@ -52,7 +52,7 @@ export default function PracticePanel({ activeTab = "practice", onSelectTab }: P
       <Sidebar student={STUDENT_PROFILE} activeTab={activeTab} onSelectTab={onSelectTab} />
 
       <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
-        <HeaderBar student={STUDENT_PROFILE} />
+        <HeaderBar student={STUDENT_PROFILE} onSelectTab={onSelectTab} />
 
         <main className="flex-1 p-4 md:p-8 space-y-6">
           {/* Header Title & Dropdown Controls */}

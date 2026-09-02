@@ -8,22 +8,22 @@ import {
   RECENT_RESULTS,
   PERFORMANCE_METRICS,
   EXAM_TIP,
-} from "../Commonn/mockData";
+} from "../Common/mockData";
 import type { ExamResultItem } from "../../types";
-import { Sidebar } from "../Commonn/Sidebar";
-import { HeaderBar } from "../Commonn/HeaderBar";
-import { UpcomingExamBanner } from "../Commonn/UpcomingExamBanner";
-import { StatsRow } from "../Commonn/StatsRow";
-import { RecentResults } from "../Commonn/RecentResults";
-import { PerformanceOverview } from "../Commonn/PerformanceOverview";
-import { AchievementsCard } from "../Commonn/AchievementsCard";
-import { ExamTipsBanner } from "../Commonn/ExamTipsBanner";
-import { PerformanceModal } from "../Commonn/PerformanceModal";
-import { EarnedBadgesModal } from "../Commonn/EarnedBadgesModal";
-import { SubjectResultModal } from "../Commonn/SubjectResultModal";
-import { ExamInstructionsStep } from "../Commonn/ExamInstructionsStep";
-import { ExamProctoringStep } from "../Commonn/ExamProctoringStep";
-import { ExamLiveInterfaceStep } from "../Commonn/ExamLiveInterfaceStep";
+import { Sidebar } from "../Common/Sidebar";
+import { HeaderBar } from "../Common/HeaderBar";
+import { UpcomingExamBanner } from "../Common/UpcomingExamBanner";
+import { StatsRow } from "../Common/StatsRow";
+import { RecentResults } from "../Common/RecentResults";
+import { PerformanceOverview } from "../Common/PerformanceOverview";
+import { AchievementsCard } from "../Common/AchievementsCard";
+import { ExamTipsBanner } from "../Common/ExamTipsBanner";
+import { PerformanceModal } from "../Common/PerformanceModal";
+import { EarnedBadgesModal } from "../Common/EarnedBadgesModal";
+import { SubjectResultModal } from "../Common/SubjectResultModal";
+import { ExamInstructionsStep } from "../Common/ExamInstructionsStep";
+import { ExamProctoringStep } from "../Common/ExamProctoringStep";
+import { ExamLiveInterfaceStep } from "../Common/ExamLiveInterfaceStep";
 
 interface StudentDashboardProps {
   activeTab?: string;

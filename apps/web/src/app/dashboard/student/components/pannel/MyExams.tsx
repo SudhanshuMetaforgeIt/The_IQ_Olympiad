@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { STUDENT_PROFILE } from "../Commonn/mockData";
-import { Sidebar } from "../Commonn/Sidebar";
-import { HeaderBar } from "../Commonn/HeaderBar";
-import { ExamInstructionsStep } from "../Commonn/ExamInstructionsStep";
-import { ExamProctoringStep } from "../Commonn/ExamProctoringStep";
-import { ExamLiveInterfaceStep } from "../Commonn/ExamLiveInterfaceStep";
+import { STUDENT_PROFILE } from "../Common/mockData";
+import { Sidebar } from "../Common/Sidebar";
+import { HeaderBar } from "../Common/HeaderBar";
+import { ExamInstructionsStep } from "../Common/ExamInstructionsStep";
+import { ExamProctoringStep } from "../Common/ExamProctoringStep";
+import { ExamLiveInterfaceStep } from "../Common/ExamLiveInterfaceStep";
 
 interface MyExamsPanelProps {
   activeTab?: string;

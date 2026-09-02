@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { STUDENT_PROFILE } from "../Commonn/mockData";
-import { Sidebar } from "../Commonn/Sidebar";
-import { HeaderBar } from "../Commonn/HeaderBar";
-import { ExamRegistrationModal, ExamRegistrationData } from "../Commonn/ExamRegistrationModal";
-import { PerformanceModal } from "../Commonn/PerformanceModal";
+import { STUDENT_PROFILE } from "../Common/mockData";
+import { Sidebar } from "../Common/Sidebar";
+import { HeaderBar } from "../Common/HeaderBar";
+import { ExamRegistrationModal, ExamRegistrationData } from "../Common/ExamRegistrationModal";
+import { PerformanceModal } from "../Common/PerformanceModal";
 import { OLYMPIAD_EXAMS } from "./Olympiad/olympiadData";
 import { OlympiadTabs } from "./Olympiad/OlympiadTabs";
 import { OlympiadCard } from "./Olympiad/OlympiadCard";

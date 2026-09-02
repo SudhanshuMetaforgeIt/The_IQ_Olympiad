@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import type { StudentProfileData } from "./types";
 
 interface PersonalInformationCardProps {
@@ -21,6 +21,10 @@ export function PersonalInformationCard({
   const [tempName, setTempName] = useState(profile.fullName);
   const [showSavedSuccess, setShowSavedSuccess] = useState(false);
 
+  useEffect(() => {
+    setTempName(profile.fullName);
+  }, [profile.fullName]);
+
   const handleStartEdit = () => {
     setTempName(profile.fullName);
     setIsEditingName(true);
@@ -34,12 +38,36 @@ export function PersonalInformationCard({
 
   const handleSaveName = () => {
     if (tempName.trim()) {
-      onChange?.("fullName", tempName.trim());
+      const trimmed = tempName.trim();
+      onChange?.("fullName", trimmed);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("student_custom_name", trimmed);
+        window.dispatchEvent(new Event("student_profile_updated"));
+      }
       onSave?.("Full Name");
       setShowSavedSuccess(true);
       setTimeout(() => setShowSavedSuccess(false), 3500);
     }
     setIsEditingName(false);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          const dataUrl = reader.result;
+          onChange?.("avatarUrl", dataUrl);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("student_custom_avatar", dataUrl);
+            window.dispatchEvent(new Event("student_profile_updated"));
+          }
+          onSave?.("Profile photo");
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -67,33 +95,52 @@ export function PersonalInformationCard({
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
           {/* Left Profile Avatar Section */}
           <div className="sm:col-span-4 flex flex-col items-center text-center">
-            <div className="relative">
-              {/* Circular Avatar Graphic */}
-              <div className="size-28 sm:size-32 rounded-full bg-emerald-50 border-4 border-white shadow-md overflow-hidden flex items-center justify-center">
-                <svg viewBox="0 0 100 100" className="w-full h-full">
-                  {/* Background */}
-                  <circle cx="50" cy="50" r="50" fill="#ECFDF5" />
-                  {/* Body (Green T-shirt) */}
-                  <path d="M22 100 C22 75, 35 68, 50 68 C65 68, 78 75, 78 100 Z" fill="#10B981" />
-                  {/* Neck */}
-                  <rect x="44" y="52" width="12" height="18" fill="#8D5B4C" />
-                  {/* Head & Face */}
-                  <circle cx="50" cy="42" r="22" fill="#A06857" />
-                  {/* Hair */}
-                  <path d="M28 38 C28 22, 40 16, 50 16 C60 16, 72 22, 72 38 C72 28, 64 22, 50 22 C36 22, 28 28, 28 38 Z" fill="#1E293B" />
-                  {/* Eyes */}
-                  <circle cx="43" cy="42" r="2.5" fill="#1E293B" />
-                  <circle cx="57" cy="42" r="2.5" fill="#1E293B" />
-                  {/* Smile */}
-                  <path d="M44 50 Q50 56 56 50" fill="none" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
-                </svg>
+            <div className="relative group">
+              {/* Circular Avatar Graphic / Uploaded Image */}
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="size-28 sm:size-32 rounded-full bg-emerald-50 border-4 border-white shadow-md overflow-hidden flex items-center justify-center cursor-pointer transition-all hover:scale-[1.02] relative"
+                title="Click to upload/change photo"
+              >
+                {profile.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={profile.avatarUrl}
+                    alt={profile.fullName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <svg viewBox="0 0 100 100" className="w-full h-full">
+                    {/* Background */}
+                    <circle cx="50" cy="50" r="50" fill="#ECFDF5" />
+                    {/* Body (Green T-shirt) */}
+                    <path d="M22 100 C22 75, 35 68, 50 68 C65 68, 78 75, 78 100 Z" fill="#10B981" />
+                    {/* Neck */}
+                    <rect x="44" y="52" width="12" height="18" fill="#8D5B4C" />
+                    {/* Head & Face */}
+                    <circle cx="50" cy="42" r="22" fill="#A06857" />
+                    {/* Hair */}
+                    <path d="M28 38 C28 22, 40 16, 50 16 C60 16, 72 22, 72 38 C72 28, 64 22, 50 22 C36 22, 28 28, 28 38 Z" fill="#1E293B" />
+                    {/* Eyes */}
+                    <circle cx="43" cy="42" r="2.5" fill="#1E293B" />
+                    <circle cx="57" cy="42" r="2.5" fill="#1E293B" />
+                    {/* Smile */}
+                    <path d="M44 50 Q50 56 56 50" fill="none" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
+                  </svg>
+                )}
+
+                {/* Subtle Hover Overlay */}
+                <div className="absolute inset-0 bg-slate-900/30 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[10px] font-bold">
+                  <span>📷</span>
+                  <span>Change</span>
+                </div>
               </div>
 
               {/* Camera Upload Badge */}
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="absolute bottom-1 right-1 size-8 rounded-full bg-violet-600 hover:bg-violet-700 text-white flex items-center justify-center shadow-md cursor-pointer transition-transform hover:scale-105"
+                className="absolute bottom-1 right-1 size-8 rounded-full bg-violet-600 hover:bg-violet-700 text-white flex items-center justify-center shadow-md cursor-pointer transition-transform hover:scale-110 active:scale-95"
                 title="Upload Passport Size Photo"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -101,12 +148,23 @@ export function PersonalInformationCard({
                   <circle cx="12" cy="13" r="4" />
                 </svg>
               </button>
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" />
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png, image/jpeg, image/jpg, image/webp"
+                onChange={handleFileChange}
+                className="hidden"
+              />
             </div>
 
-            <span className="text-xs font-bold text-slate-800 mt-3 block">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="text-xs font-bold text-slate-800 hover:text-violet-700 mt-3 block transition cursor-pointer"
+            >
               Upload Passport Size Photo
-            </span>
+            </button>
             <span className="text-[11px] font-medium text-slate-400 mt-0.5 block">
               JPG, PNG up to 2MB
             </span>

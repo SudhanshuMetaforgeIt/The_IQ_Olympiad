@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import { STUDENT_PROFILE } from "../Commonn/mockData";
-import { Sidebar } from "../Commonn/Sidebar";
-import { HeaderBar } from "../Commonn/HeaderBar";
+import React, { useState, useEffect } from "react";
+import { STUDENT_PROFILE } from "../Common/mockData";
+import { Sidebar } from "../Common/Sidebar";
+import { HeaderBar } from "../Common/HeaderBar";
 import {
   INITIAL_STUDENT_PROFILE,
   PersonalInformationCard,
@@ -28,6 +28,21 @@ export default function StudentProfilePanel({
   const [profileData, setProfileData] = useState<StudentProfileData>(INITIAL_STUDENT_PROFILE);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Sync saved avatar & name from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedAvatar = localStorage.getItem("student_custom_avatar");
+      const savedName = localStorage.getItem("student_custom_name");
+      if (savedAvatar || savedName) {
+        setProfileData((prev) => ({
+          ...prev,
+          ...(savedAvatar ? { avatarUrl: savedAvatar } : {}),
+          ...(savedName ? { fullName: savedName } : {}),
+        }));
+      }
+    }
+  }, []);
 
   const handleFieldChange = (field: keyof StudentProfileData, value: string) => {
     setProfileData((prev) => ({
@@ -79,6 +94,7 @@ export default function StudentProfilePanel({
             <PersonalInformationCard
               profile={profileData}
               onChange={handleFieldChange}
+              onSave={handleSaveField}
             />
 
             {/* 2. Academic Information */}

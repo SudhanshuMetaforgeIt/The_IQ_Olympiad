@@ -2,8 +2,8 @@
 
 import React from "react";
 import type { PracticeSubject } from "./types";
-import { STUDENT_PROFILE } from "../../Commonn/mockData";
-import { BellIcon, ChevronDownIcon } from "../../Commonn/icons";
+import { STUDENT_PROFILE } from "../../Common/mockData";
+import { BellIcon, ChevronDownIcon } from "../../Common/icons";
 
 interface PracticeTestHeaderProps {
   subject: PracticeSubject;

@@ -2,7 +2,7 @@
 
 import React from "react";
 import type { PracticeResultRecord } from "./types";
-import { TargetIcon } from "../../Commonn/icons";
+import { TargetIcon } from "../../Common/icons";
 
 interface PracticeResultsModalProps {
   isOpen: boolean;
