@@ -32,8 +32,6 @@ export default function PhoneInput({
       <input
         type="tel"
         maxLength={10}
-        pattern="[6-9][0-9]{9}"
-        title="Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9"
         className={`${inputClass} ${className}`}
         {...props}
       />

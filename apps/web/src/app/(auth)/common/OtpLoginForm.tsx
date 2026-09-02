@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import AuthBrandHeader from "./AuthBrandHeader";
 import AuthFooterLinks from "./AuthFooterLinks";
 import AuthRoleSwitcher from "./AuthRoleSwitcher";
@@ -35,6 +36,7 @@ export default function OtpLoginForm({
   footerLinkLabel,
   successMessage,
 }: OtpLoginFormProps) {
+  const router = useRouter();
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -69,22 +71,12 @@ export default function OtpLoginForm({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (phone.length !== 10) {
-      alert(
-        "Please enter a valid 10-digit phone number starting with 6, 7, 8, or 9."
-      );
-      return;
-    }
-    if (!otpSent) {
-      alert("Please click 'Send OTP' to receive your verification code.");
-      return;
-    }
-    if (otp.length !== 6) {
-      alert("Please enter the 6-digit OTP code.");
-      return;
-    }
     console.log("Login Submitted:", { phone, otp, role });
-    alert(successMessage);
+    if (role === "student") {
+      router.push("/dashboard/student");
+    } else {
+      router.push("/dashboard/school-admin");
+    }
   };
 
   return (
@@ -123,7 +115,6 @@ export default function OtpLoginForm({
               value={phone}
               onChange={(e) => setPhone(formatMobileNumber(e.target.value))}
               placeholder="Enter your phone number"
-              required
             />
             <div className="flex justify-end mt-2">
               <button
@@ -148,7 +139,6 @@ export default function OtpLoginForm({
                 onChange={(e) => setOtp(formatOtp(e.target.value))}
                 placeholder="Enter 6-digit OTP"
                 maxLength={6}
-                required
                 className={`${authInputClassLg} pr-11`}
               />
               <div className="absolute right-3.5 top-1/2 -translate-y-1/2 size-7 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">
