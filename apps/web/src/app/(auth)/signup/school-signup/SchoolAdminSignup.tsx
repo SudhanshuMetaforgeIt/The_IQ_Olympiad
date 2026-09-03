@@ -12,6 +12,7 @@ import StepAdminDetails from "./StepAdminDetails";
 import StepSchoolProfile from "./StepSchoolProfile";
 import StepVerifyActivate from "./StepVerifyActivate";
 import type { SchoolSignupFormData, SchoolSignupStep } from "./types";
+import { useSchoolRegistration } from "./useSchoolRegistration";
 
 const INITIAL_FORM: SchoolSignupFormData = {
   adminName: "",
@@ -28,14 +29,17 @@ const INITIAL_FORM: SchoolSignupFormData = {
 
 export default function SchoolAdminSignup() {
   const [currentStep, setCurrentStep] = useState<SchoolSignupStep>(1);
-  const [verificationMethod, setVerificationMethod] = useState<
-    "email" | "mobile"
-  >("email");
-  const [isVerificationSent, setIsVerificationSent] = useState(false);
   const [formData, setFormData] = useState<SchoolSignupFormData>(INITIAL_FORM);
+  const {
+    isSubmitting,
+    apiError,
+    createdSchoolCode,
+    createdSchoolName,
+    submitRegistration,
+  } = useSchoolRegistration();
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     if (name === "adminMobile") {
@@ -76,8 +80,12 @@ export default function SchoolAdminSignup() {
     e.preventDefault();
     if (formData.adminMobile.length !== 10) {
       alert(
-        "Please enter a valid 10-digit admin mobile number starting with 6, 7, 8, or 9."
+        "Please enter a valid 10-digit admin mobile number starting with 6, 7, 8, or 9.",
       );
+      return;
+    }
+    if (formData.password.length < 8) {
+      alert("Password must be at least 8 characters.");
       return;
     }
     if (formData.password !== formData.confirmPassword) {
@@ -94,8 +102,7 @@ export default function SchoolAdminSignup() {
 
   const handleFinalSubmit = (e: FormEvent) => {
     e.preventDefault();
-    alert("IQ Coordinator Account Successfully Created!");
-    console.log("Final Registration Data:", formData);
+    void submitRegistration(formData);
   };
 
   return (
@@ -140,13 +147,10 @@ export default function SchoolAdminSignup() {
         {currentStep === 3 && (
           <StepVerifyActivate
             formData={formData}
-            verificationMethod={verificationMethod}
-            isVerificationSent={isVerificationSent}
-            onVerificationMethodChange={setVerificationMethod}
-            onMobileChange={(value) =>
-              setFormData((prev) => ({ ...prev, adminMobile: value }))
-            }
-            onSendVerification={() => setIsVerificationSent(true)}
+            isSubmitting={isSubmitting}
+            apiError={apiError}
+            createdSchoolCode={createdSchoolCode}
+            createdSchoolName={createdSchoolName}
             onBack={() => setCurrentStep(2)}
             onSubmit={handleFinalSubmit}
           />

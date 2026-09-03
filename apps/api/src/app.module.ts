@@ -1,9 +1,12 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
+import { AuthModule } from './auth/auth.module.js';
 import { CommonModule } from './common/common.module.js';
 import { EntitlementConsumptionsModule } from './entitlement-consumptions/entitlement-consumptions.module.js';
 import { EntitlementsModule } from './entitlements/entitlements.module.js';
@@ -24,16 +27,28 @@ import { UsersModule } from './users/users.module.js';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: [
+        join(dirname(fileURLToPath(import.meta.url)), '..', '.env'),
+        join(process.cwd(), '.env'),
+      ],
     }),
 
     MongooseModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.getOrThrow<string>('MONGODB_URI'),
-      }),
+      useFactory: (configService: ConfigService) => {
+        const uri = configService.getOrThrow<string>('MONGODB_URI');
+        return {
+          uri,
+          connectionFactory: (connection: { name: string }) => {
+            new Logger('MongoDB').log(`Connected to database "${connection.name}"`);
+            return connection;
+          },
+        };
+      },
     }),
 
     CommonModule,
+    AuthModule,
     UsersModule,
     SchoolsModule,
     SchoolMembershipsModule,

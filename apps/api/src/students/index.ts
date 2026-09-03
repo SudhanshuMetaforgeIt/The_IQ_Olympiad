@@ -1,4 +1,5 @@
 export { StudentsModule } from './students.module.js';
+export { StudentsService } from './students.service.js';
 export {
   StudentProfile,
   StudentProfileSchema,

@@ -1,5 +1,18 @@
 export { CommonModule } from './common.module.js';
 export { PasswordService } from './services/password.service.js';
+export { Public } from './decorators/public.decorator.js';
+export { Roles } from './decorators/roles.decorator.js';
+export {
+  CurrentUser,
+  type AuthUser,
+} from './decorators/current-user.decorator.js';
+export { HttpExceptionFilter } from './filters/http-exception.filter.js';
+export { TransformInterceptor } from './interceptors/transform.interceptor.js';
+export {
+  PaginationQueryDto,
+  buildPaginatedResult,
+  type PaginatedResult,
+} from './dto/pagination-query.dto.js';
 export { UserRole, USER_ROLES } from './enums/user-role.enum.js';
 export { SchoolStatus, SCHOOL_STATUSES } from './enums/school-status.enum.js';
 export { SchoolType, SCHOOL_TYPES } from './enums/school-type.enum.js';

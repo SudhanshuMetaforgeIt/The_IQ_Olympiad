@@ -1,4 +1,6 @@
 export { MockTestsModule } from './mock-tests.module.js';
+export { MockTestsService } from './mock-tests.service.js';
+export { MockTestsController } from './mock-tests.controller.js';
 export {
   MockTest,
   MockTestSchema,

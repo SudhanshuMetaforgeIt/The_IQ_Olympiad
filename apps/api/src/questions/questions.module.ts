@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
+import { QuestionsController } from './questions.controller.js';
+import { QuestionsService } from './questions.service.js';
 import {
   QuestionVersion,
   QuestionVersionSchema,
@@ -14,6 +16,8 @@ import { Question, QuestionSchema } from './schemas/question.schema.js';
       { name: QuestionVersion.name, schema: QuestionVersionSchema },
     ]),
   ],
-  exports: [MongooseModule],
+  controllers: [QuestionsController],
+  providers: [QuestionsService],
+  exports: [MongooseModule, QuestionsService],
 })
 export class QuestionsModule {}

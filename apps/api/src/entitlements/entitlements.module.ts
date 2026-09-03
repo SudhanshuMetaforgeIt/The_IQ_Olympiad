@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
+import { EntitlementConsumptionsModule } from '../entitlement-consumptions/entitlement-consumptions.module.js';
+import { EntitlementsService } from './entitlements.service.js';
 import {
   Entitlement,
   EntitlementSchema,
@@ -11,7 +13,9 @@ import {
     MongooseModule.forFeature([
       { name: Entitlement.name, schema: EntitlementSchema },
     ]),
+    EntitlementConsumptionsModule,
   ],
-  exports: [MongooseModule],
+  providers: [EntitlementsService],
+  exports: [MongooseModule, EntitlementsService],
 })
 export class EntitlementsModule {}

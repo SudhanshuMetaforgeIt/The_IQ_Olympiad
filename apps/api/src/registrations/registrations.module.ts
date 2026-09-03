@@ -1,6 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
+import { OlympiadsModule } from '../olympiads/olympiads.module.js';
+import { StudentsModule } from '../students/students.module.js';
+import { RegistrationsController } from './registrations.controller.js';
+import { RegistrationsService } from './registrations.service.js';
 import {
   OlympiadRegistration,
   OlympiadRegistrationSchema,
@@ -14,7 +18,11 @@ import {
         schema: OlympiadRegistrationSchema,
       },
     ]),
+    OlympiadsModule,
+    StudentsModule,
   ],
-  exports: [MongooseModule],
+  controllers: [RegistrationsController],
+  providers: [RegistrationsService],
+  exports: [MongooseModule, RegistrationsService],
 })
 export class RegistrationsModule {}

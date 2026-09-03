@@ -2,8 +2,6 @@
 
 import type { ChangeEvent, FormEvent } from "react";
 import { AuthFieldLabel, AuthSubmitButton, authInputClassLg } from "../../common";
-import type { SchoolSignupFormData } from "./types";
-
 const SCHOOL_TYPES = [
   "Primary (Classes 1 to 5)",
   "Middle (Classes 6 to 8)",

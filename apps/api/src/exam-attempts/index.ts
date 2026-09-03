@@ -1,4 +1,6 @@
 export { ExamAttemptsModule } from './exam-attempts.module.js';
+export { ExamAttemptsService } from './exam-attempts.service.js';
+export { ExamAttemptsController } from './exam-attempts.controller.js';
 export {
   ExamAttempt,
   ExamAttemptSchema,

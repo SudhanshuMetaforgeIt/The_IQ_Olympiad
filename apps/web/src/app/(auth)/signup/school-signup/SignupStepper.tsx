@@ -8,7 +8,7 @@ type SignupStepperProps = {
 const STEPS: { step: SignupStep; label: string }[] = [
   { step: 1, label: "Admin Details" },
   { step: 2, label: "School Profile" },
-  { step: 3, label: "Verify & Activate" },
+  { step: 3, label: "Create Account" },
 ];
 
 export default function SignupStepper({
