@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft, Bell, Mail, ChevronDown, Menu, User, Plus } from "lucide-react";
 import { SchoolProfile } from "../../_types/dashboard";
 import { NotificationDropdown } from "./NotificationDropdown";
+import { MailDropdown } from "./MailDropdown";
 
 interface HeaderProps {
   profile: SchoolProfile;
@@ -18,12 +19,18 @@ export function Header({ profile, onToggleSidebar, onBack }: HeaderProps) {
   const [selectedYear, setSelectedYear] = useState("2025 - 2026");
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(5);
+  const [showMail, setShowMail] = useState(false);
+  const [mailUnreadCount, setMailUnreadCount] = useState(3);
   const notifRef = useRef<HTMLDivElement>(null);
+  const mailRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
         setShowNotifications(false);
+      }
+      if (mailRef.current && !mailRef.current.contains(event.target as Node)) {
+        setShowMail(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -160,13 +167,29 @@ export function Header({ profile, onToggleSidebar, onBack }: HeaderProps) {
           )}
         </div>
 
-        {/* Mail Icon */}
-        <button className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors border border-slate-200 cursor-pointer">
-          <Mail className="w-5 h-5" />
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-extrabold rounded-full flex items-center justify-center border-2 border-white tabular-nums">
-            3
-          </span>
-        </button>
+        {/* Mail Icon Button & Dropdown */}
+        <div className="relative" ref={mailRef}>
+          <button
+            onClick={() => setShowMail(!showMail)}
+            className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-colors border border-slate-200 cursor-pointer"
+            aria-label="View Mail Inbox"
+          >
+            <Mail className="w-5 h-5" />
+            {mailUnreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-extrabold rounded-full flex items-center justify-center border-2 border-white tabular-nums">
+                {mailUnreadCount}
+              </span>
+            )}
+          </button>
+
+          {showMail && (
+            <MailDropdown
+              onClose={() => setShowMail(false)}
+              unreadCount={mailUnreadCount}
+              setUnreadCount={setMailUnreadCount}
+            />
+          )}
+        </div>
 
         {/* Profile */}
         <div className="flex items-center space-x-2 pl-2">

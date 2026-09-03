@@ -9,12 +9,12 @@ export default function SchoolAdminLayout({ children }: { children: ReactNode })
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F7F8FC] flex text-slate-900 font-sans">
+    <div className="h-screen bg-[#F7F8FC] flex text-slate-900 font-sans overflow-hidden">
       {/* Sidebar Navigation */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Right Shell */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         {/* Top Header */}
         <Header
           profile={mockSchoolProfile}
