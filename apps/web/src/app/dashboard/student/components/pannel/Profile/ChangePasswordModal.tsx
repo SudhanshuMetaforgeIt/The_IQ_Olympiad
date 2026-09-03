@@ -11,7 +11,7 @@ interface ChangePasswordModalProps {
 export function ChangePasswordModal({
   isOpen,
   onClose,
-  phone = "+91 98765 43210",
+  phone = "",
 }: ChangePasswordModalProps) {
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -172,7 +172,7 @@ export function ChangePasswordModal({
               <div className="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 border border-slate-200 gap-3">
                 <div className="flex items-center gap-2.5 pl-2">
                   <span className="text-xs sm:text-sm font-bold text-slate-800">
-                    📱 {phone}
+                    📱 {phone || "—"}
                   </span>
                 </div>
                 <button

@@ -26,13 +26,21 @@ export function RecentResults({ results, onViewAll, onSelectResult }: RecentResu
 
         {/* Results List */}
         <div className="space-y-3">
-          {results.map((item) => (
-            <ResultItemRow
-              key={item.id}
-              item={item}
-              onClick={() => onSelectResult ? onSelectResult(item) : onViewAll?.()}
-            />
-          ))}
+          {results.length === 0 ? (
+            <div className="flex items-center justify-center py-10 px-4 rounded-2xl bg-slate-50/60 border border-slate-100">
+              <p className="text-sm font-medium text-slate-500 text-center">
+                No recent results
+              </p>
+            </div>
+          ) : (
+            results.map((item) => (
+              <ResultItemRow
+                key={item.id}
+                item={item}
+                onClick={() => onSelectResult ? onSelectResult(item) : onViewAll?.()}
+              />
+            ))
+          )}
         </div>
       </div>
 

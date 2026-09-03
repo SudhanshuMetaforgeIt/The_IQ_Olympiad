@@ -1,10 +1,6 @@
 "use client";
 
 import React from "react";
-import {
-  OlympiadAchieverBadgeGraphic,
-  ProblemSolverBadgeGraphic,
-} from "../pannel/Certificates/badgeIcons";
 
 interface EarnedBadgesModalProps {
   isOpen: boolean;
@@ -29,7 +25,7 @@ export function EarnedBadgesModal({
                 My Earned Badges
               </h2>
               <p className="text-xs font-medium text-slate-500">
-                You have unlocked 2 special achievement badges!
+                Your unlocked achievement badges will appear here.
               </p>
             </div>
           </div>
@@ -46,64 +42,16 @@ export function EarnedBadgesModal({
           </button>
         </div>
 
-        {/* Modal Body - Earned Badges List */}
-        <div className="p-5 sm:p-6 overflow-y-auto space-y-4 flex-1">
-          {/* Badge 1: Olympiad Achiever */}
-          <div className="bg-gradient-to-r from-amber-50/70 via-yellow-50/40 to-white rounded-2xl p-4 sm:p-5 border border-amber-200/80 shadow-xs flex items-start gap-4 relative">
-            <OlympiadAchieverBadgeGraphic className="w-20 h-20" />
-
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="text-base font-black text-slate-900 leading-tight">
-                  Olympiad Achiever
-                </h3>
-                <span className="size-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-xs text-xs font-bold">
-                  ✓
-                </span>
-              </div>
-
-              <p className="text-xs font-medium text-slate-600 mt-1 leading-relaxed">
-                Awarded for achieving a qualifying score and top 10% rank in Science Olympiad 2026.
-              </p>
-
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <span className="text-[11px] font-bold text-amber-800 bg-amber-100/80 px-2.5 py-0.5 rounded-lg border border-amber-200">
-                  🏆 Top 9.9% Rank
-                </span>
-                <span className="text-[11px] font-semibold text-slate-500 bg-white px-2 py-0.5 rounded-lg border border-slate-200">
-                  📅 28 Aug 2026
-                </span>
-              </div>
+        {/* Modal Body - Empty state */}
+        <div className="p-5 sm:p-6 overflow-y-auto flex-1 flex items-center justify-center min-h-[200px]">
+          <div className="text-center space-y-2">
+            <div className="size-14 rounded-2xl bg-violet-50 border border-violet-100 flex items-center justify-center text-2xl mx-auto">
+              🏅
             </div>
-          </div>
-
-          {/* Badge 2: Problem Solver */}
-          <div className="bg-gradient-to-r from-violet-50/70 via-purple-50/40 to-white rounded-2xl p-4 sm:p-5 border border-violet-200/80 shadow-xs flex items-start gap-4 relative">
-            <ProblemSolverBadgeGraphic className="w-20 h-20" />
-
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="text-base font-black text-slate-900 leading-tight">
-                  Problem Solver
-                </h3>
-                <span className="size-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-xs text-xs font-bold">
-                  ✓
-                </span>
-              </div>
-
-              <p className="text-xs font-medium text-slate-600 mt-1 leading-relaxed">
-                Awarded for scoring 90% in Mathematics Olympiad with excellent analytical reasoning.
-              </p>
-
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <span className="text-[11px] font-bold text-violet-800 bg-violet-100/80 px-2.5 py-0.5 rounded-lg border border-violet-200">
-                  🧠 90% Math Score
-                </span>
-                <span className="text-[11px] font-semibold text-slate-500 bg-white px-2 py-0.5 rounded-lg border border-slate-200">
-                  📅 18 Sep 2026
-                </span>
-              </div>
-            </div>
+            <p className="text-sm font-bold text-slate-700">No badges earned yet</p>
+            <p className="text-xs font-medium text-slate-500 max-w-[260px]">
+              Complete exams and practice tests to unlock achievement badges.
+            </p>
           </div>
         </div>
 

@@ -356,7 +356,7 @@ export default function SettingsPanel({
           setIsHelpModalOpen(false);
           setActiveView("chatbot");
         }}
-        whatsappNumber="+919876543210"
+        whatsappNumber=""
       />
 
       {/* Notification Preferences Modal Popup */}

@@ -30,7 +30,7 @@ const SUBJECT_QUESTIONS = [
     subtitle: "Concepts and practice questions",
     icon: "🧪",
     iconBg: "bg-emerald-50 text-emerald-600 border-emerald-100",
-    query: "What are the key Science concepts and chapters for Class 8 Olympiad?",
+    query: "What are the key Science concepts and chapters for Olympiad preparation?",
   },
   {
     id: "english",
@@ -59,13 +59,13 @@ const COMMON_QUESTIONS = [
 
 export function ChatbotPanel({
   onBack,
-  whatsappNumber = "+91 98765 43210",
+  whatsappNumber = "",
 }: ChatbotPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "1",
       sender: "bot",
-      text: `Hello Rahul! 👋 I'm your IQ Olympiad AI Assistant.\n\nHow can I help you today? Ask me anything regarding exam schedules, practice tests, results, scorecards, certificates, or account settings.`,
+      text: `Hello! 👋 I'm your IQ Olympiad AI Assistant.\n\nHow can I help you today? Ask me anything regarding exam schedules, practice tests, results, scorecards, certificates, or account settings.`,
       time: "Just now",
     },
   ]);
@@ -79,6 +79,9 @@ export function ChatbotPanel({
 
   const handleOpenWhatsApp = () => {
     const cleanNumber = whatsappNumber.replace(/[^0-9]/g, "");
+    if (!cleanNumber) {
+      return;
+    }
     const message = encodeURIComponent(
       "Hello IQ Olympiad Support, I am a student and I need immediate assistance with my account/exam."
     );
@@ -89,7 +92,7 @@ export function ChatbotPanel({
     if (!text.trim()) return;
 
     const userMsg: ChatMessage = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       sender: "user",
       text: text.trim(),
       time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
@@ -101,42 +104,42 @@ export function ChatbotPanel({
 
     setTimeout(() => {
       let reply =
-        "Thank you for asking! For immediate support or live assistance with our team, you can also connect directly on WhatsApp using the button above.";
+        "Thank you for asking! For further help, please contact support through Help & Support.";
       const lower = text.toLowerCase();
 
       if (lower.includes("math")) {
         reply =
-          "For Mathematics Olympiad (Class 8), high-weightage topics include Rational Numbers, Linear Equations, Algebraic Expressions, Geometry, Mensuration, and Data Handling. Practice chapter mock tests in the 'Practice' tab to boost your score!";
+          "For Mathematics Olympiad, review core topics in the Practice section and attempt chapter mock tests when available.";
       } else if (lower.includes("science")) {
         reply =
-          "For Science Olympiad, focus on Crop Production, Microorganisms, Synthetic Fibres, Metals & Non-metals, Force & Pressure, Sound, Light, and Chemical Effects of Electric Current. Check the 'Practice' section for topic-wise tests.";
+          "For Science Olympiad, use the Practice section for topic-wise tests when they become available.";
       } else if (lower.includes("english")) {
         reply =
-          "For English Olympiad, review Tenses, Prepositions, Active/Passive Voice, Synonyms & Antonyms, Idioms & Phrases, and Reading Comprehension passages.";
+          "For English Olympiad, focus on grammar, vocabulary, and reading comprehension practice.";
       } else if (lower.includes("gk") || lower.includes("general knowledge")) {
         reply =
-          "General Knowledge questions cover Indian & World History, Geography, Basic Science discoveries, Current Affairs, Sports milestones, and National Awards.";
+          "General Knowledge covers history, geography, science facts, current affairs, and more. Check Practice when GK tests are listed.";
       } else if (lower.includes("exam") || lower.includes("when") || lower.includes("schedule")) {
         reply =
-          "Your upcoming registered exam is the Cyber Olympiad 2026 on 15 Oct 2026. Make sure to complete camera and microphone verification before entering the exam room.";
+          "You can view upcoming exams in the Olympiad / Exams section once they are scheduled for you.";
       } else if (lower.includes("result") || lower.includes("score") || lower.includes("marks")) {
         reply =
-          "All your test scores are out of 100 marks! Open the 'Results' tab and click any Olympiad or Practice test row to view your section-wise scorecard.";
+          "Open the Results tab to view your Olympiad and practice scorecards when results are available.";
       } else if (lower.includes("badge") || lower.includes("honor") || lower.includes("unlock")) {
         reply =
-          "You've earned 2 top badges: 'Olympiad Achiever' 🏆 and 'Problem Solver' 🧠! Check 'Certificates > My Badges' to view your progress towards unlocking Accuracy Master.";
+          "Check Certificates > My Badges to see earned badges and locked badge requirements.";
       } else if (lower.includes("certificate") || lower.includes("download")) {
         reply =
-          "You can preview and download your official accredited participation and merit certificates in PDF format directly from the 'Certificates' tab.";
+          "You can preview and download certificates from the Certificates tab when they are issued.";
       } else if (lower.includes("whatsapp") || lower.includes("live") || lower.includes("support")) {
         reply =
-          "Click the green 'Chat on WhatsApp' button in the top right to chat instantly with our live student support helpline.";
+          "Please use Help & Support to contact our team. Live chat options appear when configured.";
       }
 
       setMessages((prev) => [
         ...prev,
         {
-          id: (Date.now() + 1).toString(),
+          id: crypto.randomUUID(),
           sender: "bot",
           text: reply,
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
@@ -199,7 +202,8 @@ export function ChatbotPanel({
           <button
             type="button"
             onClick={handleOpenWhatsApp}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-emerald-50 border border-emerald-400/90 text-emerald-700 font-bold text-xs transition cursor-pointer shadow-2xs"
+            disabled={!whatsappNumber.replace(/[^0-9]/g, "")}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-emerald-50 border border-emerald-400/90 text-emerald-700 font-bold text-xs transition cursor-pointer shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <svg className="w-4 h-4 fill-currentColor" viewBox="0 0 24 24">
               <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
@@ -208,7 +212,7 @@ export function ChatbotPanel({
           </button>
 
           <div className="size-9 rounded-full bg-slate-800 text-white flex items-center justify-center font-black text-xs shadow-xs">
-            N
+            S
           </div>
         </div>
       </header>
@@ -299,7 +303,8 @@ export function ChatbotPanel({
               <button
                 type="button"
                 onClick={handleOpenWhatsApp}
-                className="px-4 py-2.5 rounded-2xl bg-white border border-emerald-300 hover:bg-emerald-50 text-emerald-700 font-bold text-xs transition shadow-2xs flex items-center gap-1.5 cursor-pointer"
+                disabled={!whatsappNumber.replace(/[^0-9]/g, "")}
+                className="px-4 py-2.5 rounded-2xl bg-white border border-emerald-300 hover:bg-emerald-50 text-emerald-700 font-bold text-xs transition shadow-2xs flex items-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <svg className="w-3.5 h-3.5 fill-currentColor" viewBox="0 0 24 24">
                   <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654z" />

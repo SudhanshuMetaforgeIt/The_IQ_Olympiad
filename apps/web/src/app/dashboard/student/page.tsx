@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import StudentDashboard from "./components/pannel/Dashboard";
 import MyExamsPanel from "./components/pannel/MyExams";
@@ -10,6 +10,23 @@ import ResultsPanel from "./components/pannel/Results";
 import StudentProfilePanel from "./components/pannel/Profile";
 import SettingsPanel from "./components/pannel/Settings";
 import CertificatesPanel from "./components/pannel/Certificates";
+import type { FilterTab } from "./components/pannel/Olympiad/types";
+
+type CertificateSubTab = "certificates" | "badges" | "coupons";
+
+function isFilterTab(value: string): value is FilterTab {
+  return (
+    value === "all" ||
+    value === "registered" ||
+    value === "upcoming" ||
+    value === "ongoing" ||
+    value === "completed"
+  );
+}
+
+function isCertificateSubTab(value: string): value is CertificateSubTab {
+  return value === "certificates" || value === "badges" || value === "coupons";
+}
 
 function StudentDashboardContent() {
   const searchParams = useSearchParams();
@@ -46,7 +63,7 @@ function StudentDashboardContent() {
     if (tabId === "logout") {
       if (typeof window !== "undefined") {
         localStorage.removeItem("student_active_tab");
-        window.location.href = "/";
+        router.push("/");
       }
       return;
     }
@@ -65,6 +82,13 @@ function StudentDashboardContent() {
     router.push(`${pathname}?${params.toString()}`);
   };
 
+  const olympiadFilterTab: FilterTab = isFilterTab(currentSubTab)
+    ? currentSubTab
+    : "all";
+  const certificateSubTab: CertificateSubTab = isCertificateSubTab(currentSubTab)
+    ? currentSubTab
+    : "certificates";
+
   const renderPanel = () => {
     switch (activeTab) {
       case "exams":
@@ -79,7 +103,7 @@ function StudentDashboardContent() {
         return (
           <OlympiadPanel
             activeTab={activeTab}
-            initialFilterTab={currentSubTab as any}
+            initialFilterTab={olympiadFilterTab}
             onSelectTab={handleSelectTab}
           />
         );
@@ -91,7 +115,7 @@ function StudentDashboardContent() {
         return (
           <CertificatesPanel
             activeTab={activeTab}
-            initialSubTab={currentSubTab as any}
+            initialSubTab={certificateSubTab}
             onSelectTab={handleSelectTab}
           />
         );

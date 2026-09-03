@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { STUDENT_PROFILE } from "../Common/mockData";
 import { Sidebar } from "../Common/Sidebar";
 import { HeaderBar } from "../Common/HeaderBar";
@@ -24,38 +24,25 @@ export default function OlympiadPanel({
   onSelectTab,
 }: PanelProps) {
   const [filterTab, setFilterTab] = useState<FilterTab>(initialFilterTab || "all");
-  const [cyberCountdown, setCyberCountdown] = useState("01:25:30");
+  const [prevInitialFilterTab, setPrevInitialFilterTab] = useState(initialFilterTab);
+  const cyberCountdown = "—";
   const [selectedExamForRegistration, setSelectedExamForRegistration] = useState<ExamRegistrationData | null>(null);
-  const [registeredExamIds, setRegisteredExamIds] = useState<number[]>([1]); // Science Olympiad registered by default
+  const [registeredExamIds, setRegisteredExamIds] = useState<number[]>([]);
   const [isPerformanceModalOpen, setIsPerformanceModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  useEffect(() => {
+  // Sync local filter when parent-driven initialFilterTab changes (React-recommended render adjustment).
+  if (initialFilterTab !== prevInitialFilterTab) {
+    setPrevInitialFilterTab(initialFilterTab);
     if (initialFilterTab) {
       setFilterTab(initialFilterTab);
     }
-  }, [initialFilterTab]);
+  }
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
   };
-
-  useEffect(() => {
-    let totalSec = 1 * 3600 + 25 * 60 + 30;
-    const interval = setInterval(() => {
-      if (totalSec > 0) {
-        totalSec--;
-        const h = Math.floor(totalSec / 3600);
-        const m = Math.floor((totalSec % 3600) / 60);
-        const s = totalSec % 60;
-        setCyberCountdown(
-          `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
-        );
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   const handleCompleteRegistration = (examId: number) => {
     setRegisteredExamIds((prev) => (prev.includes(examId) ? prev : [...prev, examId]));
@@ -113,17 +100,27 @@ export default function OlympiadPanel({
                 <div className="size-12 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center mx-auto text-xl">
                   🎯
                 </div>
-                <h3 className="text-base font-black text-slate-900">No registered exams yet</h3>
+                <h3 className="text-base font-black text-slate-900">
+                  {filterTab === "registered"
+                    ? "No registered exams yet"
+                    : filterTab === "upcoming" || filterTab === "ongoing"
+                      ? "No upcoming exams"
+                      : "No olympiads available"}
+                </h3>
                 <p className="text-xs font-semibold text-slate-400 max-w-sm mx-auto">
-                  Browse through upcoming Olympiad challenges and register to appear on this list.
+                  {filterTab === "registered"
+                    ? "Browse through upcoming Olympiad challenges and register to appear on this list."
+                    : "Olympiad exams will appear here when they are available."}
                 </p>
-                <button
-                  type="button"
-                  onClick={() => setFilterTab("all")}
-                  className="px-4 py-2 rounded-xl bg-violet-600 text-white font-bold text-xs hover:bg-violet-700 transition cursor-pointer shadow-2xs"
-                >
-                  Browse All Olympiads
-                </button>
+                {filterTab !== "all" && (
+                  <button
+                    type="button"
+                    onClick={() => setFilterTab("all")}
+                    className="px-4 py-2 rounded-xl bg-violet-600 text-white font-bold text-xs hover:bg-violet-700 transition cursor-pointer shadow-2xs"
+                  >
+                    Browse All Olympiads
+                  </button>
+                )}
               </div>
             )}
           </div>

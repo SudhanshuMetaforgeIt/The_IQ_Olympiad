@@ -19,11 +19,14 @@ export function PracticeResultsModal({
 }: PracticeResultsModalProps) {
   if (!isOpen) return null;
 
+  const hasResults = results.length > 0;
   const totalAttempted = results.reduce((acc, r) => acc + r.testsAttempted, 0);
-  const avgPct = Math.round(
-    results.reduce((acc, r) => acc + r.averagePercentage, 0) / (results.length || 1)
-  );
-  const highestScore = Math.max(...results.map((r) => r.bestScore));
+  const avgPct = hasResults
+    ? Math.round(results.reduce((acc, r) => acc + r.averagePercentage, 0) / results.length)
+    : null;
+  const highestScore = hasResults
+    ? Math.max(...results.map((r) => r.bestScore))
+    : null;
 
   const displayList = selectedPractice ? [selectedPractice] : results;
 
@@ -68,7 +71,7 @@ export function PracticeResultsModal({
                   Tests Done
                 </span>
                 <span className="text-xl sm:text-2xl font-black text-slate-900 block mt-0.5">
-                  {totalAttempted}
+                  {hasResults ? totalAttempted : "—"}
                 </span>
                 <span className="text-[11px] font-semibold text-slate-500">Attempted</span>
               </div>
@@ -78,7 +81,7 @@ export function PracticeResultsModal({
                   Avg. Score
                 </span>
                 <span className="text-xl sm:text-2xl font-black text-emerald-600 block mt-0.5">
-                  {avgPct}%
+                  {avgPct != null ? `${avgPct}%` : "—"}
                 </span>
                 <span className="text-[11px] font-semibold text-slate-500">Overall</span>
               </div>
@@ -88,7 +91,7 @@ export function PracticeResultsModal({
                   Best Score
                 </span>
                 <span className="text-xl sm:text-2xl font-black text-amber-600 block mt-0.5">
-                  {highestScore}/100
+                  {highestScore != null ? `${highestScore}/100` : "—"}
                 </span>
                 <span className="text-[11px] font-semibold text-slate-500">Peak Performance</span>
               </div>
@@ -101,7 +104,12 @@ export function PracticeResultsModal({
               {selectedPractice ? "Test Category Performance" : "Performance By Practice Category"}
             </h3>
 
-            {displayList.map((item) => (
+            {displayList.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/60 py-10 px-4 text-center">
+                <p className="text-sm font-medium text-slate-500">No results available yet</p>
+              </div>
+            ) : (
+              displayList.map((item) => (
               <div
                 key={item.id}
                 className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-2xs space-y-3"
@@ -145,7 +153,8 @@ export function PracticeResultsModal({
                   </div>
                 </div>
               </div>
-            ))}
+            ))
+            )}
           </div>
 
           {/* Practice Insights Box */}
@@ -160,7 +169,9 @@ export function PracticeResultsModal({
                 Practice Insights
               </h4>
               <p className="text-xs font-medium text-slate-600 leading-snug mt-0.5">
-                Your highest performance was in Mock Tests ({highestScore}/100). Keep practicing chapter tests to maintain consistent accuracy across all subjects.
+                {hasResults && highestScore != null
+                  ? `Your highest practice score so far is ${highestScore}/100. Keep practicing to improve consistency across subjects.`
+                  : "Complete practice tests to see performance insights here."}
               </p>
             </div>
           </div>

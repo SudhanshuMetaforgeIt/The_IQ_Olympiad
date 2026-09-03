@@ -33,7 +33,7 @@ export function SubjectPracticeTestsView({
 
   // Get tests for the current subject
   const tests: PracticeTestItem[] = useMemo(() => {
-    return SUBJECT_PRACTICE_TESTS_MAP[subject.id] || SUBJECT_PRACTICE_TESTS_MAP.science;
+    return SUBJECT_PRACTICE_TESTS_MAP[subject.id] || [];
   }, [subject.id]);
 
   // Extract all unique topics
@@ -426,7 +426,9 @@ export function SubjectPracticeTestsView({
         <div className="divide-y divide-slate-100/80">
           {filteredTests.length === 0 ? (
             <div className="py-12 text-center text-slate-400 text-xs font-bold">
-              No practice tests match your search criteria.
+              {tests.length === 0
+                ? "No mock tests available"
+                : "No practice tests match your search criteria."}
             </div>
           ) : (
             filteredTests.map((test) => (

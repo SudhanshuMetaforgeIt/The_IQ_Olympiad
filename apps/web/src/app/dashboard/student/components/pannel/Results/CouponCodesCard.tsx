@@ -39,45 +39,51 @@ export function CouponCodesCard() {
 
         {/* Coupons List */}
         <div className="space-y-3">
-          {COUPON_CODES.map((coupon) => {
-            const isCopied = copiedId === coupon.id;
-            return (
-              <div
-                key={coupon.id}
-                className="flex items-center justify-between p-3 rounded-xl border border-dashed border-violet-200 bg-violet-50/40 hover:bg-violet-50/70 transition gap-3"
-              >
-                {/* Code Tag */}
-                <div className="px-3 py-1.5 rounded-lg bg-white border border-dashed border-violet-300 shadow-2xs">
-                  <span className="text-xs font-black text-violet-700 tracking-wider font-mono">
-                    {coupon.code}
-                  </span>
-                </div>
-
-                {/* Offer Details */}
-                <div className="flex-1 min-w-0">
-                  <span className="text-xs font-bold text-slate-900 block leading-tight">
-                    {coupon.discountText}
-                  </span>
-                  <span className="text-[10px] font-medium text-slate-400 block mt-0.5">
-                    {coupon.validityText}
-                  </span>
-                </div>
-
-                {/* Copy Button */}
-                <button
-                  type="button"
-                  onClick={() => handleCopy(coupon.id, coupon.code)}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition border cursor-pointer ${
-                    isCopied
-                      ? "bg-emerald-600 border-emerald-600 text-white"
-                      : "bg-white border-slate-200 text-slate-700 hover:border-violet-300 hover:text-violet-700 shadow-2xs"
-                  }`}
+          {COUPON_CODES.length === 0 ? (
+            <div className="py-10 text-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50">
+              <p className="text-sm font-medium text-slate-500">No coupons available</p>
+            </div>
+          ) : (
+            COUPON_CODES.map((coupon) => {
+              const isCopied = copiedId === coupon.id;
+              return (
+                <div
+                  key={coupon.id}
+                  className="flex items-center justify-between p-3 rounded-xl border border-dashed border-violet-200 bg-violet-50/40 hover:bg-violet-50/70 transition gap-3"
                 >
-                  {isCopied ? "Copied!" : "Copy"}
-                </button>
-              </div>
-            );
-          })}
+                  {/* Code Tag */}
+                  <div className="px-3 py-1.5 rounded-lg bg-white border border-dashed border-violet-300 shadow-2xs">
+                    <span className="text-xs font-black text-violet-700 tracking-wider font-mono">
+                      {coupon.code}
+                    </span>
+                  </div>
+
+                  {/* Offer Details */}
+                  <div className="flex-1 min-w-0">
+                    <span className="text-xs font-bold text-slate-900 block leading-tight">
+                      {coupon.discountText}
+                    </span>
+                    <span className="text-[10px] font-medium text-slate-400 block mt-0.5">
+                      {coupon.validityText}
+                    </span>
+                  </div>
+
+                  {/* Copy Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(coupon.id, coupon.code)}
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition border cursor-pointer ${
+                      isCopied
+                        ? "bg-emerald-600 border-emerald-600 text-white"
+                        : "bg-white border-slate-200 text-slate-700 hover:border-violet-300 hover:text-violet-700 shadow-2xs"
+                    }`}
+                  >
+                    {isCopied ? "Copied!" : "Copy"}
+                  </button>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
 

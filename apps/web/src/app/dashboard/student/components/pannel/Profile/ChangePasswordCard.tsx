@@ -7,7 +7,7 @@ interface ChangePasswordCardProps {
 }
 
 export function ChangePasswordCard({
-  phone = "+91 98765 43210",
+  phone = "",
 }: ChangePasswordCardProps) {
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -16,7 +16,6 @@ export function ChangePasswordCard({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState<string | null>(null);
-  const [passwordSuccess, setPasswordSuccess] = useState(false);
 
   const otpInputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -85,7 +84,6 @@ export function ChangePasswordCard({
     }
     setPasswordError(null);
     setCurrentStep(4);
-    setPasswordSuccess(true);
   };
 
   const handleResetFlow = () => {
@@ -94,7 +92,6 @@ export function ChangePasswordCard({
     setOtpSent(false);
     setNewPassword("");
     setConfirmPassword("");
-    setPasswordSuccess(false);
   };
 
   return (
@@ -218,7 +215,7 @@ export function ChangePasswordCard({
                   </svg>
                 </div>
                 <span className="text-xs sm:text-sm font-bold text-slate-800">
-                  {phone}
+                  {phone || "—"}
                 </span>
               </div>
 

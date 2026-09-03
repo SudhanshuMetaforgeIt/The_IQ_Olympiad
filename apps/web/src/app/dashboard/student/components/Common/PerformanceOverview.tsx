@@ -25,50 +25,58 @@ export function PerformanceOverview({ metrics, onViewDetails }: PerformanceOverv
         </div>
 
         {/* Bar Chart Visualization */}
-        <div className="relative pt-4 pb-2">
-          {/* Background Y-Axis Grid Lines */}
-          <div className="absolute inset-0 flex flex-col justify-between text-[10px] font-semibold text-slate-400 pointer-events-none pb-7">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-0.5">
-              <span>100%</span>
-            </div>
-            <div className="flex items-center justify-between border-b border-slate-100 pb-0.5">
-              <span>75%</span>
-            </div>
-            <div className="flex items-center justify-between border-b border-slate-100 pb-0.5">
-              <span>50%</span>
-            </div>
-            <div className="flex items-center justify-between border-b border-slate-100 pb-0.5">
-              <span>25%</span>
-            </div>
-            <div className="flex items-center justify-between border-b border-slate-100 pb-0.5">
-              <span>0%</span>
-            </div>
+        {metrics.length === 0 ? (
+          <div className="flex items-center justify-center h-44 rounded-2xl bg-slate-50/60 border border-slate-100">
+            <p className="text-sm font-medium text-slate-500 text-center">
+              No performance data yet
+            </p>
           </div>
-
-          {/* Vertical Bars */}
-          <div className="relative h-36 flex items-end justify-around pl-7 z-10">
-            {metrics.map((item) => (
-              <div
-                key={item.id}
-                className="flex flex-col items-center gap-1.5 group h-full justify-end"
-              >
-                {/* Score label above bar */}
-                <span className="text-[11px] sm:text-xs font-bold text-slate-800 tracking-tight group-hover:scale-110 transition-transform">
-                  {item.percentage}%
-                </span>
-                {/* Bar Graphic */}
-                <div
-                  className={`w-8 sm:w-9 rounded-t-xl ${item.barColorClass} transition-all duration-500 group-hover:brightness-110 shadow-2xs`}
-                  style={{ height: `${item.percentage}%` }}
-                />
-                {/* Subject Label below bar */}
-                <span className="text-[10px] sm:text-[11px] font-semibold text-slate-600 max-w-[65px] text-center leading-tight mt-1 truncate">
-                  {item.subject}
-                </span>
+        ) : (
+          <div className="relative pt-4 pb-2">
+            {/* Background Y-Axis Grid Lines */}
+            <div className="absolute inset-0 flex flex-col justify-between text-[10px] font-semibold text-slate-400 pointer-events-none pb-7">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-0.5">
+                <span>100%</span>
               </div>
-            ))}
+              <div className="flex items-center justify-between border-b border-slate-100 pb-0.5">
+                <span>75%</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-slate-100 pb-0.5">
+                <span>50%</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-slate-100 pb-0.5">
+                <span>25%</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-slate-100 pb-0.5">
+                <span>0%</span>
+              </div>
+            </div>
+
+            {/* Vertical Bars */}
+            <div className="relative h-36 flex items-end justify-around pl-7 z-10">
+              {metrics.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex flex-col items-center gap-1.5 group h-full justify-end"
+                >
+                  {/* Score label above bar */}
+                  <span className="text-[11px] sm:text-xs font-bold text-slate-800 tracking-tight group-hover:scale-110 transition-transform">
+                    {item.percentage}%
+                  </span>
+                  {/* Bar Graphic */}
+                  <div
+                    className={`w-8 sm:w-9 rounded-t-xl ${item.barColorClass} transition-all duration-500 group-hover:brightness-110 shadow-2xs`}
+                    style={{ height: `${item.percentage}%` }}
+                  />
+                  {/* Subject Label below bar */}
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-slate-600 max-w-[65px] text-center leading-tight mt-1 truncate">
+                    {item.subject}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Bottom CTA Button */}

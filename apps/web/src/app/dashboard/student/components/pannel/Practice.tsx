@@ -133,20 +133,29 @@ export default function PracticePanel({ activeTab = "practice", onSelectTab }: P
           <PracticeProgressBanner />
 
           {/* Subject Practice Cards Grid */}
-          <div
-            className={`grid gap-3.5 sm:gap-4 w-full ${filteredSubjects.length === 1
-                ? "grid-cols-1"
-                : "grid-cols-1 lg:grid-cols-2"
-              }`}
-          >
-            {filteredSubjects.map((subject) => (
-              <PracticeCard
-                key={subject.id}
-                subject={subject}
-                onStartPracticing={(subj) => setActivePracticeSubject(subj)}
-              />
-            ))}
-          </div>
+          {filteredSubjects.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs py-16 px-4 text-center">
+              <p className="text-sm font-bold text-slate-700">No practice subjects available</p>
+              <p className="text-xs font-medium text-slate-400 mt-1">
+                Practice subjects and mock tests will appear here when available.
+              </p>
+            </div>
+          ) : (
+            <div
+              className={`grid gap-3.5 sm:gap-4 w-full ${filteredSubjects.length === 1
+                  ? "grid-cols-1"
+                  : "grid-cols-1 lg:grid-cols-2"
+                }`}
+            >
+              {filteredSubjects.map((subject) => (
+                <PracticeCard
+                  key={subject.id}
+                  subject={subject}
+                  onStartPracticing={(subj) => setActivePracticeSubject(subj)}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Bottom Unlimited Practice Banner */}
           <PracticeUnlimitedBanner />

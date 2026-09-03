@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useSyncExternalStore } from "react";
 import { STUDENT_PROFILE } from "../Common/mockData";
 import { Sidebar } from "../Common/Sidebar";
 import { HeaderBar } from "../Common/HeaderBar";
@@ -21,28 +21,62 @@ interface PanelProps {
   onSelectTab?: (tabId: string, subtabId?: string) => void;
 }
 
+function subscribeToStudentProfileStore(onStoreChange: () => void) {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener("student_profile_updated", onStoreChange);
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener("student_profile_updated", onStoreChange);
+  };
+}
+
+function getStudentProfileStoreSnapshot(): string {
+  if (typeof window === "undefined") {
+    return "|";
+  }
+  const fullName = localStorage.getItem("student_custom_name") ?? "";
+  const avatarUrl = localStorage.getItem("student_custom_avatar") ?? "";
+  return `${fullName}|${avatarUrl}`;
+}
+
+function getStudentProfileServerSnapshot(): string {
+  return "|";
+}
+
+function parseStoredProfileSnapshot(snapshot: string): Pick<StudentProfileData, "fullName" | "avatarUrl"> {
+  const separatorIndex = snapshot.indexOf("|");
+  const fullName = separatorIndex >= 0 ? snapshot.slice(0, separatorIndex) : "";
+  const avatarUrl = separatorIndex >= 0 ? snapshot.slice(separatorIndex + 1) : "";
+  return {
+    fullName,
+    ...(avatarUrl ? { avatarUrl } : {}),
+  };
+}
+
 export default function StudentProfilePanel({
   activeTab = "profile",
   onSelectTab,
 }: PanelProps) {
+  const storedSnapshot = useSyncExternalStore(
+    subscribeToStudentProfileStore,
+    getStudentProfileStoreSnapshot,
+    getStudentProfileServerSnapshot
+  );
+  const storedProfile = parseStoredProfileSnapshot(storedSnapshot);
   const [profileData, setProfileData] = useState<StudentProfileData>(INITIAL_STUDENT_PROFILE);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Sync saved avatar & name from localStorage on mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedAvatar = localStorage.getItem("student_custom_avatar");
-      const savedName = localStorage.getItem("student_custom_name");
-      if (savedAvatar || savedName) {
-        setProfileData((prev) => ({
-          ...prev,
-          ...(savedAvatar ? { avatarUrl: savedAvatar } : {}),
-          ...(savedName ? { fullName: savedName } : {}),
-        }));
-      }
-    }
-  }, []);
+  const mergedProfile: StudentProfileData = {
+    ...profileData,
+    fullName: storedProfile.fullName || profileData.fullName,
+    ...(storedProfile.avatarUrl || profileData.avatarUrl
+      ? { avatarUrl: storedProfile.avatarUrl || profileData.avatarUrl }
+      : {}),
+  };
 
   const handleFieldChange = (field: keyof StudentProfileData, value: string) => {
     setProfileData((prev) => ({
@@ -51,7 +85,7 @@ export default function StudentProfilePanel({
     }));
   };
 
-  const handleSaveField = (fieldLabel: string) => {
+  const handleSaveField = () => {
     setToastMessage("Saved successfully!");
     setTimeout(() => setToastMessage(null), 3000);
   };
@@ -92,14 +126,14 @@ export default function StudentProfilePanel({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 items-stretch">
             {/* 1. Personal Information */}
             <PersonalInformationCard
-              profile={profileData}
+              profile={mergedProfile}
               onChange={handleFieldChange}
               onSave={handleSaveField}
             />
 
             {/* 2. Academic Information */}
             <AcademicInformationCard
-              profile={profileData}
+              profile={mergedProfile}
               onChange={handleFieldChange}
             />
           </div>
@@ -108,13 +142,13 @@ export default function StudentProfilePanel({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 items-stretch">
             {/* 3. Identity Information */}
             <IdentityInformationCard
-              profile={profileData}
+              profile={mergedProfile}
               onChange={handleFieldChange}
             />
 
             {/* 4. Security */}
             <SecurityCard
-              email={profileData.email}
+              email={mergedProfile.email}
               onChangePassword={() => setIsPasswordModalOpen(true)}
               onChangeEmail={handleChangeEmail}
             />
@@ -134,7 +168,7 @@ export default function StudentProfilePanel({
       <ChangePasswordModal
         isOpen={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
-        phone={profileData.phone}
+        phone={mergedProfile.phone}
       />
     </div>
   );

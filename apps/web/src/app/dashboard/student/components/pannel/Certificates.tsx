@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { STUDENT_PROFILE } from "./../Common/mockData";
 import { Sidebar } from "./../Common/Sidebar";
 import { HeaderBar } from "./../Common/HeaderBar";
@@ -30,11 +30,16 @@ export default function CertificatesPanel({
   initialSubTab = "certificates",
   onSelectTab,
 }: CertificatesPanelProps) {
-  const [activeSubTab, setActiveSubTab] = useState<CertificateSubTab>(parseSubTab(initialSubTab));
+  const [activeSubTab, setActiveSubTab] = useState<CertificateSubTab>(() =>
+    parseSubTab(initialSubTab)
+  );
+  const [prevInitialSubTab, setPrevInitialSubTab] = useState(initialSubTab);
 
-  useEffect(() => {
+  // Sync local tab when parent-driven initialSubTab changes (React-recommended render adjustment).
+  if (initialSubTab !== prevInitialSubTab) {
+    setPrevInitialSubTab(initialSubTab);
     setActiveSubTab(parseSubTab(initialSubTab));
-  }, [initialSubTab]);
+  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#F8FAFC] font-sans antialiased text-slate-900">
@@ -102,7 +107,7 @@ export default function CertificatesPanel({
               <span>🏅</span>
               <span>My Badges</span>
               <span className="bg-violet-100 text-violet-700 text-[9px] px-1.5 py-0.5 rounded-full font-bold">
-                2
+                0
               </span>
             </button>
 
@@ -122,7 +127,7 @@ export default function CertificatesPanel({
               <span>🏷️</span>
               <span>Coupon Codes</span>
               <span className="bg-emerald-100 text-emerald-800 text-[9px] px-1.5 py-0.5 rounded-full font-bold">
-                3
+                0
               </span>
             </button>
           </div>

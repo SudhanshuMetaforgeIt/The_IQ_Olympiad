@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import {
   CalendarIcon,
   ClockIcon,
@@ -24,29 +23,29 @@ export function ExamProctoringStep({ onProceedToLiveExam }: ExamProctoringStepPr
         </div>
 
         <h2 className="text-3xl font-black text-slate-900 tracking-tight">
-          Science Olympiad 2026
+          Exam Proctoring Setup
         </h2>
 
         {/* Info Chips */}
         <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-slate-600">
           <div className="flex items-center gap-1.5">
             <CalendarIcon className="w-4 h-4 text-violet-600" />
-            <span>08 Sep 2026</span>
+            <span>—</span>
           </div>
           <span className="text-slate-300">|</span>
           <div className="flex items-center gap-1.5">
             <ClockIcon className="w-4 h-4 text-violet-600" />
-            <span>10:00 AM</span>
+            <span>—</span>
           </div>
           <span className="text-slate-300">|</span>
           <div className="flex items-center gap-1.5">
             <TimerIcon className="w-4 h-4 text-violet-600" />
-            <span>50 Minutes</span>
+            <span>—</span>
           </div>
           <span className="text-slate-300">|</span>
           <div className="flex items-center gap-1.5">
             <QuestionsIcon className="w-4 h-4 text-violet-600" />
-            <span>50 Questions</span>
+            <span>—</span>
           </div>
         </div>
       </div>
@@ -82,14 +81,14 @@ export function ExamProctoringStep({ onProceedToLiveExam }: ExamProctoringStepPr
 
           {/* Right Live Camera Preview Container */}
           <div className="lg:col-span-7 space-y-2">
-            <div className="relative w-full h-56 rounded-2xl bg-slate-900 overflow-hidden shadow-md border-2 border-slate-800">
-              {/* Sample Student Video Stream Image */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80"
-                alt="Proctored Camera Stream"
-                className="w-full h-full object-cover"
-              />
+            <div className="relative w-full h-56 rounded-2xl bg-slate-900 overflow-hidden shadow-md border-2 border-slate-800 flex items-center justify-center">
+              {/* Blank camera placeholder */}
+              <div className="flex flex-col items-center gap-2 text-slate-500">
+                <svg className="w-12 h-12" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <span className="text-xs font-bold uppercase tracking-wider">Camera preview</span>
+              </div>
 
               {/* LIVE Badge */}
               <div className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-2 border border-slate-700">
