@@ -22,23 +22,23 @@ export default function HowItWorksSection() {
   ];
 
   return (
-    <section className="py-12 bg-white w-full">
-      <div className="w-full px-4 sm:px-8 lg:px-16 xl:px-24 max-w-[1920px] mx-auto">
+    <section className="py-14 bg-white w-full font-sans">
+      <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-12 max-w-[1920px] mx-auto">
         <div className="p-10 sm:p-14 rounded-3xl bg-gradient-to-r from-purple-950 via-purple-900 to-indigo-950 text-white shadow-2xl shadow-purple-950/20">
-          <h2 className="text-3xl sm:text-4xl font-black text-center tracking-tight mb-12 text-white">
+          <h2 className="text-4xl sm:text-5xl font-black text-center tracking-tight mb-14 text-white">
             How THE IQ OLYMPIAD Works
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {steps.map((step, idx) => (
               <div key={idx} className="flex flex-col items-start text-left">
-                <span className="text-5xl sm:text-6xl font-black text-purple-300/40 mb-3 tracking-tighter">
+                <span className="text-6xl sm:text-7xl font-black text-purple-300/40 mb-4 tracking-tighter">
                   {step.number}
                 </span>
-                <h3 className="text-xl font-black text-white mb-2">
+                <h3 className="text-2xl font-black text-white mb-2.5">
                   {step.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-purple-100/80 font-medium leading-relaxed">
+                <p className="text-base sm:text-lg text-purple-100/90 font-semibold leading-relaxed">
                   {step.description}
                 </p>
               </div>

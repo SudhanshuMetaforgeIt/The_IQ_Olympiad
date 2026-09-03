@@ -8,7 +8,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-roboto);
+  --font-sans: var(--font-roboto), 'Roboto', system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
@@ -22,7 +22,154 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* IQ Olympiad Precision Typography System - Roboto */
+
+/* 1. Hero Heading (56-64px, 700) */
+.text-hero {
+  font-size: 56px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+@media (min-width: 1024px) {
+  .text-hero {
+    font-size: 64px;
+  }
+}
+
+/* 2. Large Page Heading (40-48px, 700) */
+.text-page-large {
+  font-size: 40px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+@media (min-width: 1024px) {
+  .text-page-large {
+    font-size: 48px;
+  }
+}
+
+/* 3. Page Heading (32-36px, 700) */
+.text-h1 {
+  font-size: 32px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+@media (min-width: 1024px) {
+  .text-h1 {
+    font-size: 36px;
+  }
+}
+
+/* 4. Section Heading (28-32px, 600-700) */
+.text-h2 {
+  font-size: 28px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+@media (min-width: 1024px) {
+  .text-h2 {
+    font-size: 32px;
+  }
+}
+
+/* 5. Subsection Heading (24px, 600) */
+.text-h3 {
+  font-size: 24px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+/* 6. Card Heading (18-20px, 600) */
+.text-card-title {
+  font-size: 20px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+/* 7. Large Body Text (18px, 400) */
+.text-body-lg {
+  font-size: 18px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* 8. Normal Body Text (16px, 400) */
+.text-body {
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* 9. Dashboard / Menu Text (14-16px, 500) */
+.text-menu {
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* 10. Form Labels (14px, 500-600) */
+.text-label {
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* 11. Buttons (14-16px, 600) */
+.text-button {
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* 12. Table Content (14px, 400) */
+.text-table {
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* 13. Secondary Information (13-14px, 400) */
+.text-secondary {
+  font-size: 13.5px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* 14. Caption / Metadata (12px, 400-500) */
+.text-caption {
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* 15. Badge Text (12px, 600) */
+.text-badge {
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+/* Stat Numbers (36-42px, 700, tabular-nums) */
+.text-stat {
+  font-size: 36px;
+  line-height: 1.1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+@media (min-width: 1024px) {
+  .text-stat {
+    font-size: 42px;
+  }
 }
 
 @keyframes badgeFloat {
