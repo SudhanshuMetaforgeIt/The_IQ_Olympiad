@@ -15,6 +15,6 @@ export class StudentsController {
   @Roles(UserRole.STUDENT)
   @Get('me')
   me(@CurrentUser() user: AuthUser) {
-    return this.studentsService.findByUserId(user.userId);
+    return this.studentsService.getMe(user.userId);
   }
 }

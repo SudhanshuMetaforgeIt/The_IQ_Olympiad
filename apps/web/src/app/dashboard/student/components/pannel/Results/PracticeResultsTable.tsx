@@ -75,7 +75,14 @@ export function PracticeResultsTable({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {results.map((item) => (
+              {results.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-10 text-center text-sm font-medium text-slate-500">
+                    No attempts yet
+                  </td>
+                </tr>
+              ) : (
+                results.map((item) => (
                 <tr
                   key={item.id}
                   onClick={() => onSelectPractice?.(item)}
@@ -111,7 +118,8 @@ export function PracticeResultsTable({
                     {item.bestScore} / {item.totalScore}
                   </td>
                 </tr>
-              ))}
+              ))
+              )}
             </tbody>
           </table>
         </div>

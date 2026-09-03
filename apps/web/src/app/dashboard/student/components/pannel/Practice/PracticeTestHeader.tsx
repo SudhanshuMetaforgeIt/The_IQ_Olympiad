@@ -2,19 +2,24 @@
 
 import React from "react";
 import type { PracticeSubject } from "./types";
-import { STUDENT_PROFILE } from "../../Common/mockData";
+import type { StudentProfile } from "../../../types";
 import { BellIcon, ChevronDownIcon } from "../../Common/icons";
 
 interface PracticeTestHeaderProps {
   subject: PracticeSubject;
+  student: StudentProfile;
   onBack: () => void;
   onEndTest: () => void;
 }
 
-export function PracticeTestHeader({ subject, onBack, onEndTest }: PracticeTestHeaderProps) {
+export function PracticeTestHeader({
+  subject,
+  student,
+  onBack,
+  onEndTest,
+}: PracticeTestHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      {/* Left: Back Arrow + Breadcrumbs + Title */}
       <div className="flex items-start gap-3.5">
         <button
           type="button"
@@ -51,7 +56,6 @@ export function PracticeTestHeader({ subject, onBack, onEndTest }: PracticeTestH
         </div>
       </div>
 
-      {/* Right: Solid Red End Test Pill Button + Notification + Profile */}
       <div className="flex items-center gap-3.5">
         <button
           type="button"
@@ -69,21 +73,23 @@ export function PracticeTestHeader({ subject, onBack, onEndTest }: PracticeTestH
           className="relative p-2.5 rounded-2xl bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50 transition shadow-xs cursor-pointer"
         >
           <BellIcon className="w-5 h-5 text-slate-600" />
-          <span className="absolute -top-1 -right-1 size-5 bg-violet-600 text-white rounded-full text-[10px] font-black flex items-center justify-center border-2 border-white shadow-xs">
-            3
-          </span>
         </button>
 
         <div className="flex items-center gap-3 bg-white border border-slate-200/80 py-1.5 px-3 rounded-2xl shadow-xs">
           <div className="size-9 rounded-full bg-amber-100 flex items-center justify-center font-bold text-amber-700 text-sm overflow-hidden border border-amber-200">
-            👨‍🎓
+            {student.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={student.avatarUrl} alt="" className="size-full object-cover" />
+            ) : (
+              student.name.charAt(0).toUpperCase() || "S"
+            )}
           </div>
           <div className="text-left hidden sm:block">
             <span className="text-xs font-black text-slate-900 block leading-tight">
-              {STUDENT_PROFILE.name}
+              {student.name}
             </span>
             <span className="text-[10px] font-bold text-slate-400 block">
-              {STUDENT_PROFILE.grade}
+              {student.grade}
             </span>
           </div>
           <ChevronDownIcon className="w-3.5 h-3.5 text-slate-400" />

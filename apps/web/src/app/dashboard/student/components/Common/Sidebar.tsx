@@ -72,16 +72,7 @@ export function Sidebar({ activeTab = "dashboard", onSelectTab }: SidebarProps) 
                 key={item.id}
                 type="button"
                 onClick={() => {
-                  if (item.id === "logout") {
-                    if (typeof window !== "undefined") {
-                      localStorage.removeItem("student_active_tab");
-                      window.location.href = "/";
-                    }
-                    return;
-                  }
-                  if (onSelectTab) {
-                    onSelectTab(item.id);
-                  }
+                  onSelectTab?.(item.id);
                 }}
                 className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   isActive

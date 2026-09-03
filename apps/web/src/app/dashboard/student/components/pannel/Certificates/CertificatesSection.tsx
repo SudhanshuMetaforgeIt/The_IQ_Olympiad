@@ -69,19 +69,28 @@ export function CertificatesSection({
       </div>
 
       {/* Certificates Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
-        {certificates.map((cert) => (
-          <CertificateCard
-            key={cert.id}
-            certificate={cert}
-            onPreview={handleOpenPreview}
-            onDownload={handleDownload}
-            isDownloading={downloadingId === cert.id}
-            onCopyId={handleCopyId}
-            isCopied={copiedId === cert.certificateId}
-          />
-        ))}
-      </div>
+      {certificates.length === 0 ? (
+        <div className="py-12 text-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50">
+          <p className="text-sm font-bold text-slate-700">No certificates yet</p>
+          <p className="text-xs font-medium text-slate-500 mt-1">
+            Certificates will appear here after you complete Olympiad exams.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
+          {certificates.map((cert) => (
+            <CertificateCard
+              key={cert.id}
+              certificate={cert}
+              onPreview={handleOpenPreview}
+              onDownload={handleDownload}
+              isDownloading={downloadingId === cert.id}
+              onCopyId={handleCopyId}
+              isCopied={copiedId === cert.certificateId}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Online Verification Prompt Banner */}
       <div className="bg-gradient-to-r from-violet-50 to-indigo-50/80 rounded-xl p-3 sm:p-3.5 border border-violet-100/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3">

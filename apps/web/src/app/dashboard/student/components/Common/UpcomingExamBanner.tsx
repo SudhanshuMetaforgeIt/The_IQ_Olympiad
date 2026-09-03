@@ -12,7 +12,7 @@ import {
 } from "./icons";
 
 interface UpcomingExamBannerProps {
-  exam: UpcomingExam;
+  exam: UpcomingExam | null;
   onViewDetails?: () => void;
   onWriteExam?: () => void;
 }
@@ -60,16 +60,23 @@ function GoldenConfettiTrophy() {
 }
 
 export function UpcomingExamBanner({ exam, onViewDetails, onWriteExam }: UpcomingExamBannerProps) {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    days: "07",
-    hours: "00",
-    minutes: "09",
-    seconds: "37",
-  });
+  const emptyTimeLeft: TimeLeft = {
+    days: "—",
+    hours: "—",
+    minutes: "—",
+    seconds: "—",
+  };
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>(emptyTimeLeft);
+  const startTimeIso = exam?.startTimeIso;
+  const displayTimeLeft = startTimeIso ? timeLeft : emptyTimeLeft;
 
   useEffect(() => {
+    if (!startTimeIso) {
+      return;
+    }
+
     const calculateTimeLeft = () => {
-      const difference = +new Date(exam.startTimeIso) - +new Date();
+      const difference = +new Date(startTimeIso) - +new Date();
       if (difference > 0) {
         const d = Math.floor(difference / (1000 * 60 * 60 * 24));
         const h = Math.floor((difference / (1000 * 60 * 60)) % 24);
@@ -81,19 +88,87 @@ export function UpcomingExamBanner({ exam, onViewDetails, onWriteExam }: Upcomin
           minutes: String(m).padStart(2, "0"),
           seconds: String(s).padStart(2, "0"),
         });
+      } else {
+        setTimeLeft({ days: "00", hours: "00", minutes: "00", seconds: "00" });
       }
     };
 
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
-  }, [exam.startTimeIso]);
+  }, [startTimeIso]);
+
+  if (!exam) {
+    return (
+      <section className="bg-[#F6F5FF] border border-purple-100/80 rounded-3xl p-4 sm:p-5 md:p-6 shadow-xs relative overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-center">
+          <div className="lg:col-span-5 flex items-start gap-3.5">
+            <div className="size-12 sm:size-14 rounded-2xl bg-[#EDE9FE] text-[#6366F1] flex items-center justify-center shrink-0 shadow-inner">
+              <svg className="w-6 h-6 sm:w-7 sm:h-7 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div>
+              <span className="text-xs font-extrabold text-[#6366F1] tracking-wide block uppercase">
+                Your Upcoming Exam
+              </span>
+              <h2 className="text-xl sm:text-2xl lg:text-2xl font-black text-slate-900 tracking-tight leading-tight mt-0.5">
+                No upcoming exams
+              </h2>
+              <p className="text-xs font-medium text-slate-500 mt-2">
+                When you register for an exam, details will appear here.
+              </p>
+            </div>
+          </div>
+
+          <div className="lg:col-span-4 flex flex-col items-center justify-center">
+            <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">
+              EXAM STARTS IN
+            </span>
+            <div className="flex items-center gap-1.5 w-full justify-center opacity-40 pointer-events-none">
+              {["Days", "Hours", "Minutes", "Seconds"].map((label, i) => (
+                <React.Fragment key={label}>
+                  {i > 0 && <span className="text-[#4F46E5] font-black text-base -mt-3 px-0.5">:</span>}
+                  <div className="bg-white rounded-xl py-2 px-2.5 text-center border border-slate-100/90 shadow-2xs flex-1 max-w-[62px]">
+                    <span className="block text-xl sm:text-2xl font-black text-[#4F46E5] leading-none">—</span>
+                    <span className="text-[10px] font-bold text-slate-500 mt-1 block">{label}</span>
+                  </div>
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+
+          <div className="lg:col-span-3 flex flex-col items-center justify-center text-center">
+            <GoldenConfettiTrophy />
+            <div className="flex flex-col gap-2 w-full max-w-[180px]">
+              <button
+                type="button"
+                disabled
+                className="w-full bg-slate-200 text-slate-400 font-extrabold text-xs sm:text-sm py-2.5 px-3.5 rounded-xl flex items-center justify-center gap-1.5 cursor-not-allowed"
+              >
+                <PenIcon className="w-3.5 h-3.5" />
+                <span>Write Exam</span>
+              </button>
+              <button
+                type="button"
+                disabled
+                className="w-full bg-white text-slate-300 font-extrabold text-xs sm:text-sm py-2 px-3.5 rounded-xl border border-slate-200 flex items-center justify-center gap-1.5 cursor-not-allowed"
+              >
+                <EyeIcon className="w-3.5 h-3.5" />
+                <span>View Details</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-[#F6F5FF] border border-purple-100/80 rounded-3xl p-4 sm:p-5 md:p-6 shadow-xs relative overflow-hidden">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-center">
         
-        {/* 1. LEFT SECTION: Science Olympiad Info (5 Columns) */}
+        {/* 1. LEFT SECTION: Exam Info (5 Columns) */}
         <div className="lg:col-span-5 flex items-start gap-3.5">
           <div className="size-12 sm:size-14 rounded-2xl bg-[#EDE9FE] text-[#6366F1] flex items-center justify-center shrink-0 shadow-inner">
             <svg className="w-6 h-6 sm:w-7 sm:h-7 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
@@ -144,7 +219,7 @@ export function UpcomingExamBanner({ exam, onViewDetails, onWriteExam }: Upcomin
             {/* Days */}
             <div className="bg-white rounded-xl py-2 px-2.5 text-center border border-slate-100/90 shadow-2xs flex-1 max-w-[62px]">
               <span className="block text-xl sm:text-2xl font-black text-[#4F46E5] leading-none">
-                {timeLeft.days}
+                {displayTimeLeft.days}
               </span>
               <span className="text-[10px] font-bold text-slate-500 mt-1 block">
                 Days
@@ -156,7 +231,7 @@ export function UpcomingExamBanner({ exam, onViewDetails, onWriteExam }: Upcomin
             {/* Hours */}
             <div className="bg-white rounded-xl py-2 px-2.5 text-center border border-slate-100/90 shadow-2xs flex-1 max-w-[62px]">
               <span className="block text-xl sm:text-2xl font-black text-[#4F46E5] leading-none">
-                {timeLeft.hours}
+                {displayTimeLeft.hours}
               </span>
               <span className="text-[10px] font-bold text-slate-500 mt-1 block">
                 Hours
@@ -168,7 +243,7 @@ export function UpcomingExamBanner({ exam, onViewDetails, onWriteExam }: Upcomin
             {/* Minutes */}
             <div className="bg-[#4F46E5] text-white rounded-xl py-2 px-2.5 text-center border border-indigo-600 shadow-sm flex-1 max-w-[62px]">
               <span className="block text-xl sm:text-2xl font-black leading-none">
-                {timeLeft.minutes}
+                {displayTimeLeft.minutes}
               </span>
               <span className="text-[10px] font-bold text-indigo-100 mt-1 block">
                 Minutes
@@ -180,7 +255,7 @@ export function UpcomingExamBanner({ exam, onViewDetails, onWriteExam }: Upcomin
             {/* Seconds */}
             <div className="bg-white rounded-xl py-2 px-2.5 text-center border border-slate-100/90 shadow-2xs flex-1 max-w-[62px]">
               <span className="block text-xl sm:text-2xl font-black text-[#4F46E5] leading-none">
-                {timeLeft.seconds}
+                {displayTimeLeft.seconds}
               </span>
               <span className="text-[10px] font-bold text-slate-500 mt-1 block">
                 Seconds

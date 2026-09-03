@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import type { PracticeSubject } from "./types";
+import type { StudentProfile } from "../../../types";
 import { SAMPLE_PRACTICE_QUESTIONS } from "./practiceQuestionsData";
 import { PracticeTestHeader } from "./PracticeTestHeader";
 import { PracticeTestMetricsBar } from "./PracticeTestMetricsBar";
@@ -12,28 +13,30 @@ import { PracticeEndTestModal } from "./PracticeEndTestModal";
 
 interface PracticeTestInterfaceProps {
   subject: PracticeSubject;
+  student: StudentProfile;
   onBack: () => void;
 }
 
-export function PracticeTestInterface({ subject, onBack }: PracticeTestInterfaceProps) {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(1); // Default Q2 to match mockup
-  const [answers, setAnswers] = useState<Record<number, string>>({ 1: "A", 2: "A" });
-  const [markedForReview, setMarkedForReview] = useState<number[]>([7, 13]);
-  const [secondsRemaining, setSecondsRemaining] = useState(59 * 60 + 45); // 59:45
+export function PracticeTestInterface({ subject, student, onBack }: PracticeTestInterfaceProps) {
+  const totalQuestions = SAMPLE_PRACTICE_QUESTIONS.length;
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [markedForReview, setMarkedForReview] = useState<number[]>([]);
+  const [secondsRemaining, setSecondsRemaining] = useState(0);
   const [showEndTestModal, setShowEndTestModal] = useState(false);
 
-  // Timer countdown
+  // Timer countdown — only when duration is set
   useEffect(() => {
+    if (secondsRemaining <= 0) return;
     const timer = setInterval(() => {
       setSecondsRemaining((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [secondsRemaining]);
 
-  const totalQuestions = 50;
-  const currentQ = SAMPLE_PRACTICE_QUESTIONS[currentQuestionIndex] || SAMPLE_PRACTICE_QUESTIONS[0];
+  const currentQ = SAMPLE_PRACTICE_QUESTIONS[currentQuestionIndex];
   const answeredCount = Object.keys(answers).length;
-  const notAnsweredCount = totalQuestions - answeredCount;
+  const notAnsweredCount = Math.max(totalQuestions - answeredCount, 0);
 
   const handleSelectOption = (key: string) => {
     setAnswers((prev) => ({
@@ -74,23 +77,49 @@ export function PracticeTestInterface({ subject, onBack }: PracticeTestInterface
     onBack();
   };
 
+  if (totalQuestions === 0 || !currentQ) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] font-sans antialiased text-slate-900 flex flex-col p-4 sm:p-6 lg:p-8">
+        <PracticeTestHeader
+          subject={subject}
+          student={student}
+          onBack={onBack}
+          onEndTest={onBack}
+        />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-10 max-w-md w-full text-center space-y-3">
+            <p className="text-base font-black text-slate-900">No test data available</p>
+            <p className="text-xs font-medium text-slate-500">
+              This practice test has no questions loaded yet.
+            </p>
+            <button
+              type="button"
+              onClick={onBack}
+              className="mt-2 px-5 py-2.5 rounded-xl bg-violet-600 text-white font-bold text-xs hover:bg-violet-700 transition cursor-pointer"
+            >
+              Back to Practice
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans antialiased text-slate-900 flex flex-col justify-between p-4 sm:p-6 lg:p-8 space-y-6">
-      {/* 1. Top Header Bar */}
       <PracticeTestHeader
         subject={subject}
+        student={student}
         onBack={onBack}
         onEndTest={() => setShowEndTestModal(true)}
       />
 
-      {/* 2. Top 4-Stats Metrics Card */}
       <PracticeTestMetricsBar
         secondsRemaining={secondsRemaining}
         totalQuestions={totalQuestions}
-        totalMarks={100}
+        totalMarks={totalQuestions * 2}
       />
 
-      {/* 3. Main Grid: Left Question Navigator & Right Question Area */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
         <div className="xl:col-span-4">
           <PracticeQuestionNavigator
@@ -116,7 +145,6 @@ export function PracticeTestInterface({ subject, onBack }: PracticeTestInterface
         </div>
       </div>
 
-      {/* 4. Bottom Navigation Controls */}
       <PracticeTestBottomBar
         currentQuestionIndex={currentQuestionIndex}
         totalQuestions={totalQuestions}
@@ -125,7 +153,6 @@ export function PracticeTestInterface({ subject, onBack }: PracticeTestInterface
         onToggleMarkForReview={toggleMarkForReview}
       />
 
-      {/* 5. End Test Confirmation Modal */}
       <PracticeEndTestModal
         isOpen={showEndTestModal}
         answeredCount={answeredCount}

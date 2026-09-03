@@ -30,17 +30,22 @@ export function ExamDetailsModal({
   onClose,
   exam,
 }: ExamDetailsModalProps) {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    days: "05",
-    hours: "05",
-    minutes: "38",
-    seconds: "30",
-  });
+  const emptyTimeLeft: TimeLeft = {
+    days: "—",
+    hours: "—",
+    minutes: "—",
+    seconds: "—",
+  };
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>(emptyTimeLeft);
+  const startTimeIso = exam?.startTimeIso;
+  const displayTimeLeft = startTimeIso ? timeLeft : emptyTimeLeft;
 
   useEffect(() => {
-    if (!exam?.startTimeIso) return;
+    if (!startTimeIso) {
+      return;
+    }
     const calculateTimeLeft = () => {
-      const difference = +new Date(exam.startTimeIso) - +new Date();
+      const difference = +new Date(startTimeIso) - +new Date();
       if (difference > 0) {
         const d = Math.floor(difference / (1000 * 60 * 60 * 24));
         const h = Math.floor((difference / (1000 * 60 * 60)) % 24);
@@ -52,21 +57,23 @@ export function ExamDetailsModal({
           minutes: String(m).padStart(2, "0"),
           seconds: String(s).padStart(2, "0"),
         });
+      } else {
+        setTimeLeft({ days: "00", hours: "00", minutes: "00", seconds: "00" });
       }
     };
 
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
-  }, [exam?.startTimeIso]);
+  }, [startTimeIso]);
 
   if (!isOpen) return null;
 
-  const examTitle = exam?.title || "Science Olympiad 2026";
-  const examDate = exam?.date || "08 Sep 2026";
-  const examTime = exam?.time || "10:00 AM";
-  const examDuration = exam?.durationMinutes || 50;
-  const examQuestions = exam?.totalQuestions || 50;
+  const examTitle = exam?.title || "—";
+  const examDate = exam?.date || "—";
+  const examTime = exam?.time || "—";
+  const examDuration = exam?.durationMinutes;
+  const examQuestions = exam?.totalQuestions;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4 animate-in fade-in duration-200">
@@ -110,22 +117,22 @@ export function ExamDetailsModal({
               </span>
               <div className="flex items-center gap-1.5 justify-center">
                 <div className="bg-white text-slate-900 rounded-xl px-2 py-1.5 min-w-[40px] sm:min-w-[46px] text-center shadow-xs">
-                  <span className="block text-base sm:text-lg font-black leading-none">{timeLeft.days}</span>
+                  <span className="block text-base sm:text-lg font-black leading-none">{displayTimeLeft.days}</span>
                   <span className="text-[8px] font-bold text-slate-500 uppercase mt-0.5 block">DAYS</span>
                 </div>
                 <span className="text-white font-black text-sm -mt-2">:</span>
                 <div className="bg-white text-slate-900 rounded-xl px-2 py-1.5 min-w-[40px] sm:min-w-[46px] text-center shadow-xs">
-                  <span className="block text-base sm:text-lg font-black leading-none">{timeLeft.hours}</span>
+                  <span className="block text-base sm:text-lg font-black leading-none">{displayTimeLeft.hours}</span>
                   <span className="text-[8px] font-bold text-slate-500 uppercase mt-0.5 block">HRS</span>
                 </div>
                 <span className="text-white font-black text-sm -mt-2">:</span>
                 <div className="bg-white text-slate-900 rounded-xl px-2 py-1.5 min-w-[40px] sm:min-w-[46px] text-center shadow-xs">
-                  <span className="block text-base sm:text-lg font-black leading-none">{timeLeft.minutes}</span>
+                  <span className="block text-base sm:text-lg font-black leading-none">{displayTimeLeft.minutes}</span>
                   <span className="text-[8px] font-bold text-slate-500 uppercase mt-0.5 block">MIN</span>
                 </div>
                 <span className="text-white font-black text-sm -mt-2">:</span>
                 <div className="bg-white text-slate-900 rounded-xl px-2 py-1.5 min-w-[40px] sm:min-w-[46px] text-center shadow-xs">
-                  <span className="block text-base sm:text-lg font-black leading-none">{timeLeft.seconds}</span>
+                  <span className="block text-base sm:text-lg font-black leading-none">{displayTimeLeft.seconds}</span>
                   <span className="text-[8px] font-bold text-slate-500 uppercase mt-0.5 block">SEC</span>
                 </div>
               </div>
@@ -148,7 +155,7 @@ export function ExamDetailsModal({
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">DATE</span>
               </div>
               <span className="text-sm sm:text-base font-black text-slate-900 block">{examDate}</span>
-              <span className="text-xs font-medium text-slate-500 block">Tuesday</span>
+              <span className="text-xs font-medium text-slate-500 block">—</span>
             </div>
 
             {/* Card 2: TIME SLOT */}
@@ -158,7 +165,7 @@ export function ExamDetailsModal({
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">TIME SLOT</span>
               </div>
               <span className="text-sm sm:text-base font-black text-slate-900 block">{examTime}</span>
-              <span className="text-xs font-medium text-slate-500 block">IST (Morning Slot)</span>
+              <span className="text-xs font-medium text-slate-500 block">IST</span>
             </div>
 
             {/* Card 3: DURATION */}
@@ -167,7 +174,7 @@ export function ExamDetailsModal({
                 <TimerIcon className="w-3.5 h-3.5" />
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">DURATION</span>
               </div>
-              <span className="text-sm sm:text-base font-black text-slate-900 block">{examDuration} Minutes</span>
+              <span className="text-sm sm:text-base font-black text-slate-900 block">{examDuration != null ? `${examDuration} Minutes` : "—"}</span>
               <span className="text-xs font-medium text-slate-500 block">Timed Online Test</span>
             </div>
 
@@ -177,7 +184,7 @@ export function ExamDetailsModal({
                 <QuestionsIcon className="w-3.5 h-3.5" />
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">TOTAL QUESTIONS</span>
               </div>
-              <span className="text-sm sm:text-base font-black text-slate-900 block">{examQuestions} Questions</span>
+              <span className="text-sm sm:text-base font-black text-slate-900 block">{examQuestions != null ? `${examQuestions} Questions` : "—"}</span>
               <span className="text-xs font-medium text-slate-500 block">Objective (MCQ)</span>
             </div>
 
@@ -187,7 +194,7 @@ export function ExamDetailsModal({
                 <StarIcon className="w-3.5 h-3.5" />
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">TOTAL MARKS</span>
               </div>
-              <span className="text-sm sm:text-base font-black text-slate-900 block">50 Marks</span>
+              <span className="text-sm sm:text-base font-black text-slate-900 block">—</span>
               <span className="text-xs font-bold text-emerald-600 block">No Negative Marking</span>
             </div>
 
@@ -210,10 +217,10 @@ export function ExamDetailsModal({
               CANDIDATE ADMIT CARD
             </span>
             <h4 className="text-sm sm:text-base font-black text-slate-900">
-              Rahul Sharma • Class 8
+              — • Class —
             </h4>
             <p className="text-xs font-medium text-slate-500">
-              Olympiad ID: <span className="font-bold text-[#6366F1]">IQO2026001</span> • ABC Public School
+              Olympiad ID: <span className="font-bold text-[#6366F1]">—</span> • —
             </p>
           </div>
 

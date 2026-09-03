@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { STUDENT_PROFILE } from "../Common/mockData";
+import { StudentPanelChrome } from "../Common/StudentPanelChrome";
 import { Sidebar } from "../Common/Sidebar";
 import { HeaderBar } from "../Common/HeaderBar";
 import { PRACTICE_SUBJECTS } from "./Practice/practiceData";
@@ -10,6 +10,7 @@ import { PracticeProgressBanner } from "./Practice/PracticeProgressBanner";
 import { PracticeUnlimitedBanner } from "./Practice/PracticeUnlimitedBanner";
 import { PracticeTestInterface } from "./Practice/PracticeTestInterface";
 import type { PracticeSubject } from "./Practice/types";
+import type { StudentProfile } from "../../types";
 
 interface PanelProps {
   activeTab?: string;
@@ -24,7 +25,15 @@ const SUBJECT_FILTER_OPTIONS = [
   { id: "gk", label: "General Knowledge" },
 ];
 
-export default function PracticePanel({ activeTab = "practice", onSelectTab }: PanelProps) {
+function PracticePanelBody({
+  activeTab,
+  onSelectTab,
+  student,
+}: {
+  activeTab: string;
+  onSelectTab?: (tabId: string) => void;
+  student: StudentProfile;
+}) {
   const [selectedSubjectFilter, setSelectedSubjectFilter] = useState("all");
   const [isSubjectDropdownOpen, setIsSubjectDropdownOpen] = useState(false);
   const [activePracticeSubject, setActivePracticeSubject] = useState<PracticeSubject | null>(null);
@@ -37,11 +46,11 @@ export default function PracticePanel({ activeTab = "practice", onSelectTab }: P
   const currentSubjectLabel =
     SUBJECT_FILTER_OPTIONS.find((opt) => opt.id === selectedSubjectFilter)?.label ?? "All Subjects";
 
-  // If student is currently taking a practice test, show the interactive Practice Test Interface
   if (activePracticeSubject) {
     return (
       <PracticeTestInterface
         subject={activePracticeSubject}
+        student={student}
         onBack={() => setActivePracticeSubject(null)}
       />
     );
@@ -49,10 +58,10 @@ export default function PracticePanel({ activeTab = "practice", onSelectTab }: P
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#F8FAFC] font-sans antialiased text-slate-900">
-      <Sidebar student={STUDENT_PROFILE} activeTab={activeTab} onSelectTab={onSelectTab} />
+      <Sidebar student={student} activeTab={activeTab} onSelectTab={onSelectTab} />
 
       <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
-        <HeaderBar student={STUDENT_PROFILE} onSelectTab={onSelectTab} />
+        <HeaderBar student={student} onSelectTab={onSelectTab} />
 
         <main className="flex-1 p-4 md:p-6 space-y-4 sm:space-y-5">
           {/* Header Title & Dropdown Controls */}
@@ -133,25 +142,48 @@ export default function PracticePanel({ activeTab = "practice", onSelectTab }: P
           <PracticeProgressBanner />
 
           {/* Subject Practice Cards Grid */}
-          <div
-            className={`grid gap-3.5 sm:gap-4 w-full ${filteredSubjects.length === 1
-                ? "grid-cols-1"
-                : "grid-cols-1 lg:grid-cols-2"
-              }`}
-          >
-            {filteredSubjects.map((subject) => (
-              <PracticeCard
-                key={subject.id}
-                subject={subject}
-                onStartPracticing={(subj) => setActivePracticeSubject(subj)}
-              />
-            ))}
-          </div>
+          {filteredSubjects.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs py-16 px-4 text-center">
+              <p className="text-sm font-bold text-slate-700">No practice subjects available</p>
+              <p className="text-xs font-medium text-slate-400 mt-1">
+                Practice subjects and mock tests will appear here when available.
+              </p>
+            </div>
+          ) : (
+            <div
+              className={`grid gap-3.5 sm:gap-4 w-full ${filteredSubjects.length === 1
+                  ? "grid-cols-1"
+                  : "grid-cols-1 lg:grid-cols-2"
+                }`}
+            >
+              {filteredSubjects.map((subject) => (
+                <PracticeCard
+                  key={subject.id}
+                  subject={subject}
+                  onStartPracticing={(subj) => setActivePracticeSubject(subj)}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Bottom Unlimited Practice Banner */}
           <PracticeUnlimitedBanner />
         </main>
       </div>
     </div>
+  );
+}
+
+export default function PracticePanel({ activeTab = "practice", onSelectTab }: PanelProps) {
+  return (
+    <StudentPanelChrome activeTab={activeTab} onSelectTab={onSelectTab}>
+      {({ student, activeTab, onSelectTab }) => (
+        <PracticePanelBody
+          student={student}
+          activeTab={activeTab}
+          onSelectTab={onSelectTab}
+        />
+      )}
+    </StudentPanelChrome>
   );
 }

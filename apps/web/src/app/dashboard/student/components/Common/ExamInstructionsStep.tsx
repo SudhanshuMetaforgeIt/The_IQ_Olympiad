@@ -24,7 +24,7 @@ export function ExamInstructionsStep({ onStartExam }: ExamInstructionsStepProps)
           </svg>
         </div>
       ),
-      text: "The exam consists of 50 multiple-choice questions.",
+      text: "The exam consists of multiple-choice questions.",
     },
     {
       id: 2,
@@ -33,7 +33,7 @@ export function ExamInstructionsStep({ onStartExam }: ExamInstructionsStepProps)
           <ClockIcon className="w-3.5 h-3.5" />
         </div>
       ),
-      text: "The total duration of the exam is 50 minutes.",
+      text: "The total duration of the exam will be shown before you start.",
     },
     {
       id: 3,
@@ -111,29 +111,29 @@ export function ExamInstructionsStep({ onStartExam }: ExamInstructionsStepProps)
         </div>
 
         <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-          Science Olympiad 2026
+          Exam Instructions
         </h2>
 
         {/* Info Chips */}
         <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-bold text-slate-700">
           <div className="flex items-center gap-1.5">
             <CalendarIcon className="w-3.5 h-3.5 text-violet-600" />
-            <span>08 Sep 2026</span>
+            <span>—</span>
           </div>
           <span className="text-slate-300">|</span>
           <div className="flex items-center gap-1.5">
             <ClockIcon className="w-3.5 h-3.5 text-violet-600" />
-            <span>10:00 AM</span>
+            <span>—</span>
           </div>
           <span className="text-slate-300">|</span>
           <div className="flex items-center gap-1.5">
             <TimerIcon className="w-3.5 h-3.5 text-violet-600" />
-            <span>50 Minutes</span>
+            <span>—</span>
           </div>
           <span className="text-slate-300">|</span>
           <div className="flex items-center gap-1.5">
             <QuestionsIcon className="w-3.5 h-3.5 text-violet-600" />
-            <span>50 Questions</span>
+            <span>—</span>
           </div>
         </div>
       </div>

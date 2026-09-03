@@ -26,13 +26,13 @@ const QUICK_PROMPTS = [
 export function BotChatModal({
   isOpen,
   onClose,
-  whatsappNumber = "+91 98765 43210",
+  whatsappNumber = "",
 }: BotChatModalProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "1",
       sender: "bot",
-      text: "Hello Rahul! 👋 I'm your IQ Olympiad AI Assistant. How can I help you today? Ask me about exam schedules, results, syllabus, badges, or certificates.",
+      text: "Hello! 👋 I'm your IQ Olympiad AI Assistant. How can I help you today? Ask me about exam schedules, results, syllabus, badges, or certificates.",
       time: "Just now",
     },
   ]);
@@ -48,6 +48,9 @@ export function BotChatModal({
 
   const handleOpenWhatsApp = () => {
     const cleanNumber = whatsappNumber.replace(/[^0-9]/g, "");
+    if (!cleanNumber) {
+      return;
+    }
     const message = encodeURIComponent(
       "Hello IQ Olympiad Support, I am a student and I need immediate assistance."
     );
@@ -58,7 +61,7 @@ export function BotChatModal({
     if (!text.trim()) return;
 
     const userMsg: ChatMessage = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       sender: "user",
       text: text.trim(),
       time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
@@ -70,34 +73,34 @@ export function BotChatModal({
 
     setTimeout(() => {
       let reply =
-        "Thank you for asking! For immediate support or live assistance with our team, you can also connect directly on WhatsApp.";
+        "Thank you for asking! For further help, please contact support through Help & Support.";
       const lower = text.toLowerCase();
 
       if (lower.includes("exam") || lower.includes("date") || lower.includes("when")) {
         reply =
-          "Your upcoming exam is the Cyber Olympiad 2026 on 15 Oct 2026. Practice mock tests are available in the 'Practice' panel.";
+          "You can view upcoming exams in the Olympiad / Exams section of your dashboard once they are scheduled.";
       } else if (
         lower.includes("result") ||
         lower.includes("score") ||
         lower.includes("marks")
       ) {
         reply =
-          "All test scores are out of 100 marks! Go to the 'Results' tab and click any exam row to view your section-wise scorecard.";
+          "Open the Results tab to view your exam and practice scorecards when results are available.";
       } else if (lower.includes("badge") || lower.includes("honor") || lower.includes("unlock")) {
         reply =
-          "You've earned 'Olympiad Achiever' 🏆 and 'Problem Solver' 🧠! Check 'Certificates > My Badges' to view upcoming unlocks.";
+          "Check Certificates > My Badges to see earned badges and how to unlock more.";
       } else if (lower.includes("certificate") || lower.includes("download")) {
         reply =
-          "You can preview and download official certificates in PDF format from the 'Certificates' tab.";
+          "You can preview and download certificates from the Certificates tab when they are issued.";
       } else if (lower.includes("whatsapp") || lower.includes("support") || lower.includes("human")) {
         reply =
-          "You can connect directly with our live support team on WhatsApp (+91 98765 43210) for instant help.";
+          "Please use Help & Support to contact our team. WhatsApp support will be available when configured.";
       }
 
       setMessages((prev) => [
         ...prev,
         {
-          id: (Date.now() + 1).toString(),
+          id: crypto.randomUUID(),
           sender: "bot",
           text: reply,
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
@@ -153,8 +156,9 @@ export function BotChatModal({
             <button
               type="button"
               onClick={handleOpenWhatsApp}
-              className="p-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200 transition cursor-pointer"
-              title="Chat on WhatsApp"
+              disabled={!whatsappNumber.replace(/[^0-9]/g, "")}
+              className="p-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              title={whatsappNumber ? "Chat on WhatsApp" : "WhatsApp support unavailable"}
             >
               <svg className="w-4 h-4 fill-currentColor" viewBox="0 0 24 24">
                 <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654z" />
@@ -226,7 +230,7 @@ export function BotChatModal({
               {/* User Avatar */}
               {m.sender === "user" && (
                 <div className="size-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0 font-bold text-[10px] shadow-xs">
-                  RS
+                  You
                 </div>
               )}
             </div>
