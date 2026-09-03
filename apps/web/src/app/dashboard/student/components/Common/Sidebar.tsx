@@ -73,8 +73,13 @@ export function Sidebar({ activeTab = "dashboard", onSelectTab }: SidebarProps) 
                 type="button"
                 onClick={() => {
                   if (item.id === "logout") {
-                    window.location.href = "/login";
-                  } else if (onSelectTab) {
+                    if (typeof window !== "undefined") {
+                      localStorage.removeItem("student_active_tab");
+                      window.location.href = "/";
+                    }
+                    return;
+                  }
+                  if (onSelectTab) {
                     onSelectTab(item.id);
                   }
                 }}
