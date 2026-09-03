@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { STUDENT_PROFILE } from "./../Common/mockData";
+import { StudentPanelChrome } from "./../Common/StudentPanelChrome";
 import { Sidebar } from "./../Common/Sidebar";
 import { HeaderBar } from "./../Common/HeaderBar";
 import {
@@ -42,11 +42,13 @@ export default function CertificatesPanel({
   }
 
   return (
+    <StudentPanelChrome activeTab={activeTab} onSelectTab={onSelectTab}>
+      {({ student, activeTab, onSelectTab }) => (
     <div className="flex h-screen overflow-hidden bg-[#F8FAFC] font-sans antialiased text-slate-900">
-      <Sidebar student={STUDENT_PROFILE} activeTab={activeTab} onSelectTab={onSelectTab} />
+      <Sidebar student={student} activeTab={activeTab} onSelectTab={onSelectTab} />
 
       <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
-        <HeaderBar student={STUDENT_PROFILE} onSelectTab={onSelectTab} />
+        <HeaderBar student={student} onSelectTab={onSelectTab} />
 
         <main className="flex-1 p-4 md:p-6 space-y-4 sm:space-y-5">
           {/* Header Banner */}
@@ -134,7 +136,7 @@ export default function CertificatesPanel({
 
           {/* Tab Content Display */}
           {activeSubTab === "badges" ? (
-            <MyBadgesSection studentName={STUDENT_PROFILE.name.split(" ")[0]} />
+            <MyBadgesSection studentName={student.name.split(" ")[0] || student.name} />
           ) : activeSubTab === "coupons" ? (
             <CertificatesCouponsSection />
           ) : (
@@ -143,5 +145,7 @@ export default function CertificatesPanel({
         </main>
       </div>
     </div>
+      )}
+    </StudentPanelChrome>
   );
 }

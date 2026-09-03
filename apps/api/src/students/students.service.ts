@@ -10,6 +10,12 @@ import { GuardianRelation } from '../common/enums/guardian-relation.enum.js';
 import { StudentClass } from '../common/enums/student-class.enum.js';
 import { StudentProfileStatus } from '../common/enums/student-profile-status.enum.js';
 import {
+  School,
+  type SchoolDocument,
+} from '../schools/schemas/school.schema.js';
+import { UsersService } from '../users/users.service.js';
+import type { StudentMeResponse } from './dto/student-me-response.js';
+import {
   StudentProfile,
   type StudentProfileDocument,
 } from './schemas/student-profile.schema.js';
@@ -36,6 +42,9 @@ export class StudentsService {
   constructor(
     @InjectModel(StudentProfile.name)
     private readonly studentModel: Model<StudentProfileDocument>,
+    @InjectModel(School.name)
+    private readonly schoolModel: Model<SchoolDocument>,
+    private readonly usersService: UsersService,
   ) {}
 
   async create(
@@ -84,6 +93,48 @@ export class StudentsService {
       throw new NotFoundException('Student profile not found');
     }
     return profile;
+  }
+
+  /**
+   * Authenticated student dashboard payload.
+   * Identity is always derived from the JWT userId — never from client input.
+   */
+  async getMe(userId: string): Promise<StudentMeResponse> {
+    const [user, profile] = await Promise.all([
+      this.usersService.findById(userId),
+      this.findByUserId(userId),
+    ]);
+
+    const school = await this.schoolModel.findById(profile.schoolId).exec();
+    if (!school) {
+      throw new NotFoundException('School not found');
+    }
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        phone: user.phone,
+        isEmailVerified: user.isEmailVerified,
+        isPhoneVerified: user.isPhoneVerified,
+      },
+      profile: {
+        id: profile.id,
+        fullName: profile.fullName,
+        dateOfBirth: profile.dateOfBirth.toISOString(),
+        academicClass: profile.academicClass,
+        section: profile.section,
+        rollNumber: profile.rollNumber,
+        academicYear: profile.academicYear,
+        status: profile.status,
+      },
+      school: {
+        id: school.id,
+        code: school.code,
+        name: school.name,
+      },
+    };
   }
 
   async findById(id: string): Promise<StudentProfileDocument> {

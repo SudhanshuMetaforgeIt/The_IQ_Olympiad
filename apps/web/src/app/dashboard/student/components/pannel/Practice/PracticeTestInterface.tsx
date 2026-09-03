@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import type { PracticeSubject } from "./types";
+import type { StudentProfile } from "../../../types";
 import { SAMPLE_PRACTICE_QUESTIONS } from "./practiceQuestionsData";
 import { PracticeTestHeader } from "./PracticeTestHeader";
 import { PracticeTestMetricsBar } from "./PracticeTestMetricsBar";
@@ -12,10 +13,11 @@ import { PracticeEndTestModal } from "./PracticeEndTestModal";
 
 interface PracticeTestInterfaceProps {
   subject: PracticeSubject;
+  student: StudentProfile;
   onBack: () => void;
 }
 
-export function PracticeTestInterface({ subject, onBack }: PracticeTestInterfaceProps) {
+export function PracticeTestInterface({ subject, student, onBack }: PracticeTestInterfaceProps) {
   const totalQuestions = SAMPLE_PRACTICE_QUESTIONS.length;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
@@ -80,6 +82,7 @@ export function PracticeTestInterface({ subject, onBack }: PracticeTestInterface
       <div className="min-h-screen bg-[#F8FAFC] font-sans antialiased text-slate-900 flex flex-col p-4 sm:p-6 lg:p-8">
         <PracticeTestHeader
           subject={subject}
+          student={student}
           onBack={onBack}
           onEndTest={onBack}
         />
@@ -106,6 +109,7 @@ export function PracticeTestInterface({ subject, onBack }: PracticeTestInterface
     <div className="min-h-screen bg-[#F8FAFC] font-sans antialiased text-slate-900 flex flex-col justify-between p-4 sm:p-6 lg:p-8 space-y-6">
       <PracticeTestHeader
         subject={subject}
+        student={student}
         onBack={onBack}
         onEndTest={() => setShowEndTestModal(true)}
       />

@@ -25,34 +25,27 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
   const [avatarUrl, setAvatarUrl] = useState<string>(student.avatarUrl);
-  const [studentName, setStudentName] = useState<string>(student.name);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const studentName = student.name;
   const unreadCount = notifications.filter((n) => n.isUnread).length;
 
-  // Sync updated avatar and name from localStorage & custom events in real time
+  // Optional local avatar override only (schema has no avatar field yet).
   useEffect(() => {
-    const syncProfile = () => {
-      if (typeof window !== "undefined") {
-        const savedAvatar = localStorage.getItem("student_custom_avatar");
-        if (savedAvatar) {
-          setAvatarUrl(savedAvatar);
-        }
-        const savedName = localStorage.getItem("student_custom_name");
-        if (savedName) {
-          setStudentName(savedName);
-        }
-      }
+    const syncAvatar = () => {
+      if (typeof window === "undefined") return;
+      const savedAvatar = localStorage.getItem("student_custom_avatar");
+      setAvatarUrl(savedAvatar || student.avatarUrl);
     };
 
-    syncProfile();
-    window.addEventListener("student_profile_updated", syncProfile);
-    window.addEventListener("storage", syncProfile);
+    syncAvatar();
+    window.addEventListener("student_profile_updated", syncAvatar);
+    window.addEventListener("storage", syncAvatar);
     return () => {
-      window.removeEventListener("student_profile_updated", syncProfile);
-      window.removeEventListener("storage", syncProfile);
+      window.removeEventListener("student_profile_updated", syncAvatar);
+      window.removeEventListener("storage", syncAvatar);
     };
-  }, [student.avatarUrl, student.name]);
+  }, [student.avatarUrl]);
 
   // Click outside to close dropdown
   useEffect(() => {
