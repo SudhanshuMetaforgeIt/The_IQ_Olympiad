@@ -1,4 +1,6 @@
 export { ExamsModule } from './exams.module.js';
+export { ExamsService } from './exams.service.js';
+export { ExamsController } from './exams.controller.js';
 export {
   Exam,
   ExamSchema,
