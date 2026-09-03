@@ -2,6 +2,8 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { ApiError, sendOtp, verifyOtp } from "@/lib/api";
+import { setAccessToken } from "@/lib/auth/token-storage";
 import AuthBrandHeader from "./AuthBrandHeader";
 import AuthFooterLinks from "./AuthFooterLinks";
 import AuthRoleSwitcher from "./AuthRoleSwitcher";
@@ -22,7 +24,7 @@ type OtpLoginFormProps = {
   footerPrompt: string;
   footerHref: string;
   footerLinkLabel: string;
-  successMessage?: string;
+  successMessage: string;
 };
 
 export default function OtpLoginForm({
@@ -34,18 +36,60 @@ export default function OtpLoginForm({
   footerPrompt,
   footerHref,
   footerLinkLabel,
+  successMessage,
 }: OtpLoginFormProps) {
   const router = useRouter();
-  const [phone, setPhone] = useState("8798899009");
-  const [otp, setOtp] = useState("877888");
-  const [otpSent, setOtpSent] = useState(true);
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
   const [timer, setTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSendOtp = () => {
-    setOtpSent(true);
-    setTimer(30);
-    setCanResend(false);
+  const handleSendOtp = async () => {
+    if (phone.length !== 10) {
+      alert(
+        "Please enter a valid 10-digit phone number starting with 6, 7, 8, or 9.",
+      );
+      return;
+    }
+
+    setIsSendingOtp(true);
+    setError(null);
+
+    try {
+      const result = await sendOtp({ phone });
+      setOtpSent(true);
+      setTimer(30);
+      setCanResend(false);
+
+      // Temporary until SMS is integrated — OTP is returned as debugCode in non-prod.
+      if (result.debugCode) {
+        alert(`Your OTP is ${result.debugCode}`);
+      } else {
+        alert("OTP sent. Check your phone.");
+      }
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+        alert(err.message);
+        return;
+      }
+      if (err instanceof TypeError) {
+        const message =
+          "Cannot reach the API. Confirm it is running at http://localhost:4000.";
+        setError(message);
+        alert(message);
+        return;
+      }
+      const message = "Unable to send OTP. Please try again.";
+      setError(message);
+      alert(message);
+    } finally {
+      setIsSendingOtp(false);
+    }
   };
 
   useEffect(() => {
@@ -62,12 +106,64 @@ export default function OtpLoginForm({
     };
   }, [otpSent, timer]);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (role === "school") {
-      router.push("/dashboard/school-admin");
-    } else {
-      router.push("/dashboard/student");
+
+    if (phone.length !== 10) {
+      alert(
+        "Please enter a valid 10-digit phone number starting with 6, 7, 8, or 9.",
+      );
+      return;
+    }
+
+    if (otp.length !== 6) {
+      alert("Please enter the 6-digit OTP.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const result = await verifyOtp({ phone, otp });
+      const roles = result.user.roles;
+
+      if (role === "student" && !roles.includes("STUDENT")) {
+        throw new ApiError("This phone is not registered as a student.", 403);
+      }
+      if (role === "school" && !roles.includes("SCHOOL_ADMIN")) {
+        throw new ApiError(
+          "This phone is not registered as a school admin.",
+          403,
+        );
+      }
+
+      setAccessToken(result.accessToken);
+      alert(successMessage);
+
+      if (role === "student") {
+        router.push("/dashboard/student");
+      } else {
+        router.push("/dashboard/school-admin");
+      }
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+        alert(err.message);
+        return;
+      }
+      if (err instanceof TypeError) {
+        const message =
+          "Cannot reach the API. Confirm it is running at http://localhost:4000.";
+        setError(message);
+        alert(message);
+        return;
+      }
+      const message = "Unable to log in. Please try again.";
+      setError(message);
+      alert(message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -107,15 +203,21 @@ export default function OtpLoginForm({
               value={phone}
               onChange={(e) => setPhone(formatMobileNumber(e.target.value))}
               placeholder="Enter your phone number"
-              required
             />
             <div className="flex justify-end mt-2">
               <button
                 type="button"
-                onClick={handleSendOtp}
-                className="text-xs font-extrabold text-violet-600 hover:text-violet-800 flex items-center gap-1.5 transition cursor-pointer"
+                onClick={() => void handleSendOtp()}
+                disabled={isSendingOtp}
+                className="text-xs font-extrabold text-violet-600 hover:text-violet-800 flex items-center gap-1.5 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span>{otpSent ? "Resend OTP" : "Send OTP"}</span>
+                <span>
+                  {isSendingOtp
+                    ? "Sending..."
+                    : otpSent
+                      ? "Resend OTP"
+                      : "Send OTP"}
+                </span>
                 <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                   <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
                 </svg>
@@ -132,7 +234,6 @@ export default function OtpLoginForm({
                 onChange={(e) => setOtp(formatOtp(e.target.value))}
                 placeholder="Enter 6-digit OTP"
                 maxLength={6}
-                required
                 className={`${authInputClassLg} pr-11`}
               />
               <div className="absolute right-3.5 top-1/2 -translate-y-1/2 size-7 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">
@@ -145,10 +246,14 @@ export default function OtpLoginForm({
               Didn&apos;t receive OTP?{" "}
               <button
                 type="button"
-                onClick={canResend ? handleSendOtp : undefined}
-                disabled={!canResend}
+                onClick={
+                  canResend && !isSendingOtp
+                    ? () => void handleSendOtp()
+                    : undefined
+                }
+                disabled={!canResend || isSendingOtp}
                 className={`font-bold transition ${
-                  canResend
+                  canResend && !isSendingOtp
                     ? "text-violet-600 hover:underline cursor-pointer"
                     : "text-slate-400 cursor-not-allowed"
                 }`}
@@ -161,7 +266,18 @@ export default function OtpLoginForm({
             </p>
           </div>
 
-          <AuthSubmitButton icon={<BookIcon />}>{submitLabel}</AuthSubmitButton>
+          {error ? (
+            <p
+              className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700"
+              role="alert"
+            >
+              {error}
+            </p>
+          ) : null}
+
+          <AuthSubmitButton icon={<BookIcon />} disabled={isSubmitting}>
+            {isSubmitting ? "Logging in..." : submitLabel}
+          </AuthSubmitButton>
         </form>
 
         <AuthFooterLinks

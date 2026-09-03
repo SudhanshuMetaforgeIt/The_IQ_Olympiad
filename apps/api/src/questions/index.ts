@@ -1,4 +1,6 @@
 export { QuestionsModule } from './questions.module.js';
+export { QuestionsService } from './questions.service.js';
+export { QuestionsController } from './questions.controller.js';
 export {
   Question,
   QuestionSchema,

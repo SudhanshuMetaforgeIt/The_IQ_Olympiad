@@ -46,8 +46,8 @@ function StudentDashboardContent() {
     if (tabId === "logout") {
       if (typeof window !== "undefined") {
         localStorage.removeItem("student_active_tab");
+        window.location.href = "/";
       }
-      router.push("/login/student-login");
       return;
     }
 
@@ -64,19 +64,6 @@ function StudentDashboardContent() {
     }
     router.push(`${pathname}?${params.toString()}`);
   };
-
-  // Restore saved tab from localStorage if URL has no tab param on initial load
-  useEffect(() => {
-    const urlTab = searchParams.get("tab");
-    if (!urlTab && typeof window !== "undefined") {
-      const savedTab = localStorage.getItem("student_active_tab");
-      if (savedTab && savedTab !== "dashboard" && savedTab !== "logout") {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("tab", savedTab);
-        router.replace(`${pathname}?${params.toString()}`);
-      }
-    }
-  }, [searchParams, pathname, router]);
 
   const renderPanel = () => {
     switch (activeTab) {

@@ -5,6 +5,7 @@ import {
   SchoolMembership,
   SchoolMembershipSchema,
 } from './schemas/school-membership.schema.js';
+import { SchoolMembershipsService } from './school-memberships.service.js';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import {
       { name: SchoolMembership.name, schema: SchoolMembershipSchema },
     ]),
   ],
-  exports: [MongooseModule],
+  providers: [SchoolMembershipsService],
+  exports: [MongooseModule, SchoolMembershipsService],
 })
 export class SchoolMembershipsModule {}

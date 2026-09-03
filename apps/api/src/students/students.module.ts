@@ -5,6 +5,8 @@ import {
   StudentProfile,
   StudentProfileSchema,
 } from './schemas/student-profile.schema.js';
+import { StudentsController } from './students.controller.js';
+import { StudentsService } from './students.service.js';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import {
       { name: StudentProfile.name, schema: StudentProfileSchema },
     ]),
   ],
-  exports: [MongooseModule],
+  controllers: [StudentsController],
+  providers: [StudentsService],
+  exports: [MongooseModule, StudentsService],
 })
 export class StudentsModule {}
