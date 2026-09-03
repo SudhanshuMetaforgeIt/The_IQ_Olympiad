@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import {
-  STUDENT_PROFILE,
   UPCOMING_EXAM,
   DASHBOARD_STATS,
   RECENT_RESULTS,
@@ -10,6 +9,7 @@ import {
   EXAM_TIP,
 } from "../Common/mockData";
 import type { ExamResultItem } from "../../types";
+import { StudentPanelChrome } from "../Common/StudentPanelChrome";
 import { Sidebar } from "../Common/Sidebar";
 import { HeaderBar } from "../Common/HeaderBar";
 import { UpcomingExamBanner } from "../Common/UpcomingExamBanner";
@@ -46,14 +46,16 @@ export default function StudentDashboard({ activeTab = "dashboard", onSelectTab 
   }
 
   return (
+    <StudentPanelChrome activeTab={activeTab} onSelectTab={onSelectTab}>
+      {({ student, activeTab, onSelectTab }) => (
     <div className="flex h-screen overflow-hidden bg-[#F8FAFC] font-sans antialiased text-slate-900">
       {/* Sidebar Navigation */}
-      <Sidebar student={STUDENT_PROFILE} activeTab={activeTab} onSelectTab={onSelectTab} />
+      <Sidebar student={student} activeTab={activeTab} onSelectTab={onSelectTab} />
 
       {/* Main Dashboard Canvas */}
       <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
         {/* Top Header */}
-        <HeaderBar student={STUDENT_PROFILE} onSelectTab={onSelectTab} />
+        <HeaderBar student={student} onSelectTab={onSelectTab} />
 
         {/* Scrollable Dashboard Body */}
         <main className="flex-1 p-4 md:p-6 space-y-4 sm:space-y-5">
@@ -153,5 +155,7 @@ export default function StudentDashboard({ activeTab = "dashboard", onSelectTab 
         onClose={() => setIsBadgesModalOpen(false)}
       />
     </div>
+      )}
+    </StudentPanelChrome>
   );
 }

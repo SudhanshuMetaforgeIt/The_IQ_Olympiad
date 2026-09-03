@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 
 import {
   GuardianRelation,
@@ -95,7 +95,7 @@ export const StudentGuardianSchema =
 })
 export class StudentProfile {
   @Prop({
-    type: Types.ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: User.name,
     required: true,
     unique: true,
@@ -103,7 +103,7 @@ export class StudentProfile {
   userId: Types.ObjectId;
 
   @Prop({
-    type: Types.ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: School.name,
     required: true,
     index: true,

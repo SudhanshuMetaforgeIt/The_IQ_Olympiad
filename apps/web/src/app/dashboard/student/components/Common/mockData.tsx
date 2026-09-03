@@ -8,7 +8,7 @@ import type {
   CertificateItem,
 } from "../../types";
 
-/** Neutral shell until real auth/profile API is wired into the dashboard. */
+/** Neutral shell kept only for non-profile dashboard placeholders (stats/exams). Identity comes from GET /api/students/me. */
 export const STUDENT_PROFILE: StudentProfile = {
   name: "Student",
   grade: "—",

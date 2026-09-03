@@ -2,6 +2,7 @@
 
 import React, { Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { clearAccessToken } from "@/lib/auth/token-storage";
 import StudentDashboard from "./components/pannel/Dashboard";
 import MyExamsPanel from "./components/pannel/MyExams";
 import OlympiadPanel from "./components/pannel/Olympiad";
@@ -62,6 +63,7 @@ function StudentDashboardContent() {
   const handleSelectTab = (tabId: string, subtabId?: string) => {
     if (tabId === "logout") {
       if (typeof window !== "undefined") {
+        clearAccessToken();
         localStorage.removeItem("student_active_tab");
         router.push("/");
       }

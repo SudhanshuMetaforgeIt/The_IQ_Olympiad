@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useSyncExternalStore } from "react";
-import { STUDENT_PROFILE } from "../Common/mockData";
+import { StudentPanelChrome } from "../Common/StudentPanelChrome";
 import { Sidebar } from "../Common/Sidebar";
 import { HeaderBar } from "../Common/HeaderBar";
+import { useStudentMe } from "../../StudentMeProvider";
+import type { StudentProfile } from "../../types";
 import {
-  INITIAL_STUDENT_PROFILE,
   PersonalInformationCard,
   AcademicInformationCard,
   IdentityInformationCard,
@@ -46,7 +47,9 @@ function getStudentProfileServerSnapshot(): string {
   return "|";
 }
 
-function parseStoredProfileSnapshot(snapshot: string): Pick<StudentProfileData, "fullName" | "avatarUrl"> {
+function parseStoredProfileSnapshot(
+  snapshot: string
+): Pick<StudentProfileData, "fullName" | "avatarUrl"> {
   const separatorIndex = snapshot.indexOf("|");
   const fullName = separatorIndex >= 0 ? snapshot.slice(0, separatorIndex) : "";
   const avatarUrl = separatorIndex >= 0 ? snapshot.slice(separatorIndex + 1) : "";
@@ -56,19 +59,34 @@ function parseStoredProfileSnapshot(snapshot: string): Pick<StudentProfileData, 
   };
 }
 
-export default function StudentProfilePanel({
-  activeTab = "profile",
+function ProfilePanelBody({
+  activeTab,
   onSelectTab,
-}: PanelProps) {
+  student,
+}: {
+  activeTab: string;
+  onSelectTab?: (tabId: string, subtabId?: string) => void;
+  student: StudentProfile;
+}) {
+  const { profileForm } = useStudentMe();
   const storedSnapshot = useSyncExternalStore(
     subscribeToStudentProfileStore,
     getStudentProfileStoreSnapshot,
     getStudentProfileServerSnapshot
   );
   const storedProfile = parseStoredProfileSnapshot(storedSnapshot);
-  const [profileData, setProfileData] = useState<StudentProfileData>(INITIAL_STUDENT_PROFILE);
+  const [overrides, setOverrides] = useState<Partial<StudentProfileData>>({});
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  if (!profileForm) {
+    return null;
+  }
+
+  const profileData: StudentProfileData = {
+    ...profileForm,
+    ...overrides,
+  };
 
   const mergedProfile: StudentProfileData = {
     ...profileData,
@@ -79,7 +97,7 @@ export default function StudentProfilePanel({
   };
 
   const handleFieldChange = (field: keyof StudentProfileData, value: string) => {
-    setProfileData((prev) => ({
+    setOverrides((prev) => ({
       ...prev,
       [field]: value,
     }));
@@ -91,20 +109,20 @@ export default function StudentProfilePanel({
   };
 
   const handleChangeEmail = () => {
-    setToastMessage("Please contact the school admin to update your registered email address.");
+    setToastMessage(
+      "Please contact the school admin to update your registered email address."
+    );
     setTimeout(() => setToastMessage(null), 3500);
   };
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#F8FAFC] font-sans antialiased text-slate-900">
-      {/* Sidebar Navigation */}
-      <Sidebar student={STUDENT_PROFILE} activeTab={activeTab} onSelectTab={onSelectTab} />
+      <Sidebar student={student} activeTab={activeTab} onSelectTab={onSelectTab} />
 
       <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
-        <HeaderBar student={STUDENT_PROFILE} onSelectTab={onSelectTab} />
+        <HeaderBar student={student} onSelectTab={onSelectTab} />
 
         <main className="flex-1 p-4 md:p-6 space-y-4 sm:space-y-5">
-          {/* Toast Notification */}
           {toastMessage && (
             <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-xl border border-slate-700 text-xs sm:text-sm font-bold flex items-center gap-2.5 animate-fade-in">
               <span className="text-emerald-400 text-base">✓</span>
@@ -112,7 +130,6 @@ export default function StudentProfilePanel({
             </div>
           )}
 
-          {/* Top Title Bar */}
           <div>
             <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight">
               Profile Information
@@ -122,54 +139,62 @@ export default function StudentProfilePanel({
             </p>
           </div>
 
-          {/* Top Row: 2 Columns (Personal Information & Academic Information) */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 items-stretch">
-            {/* 1. Personal Information */}
             <PersonalInformationCard
               profile={mergedProfile}
               onChange={handleFieldChange}
               onSave={handleSaveField}
             />
 
-            {/* 2. Academic Information */}
             <AcademicInformationCard
               profile={mergedProfile}
               onChange={handleFieldChange}
             />
           </div>
 
-          {/* Bottom Row: 3 Columns (Identity Information, Security, Activity Summary) */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 items-stretch">
-            {/* 3. Identity Information */}
             <IdentityInformationCard
               profile={mergedProfile}
               onChange={handleFieldChange}
             />
 
-            {/* 4. Security */}
             <SecurityCard
               email={mergedProfile.email}
               onChangePassword={() => setIsPasswordModalOpen(true)}
               onChangeEmail={handleChangeEmail}
             />
 
-            {/* 5. Activity Summary */}
             <ActivitySummaryCard
               onViewDetailedAnalytics={() => onSelectTab?.("results")}
             />
           </div>
 
-          {/* Bottom Banner: Privacy & Security */}
           <PrivacyBanner />
         </main>
       </div>
 
-      {/* Change Password Modal */}
       <ChangePasswordModal
         isOpen={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
         phone={mergedProfile.phone}
       />
     </div>
+  );
+}
+
+export default function StudentProfilePanel({
+  activeTab = "profile",
+  onSelectTab,
+}: PanelProps) {
+  return (
+    <StudentPanelChrome activeTab={activeTab} onSelectTab={onSelectTab}>
+      {({ student, activeTab, onSelectTab }) => (
+        <ProfilePanelBody
+          student={student}
+          activeTab={activeTab}
+          onSelectTab={onSelectTab}
+        />
+      )}
+    </StudentPanelChrome>
   );
 }
