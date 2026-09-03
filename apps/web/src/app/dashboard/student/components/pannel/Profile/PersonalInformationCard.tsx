@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import type { StudentProfileData } from "./types";
 
 interface PersonalInformationCardProps {
@@ -19,11 +19,14 @@ export function PersonalInformationCard({
   // Edit toggle & temp state for Full Name
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState(profile.fullName);
+  const [prevFullName, setPrevFullName] = useState(profile.fullName);
   const [showSavedSuccess, setShowSavedSuccess] = useState(false);
 
-  useEffect(() => {
+  // Keep temp name in sync when profile.fullName changes from outside (React-recommended render adjustment).
+  if (profile.fullName !== prevFullName) {
+    setPrevFullName(profile.fullName);
     setTempName(profile.fullName);
-  }, [profile.fullName]);
+  }
 
   const handleStartEdit = () => {
     setTempName(profile.fullName);
@@ -276,7 +279,7 @@ export function PersonalInformationCard({
                 value={profile.phone}
                 onChange={(e) => onChange?.("phone", e.target.value)}
                 className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-900 font-bold text-xs focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10 transition shadow-2xs"
-                placeholder="+91 98765 43210"
+                placeholder="+91"
               />
             </div>
           </div>

@@ -10,56 +10,12 @@ interface OlympiadScorecardModalProps {
   result: OlympiadResultRecord | null;
 }
 
-interface SubjectBreakdownItem {
-  topic: string;
-  scored: number;
-  total: number;
-  grade: string;
-  colorClass: string;
-}
-
 export function OlympiadScorecardModal({
   isOpen,
   onClose,
   result,
 }: OlympiadScorecardModalProps) {
   if (!isOpen || !result) return null;
-
-  const getBreakdown = (iconType: OlympiadResultRecord["iconType"]): SubjectBreakdownItem[] => {
-    switch (iconType) {
-      case "science":
-        return [
-          { topic: "Physics Concepts & Laws", scored: 28, total: 30, grade: "Excellent", colorClass: "bg-emerald-500" },
-          { topic: "Chemistry & Reactions", scored: 26, total: 30, grade: "Very Good", colorClass: "bg-emerald-500" },
-          { topic: "Biology & Life Sciences", scored: 30, total: 40, grade: "Good", colorClass: "bg-emerald-400" },
-        ];
-      case "math":
-        return [
-          { topic: "Algebra & Number Systems", scored: 38, total: 40, grade: "Mastered", colorClass: "bg-violet-600" },
-          { topic: "Geometry & Mensuration", scored: 28, total: 30, grade: "Excellent", colorClass: "bg-violet-600" },
-          { topic: "Logical & Applied Math", scored: 24, total: 30, grade: "Very Good", colorClass: "bg-violet-500" },
-        ];
-      case "english":
-        return [
-          { topic: "Grammar & Vocabulary", scored: 34, total: 40, grade: "Very Good", colorClass: "bg-amber-500" },
-          { topic: "Reading Comprehension", scored: 26, total: 30, grade: "Very Good", colorClass: "bg-amber-500" },
-          { topic: "Verbal & Critical Thinking", scored: 20, total: 30, grade: "Developing", colorClass: "bg-amber-400" },
-        ];
-      case "cyber":
-        return [
-          { topic: "Computer Fundamentals & IT", scored: 32, total: 40, grade: "Good", colorClass: "bg-cyan-500" },
-          { topic: "Algorithms & Logic", scored: 24, total: 30, grade: "Good", colorClass: "bg-cyan-500" },
-          { topic: "Cyber Security & Networks", scored: 20, total: 30, grade: "Needs Practice", colorClass: "bg-cyan-400" },
-        ];
-      default:
-        return [
-          { topic: "Core Knowledge", scored: 42, total: 50, grade: "Good", colorClass: "bg-violet-500" },
-          { topic: "Analytical Reasoning", scored: 42, total: 50, grade: "Good", colorClass: "bg-violet-500" },
-        ];
-    }
-  };
-
-  const breakdown = getBreakdown(result.iconType);
 
   const renderSubjectIcon = (iconType: OlympiadResultRecord["iconType"]) => {
     switch (iconType) {
@@ -163,31 +119,10 @@ export function OlympiadScorecardModal({
               Section-wise Performance
             </h3>
 
-            <div className="bg-slate-50/80 rounded-2xl border border-slate-100 p-4 space-y-3.5">
-              {breakdown.map((item) => {
-                const pct = Math.round((item.scored / item.total) * 100);
-                return (
-                  <div key={item.topic} className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-slate-800">{item.topic}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900">
-                          {item.scored} / {item.total}
-                        </span>
-                        <span className="font-extrabold text-violet-700 bg-violet-50 px-2 py-0.5 rounded border border-violet-100 text-[10px]">
-                          {item.grade}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="w-full bg-slate-200/80 rounded-full h-2 overflow-hidden">
-                      <div
-                        className={`h-2 rounded-full ${item.colorClass} transition-all duration-500`}
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="bg-slate-50/80 rounded-2xl border border-slate-100 p-8 text-center">
+              <p className="text-sm font-medium text-slate-500">
+                No score details available
+              </p>
             </div>
           </div>
 

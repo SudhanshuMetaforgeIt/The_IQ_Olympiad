@@ -19,53 +19,7 @@ interface NotificationItem {
   tabRedirect?: string;
 }
 
-const INITIAL_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: "notif-1",
-    title: "Cyber Olympiad 2026 Scheduled 🎯",
-    description: "Your registered exam starts on 15 Oct 2026. Complete device verification before joining.",
-    time: "10 mins ago",
-    isUnread: true,
-    type: "exam",
-    tabRedirect: "exams",
-  },
-  {
-    id: "notif-2",
-    title: "Mathematics Olympiad Score Out! 🏆",
-    description: "You scored 90 / 100 with a Gold Medal. View your detailed scorecard now.",
-    time: "2 hours ago",
-    isUnread: true,
-    type: "result",
-    tabRedirect: "results",
-  },
-  {
-    id: "notif-3",
-    title: "New Badge Unlocked: Problem Solver 🧠",
-    description: "Congratulations! You unlocked the Logic Master milestone badge.",
-    time: "Yesterday",
-    isUnread: true,
-    type: "badge",
-    tabRedirect: "certificates",
-  },
-  {
-    id: "notif-4",
-    title: "Mock Test Performance: 96 / 100 ⭐",
-    description: "You achieved a peak score in Science Chapter Practice Test #3.",
-    time: "2 days ago",
-    isUnread: false,
-    type: "practice",
-    tabRedirect: "practice",
-  },
-  {
-    id: "notif-5",
-    title: "Accredited Certificate Available 📜",
-    description: "Your official certificate for Science Olympiad 2026 is ready for download.",
-    time: "3 days ago",
-    isUnread: false,
-    type: "certificate",
-    tabRedirect: "certificates",
-  },
-];
+const INITIAL_NOTIFICATIONS: NotificationItem[] = [];
 
 export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -218,44 +172,50 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
                 )}
               </div>
 
-              {/* 5 Notifications List */}
+              {/* Notifications List */}
               <div className="max-h-[380px] overflow-y-auto divide-y divide-slate-100">
-                {notifications.map((n) => {
-                  const iconConfig = getIcon(n.type);
-                  return (
-                    <div
-                      key={n.id}
-                      onClick={() => handleNotificationClick(n)}
-                      className={`p-3.5 sm:p-4 hover:bg-violet-50/40 transition cursor-pointer flex items-start gap-3 relative ${n.isUnread ? "bg-[#FAF8FF]" : "bg-white"
-                        }`}
-                    >
-                      {/* Icon */}
+                {notifications.length === 0 ? (
+                  <div className="p-8 text-center">
+                    <p className="text-sm font-medium text-slate-500">No notifications yet</p>
+                  </div>
+                ) : (
+                  notifications.map((n) => {
+                    const iconConfig = getIcon(n.type);
+                    return (
                       <div
-                        className={`size-9 rounded-xl ${iconConfig.bg} border flex items-center justify-center text-sm shrink-0 mt-0.5`}
+                        key={n.id}
+                        onClick={() => handleNotificationClick(n)}
+                        className={`p-3.5 sm:p-4 hover:bg-violet-50/40 transition cursor-pointer flex items-start gap-3 relative ${n.isUnread ? "bg-[#FAF8FF]" : "bg-white"
+                          }`}
                       >
-                        {iconConfig.icon}
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-1">
-                          <h4 className="text-xs font-black text-slate-900 truncate">
-                            {n.title}
-                          </h4>
-                          {n.isUnread && (
-                            <span className="size-2 rounded-full bg-violet-600 shrink-0" />
-                          )}
+                        {/* Icon */}
+                        <div
+                          className={`size-9 rounded-xl ${iconConfig.bg} border flex items-center justify-center text-sm shrink-0 mt-0.5`}
+                        >
+                          {iconConfig.icon}
                         </div>
-                        <p className="text-[11px] font-medium text-slate-600 leading-snug mt-0.5 line-clamp-2">
-                          {n.description}
-                        </p>
-                        <span className="text-[10px] font-semibold text-slate-400 block mt-1">
-                          {n.time}
-                        </span>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <h4 className="text-xs font-black text-slate-900 truncate">
+                              {n.title}
+                            </h4>
+                            {n.isUnread && (
+                              <span className="size-2 rounded-full bg-violet-600 shrink-0" />
+                            )}
+                          </div>
+                          <p className="text-[11px] font-medium text-slate-600 leading-snug mt-0.5 line-clamp-2">
+                            {n.description}
+                          </p>
+                          <span className="text-[10px] font-semibold text-slate-400 block mt-1">
+                            {n.time}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
 
               {/* Popover Footer */}

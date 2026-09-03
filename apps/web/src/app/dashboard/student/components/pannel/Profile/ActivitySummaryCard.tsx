@@ -13,7 +13,7 @@ export function ActivitySummaryCard({
     {
       id: "olympiads",
       label: "Olympiads Participated",
-      value: "4",
+      value: "—",
       iconBg: "bg-emerald-50 text-emerald-600 border border-emerald-100",
       icon: (
         <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor">
@@ -24,7 +24,7 @@ export function ActivitySummaryCard({
     {
       id: "exams",
       label: "Exams Completed",
-      value: "7",
+      value: "—",
       iconBg: "bg-blue-50 text-blue-600 border border-blue-100",
       icon: (
         <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -36,7 +36,7 @@ export function ActivitySummaryCard({
     {
       id: "practice",
       label: "Practice Tests Attempted",
-      value: "109",
+      value: "—",
       iconBg: "bg-violet-50 text-violet-600 border border-violet-100",
       icon: (
         <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -48,7 +48,7 @@ export function ActivitySummaryCard({
     {
       id: "avg-score",
       label: "Average Score",
-      value: "72%",
+      value: "—",
       iconBg: "bg-amber-50 text-amber-600 border border-amber-100",
       icon: (
         <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -60,7 +60,7 @@ export function ActivitySummaryCard({
     {
       id: "study-time",
       label: "Total Study Time",
-      value: "18h 45m",
+      value: "—",
       iconBg: "bg-teal-50 text-teal-600 border border-teal-100",
       icon: (
         <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -107,7 +107,7 @@ export function ActivitySummaryCard({
                 </span>
               </div>
 
-              <span className="text-xs font-black text-slate-900 shrink-0 font-mono">
+              <span className="text-xs font-black text-slate-400 shrink-0 font-mono">
                 {item.value}
               </span>
             </div>

@@ -26,13 +26,13 @@ export function ExamRegistrationModal({
   exam,
   onCompleteRegistration,
 }: ExamRegistrationModalProps) {
-  const [studentId, setStudentId] = useState("IQO-2026-8942");
-  const [fullName, setFullName] = useState("Rahul Sharma");
-  const [selectedClass, setSelectedClass] = useState("Class 8");
-  const [schoolName, setSchoolName] = useState("ABC Public School");
-  const [dob, setDob] = useState("15 / 08 / 2012");
-  const [email, setEmail] = useState("rahul.sharma@example.com");
-  const [mobile, setMobile] = useState("+91 98765 43210");
+  const [studentId, setStudentId] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
+  const [schoolName, setSchoolName] = useState("");
+  const [dob, setDob] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -233,7 +233,7 @@ export function ExamRegistrationModal({
                       required
                       value={schoolName}
                       onChange={(e) => setSchoolName(e.target.value)}
-                      placeholder="ABC Public School"
+                      placeholder="School name"
                       className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-600 bg-slate-50/60"
                     />
                   </div>

@@ -43,3 +43,15 @@ export interface PerformanceTimePoint {
   percentage: number;
   nationalRankPercent: number; // For plotting relative rank curve
 }
+
+export interface ResultsTopMetrics {
+  nationalRank: number;
+  totalStudents: number;
+  topPercentage: number;
+  percentage: number;
+  improvementPercentage: number;
+  totalMedals: number;
+  goldMedals: number;
+  silverMedals: number;
+  bronzeMedals: number;
+}

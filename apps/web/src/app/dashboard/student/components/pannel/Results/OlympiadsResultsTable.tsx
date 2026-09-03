@@ -126,7 +126,14 @@ export function OlympiadsResultsTable({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {results.map((item) => (
+              {results.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-10 text-center text-sm font-medium text-slate-500">
+                    No results available yet
+                  </td>
+                </tr>
+              ) : (
+                results.map((item) => (
                 <tr
                   key={item.id}
                   onClick={() => onSelectResult?.(item)}
@@ -180,7 +187,8 @@ export function OlympiadsResultsTable({
                     </span>
                   </td>
                 </tr>
-              ))}
+              ))
+              )}
             </tbody>
           </table>
         </div>
