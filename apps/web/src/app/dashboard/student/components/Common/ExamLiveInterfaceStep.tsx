@@ -1,0 +1,411 @@
+"use client";
+
+import React, { useState, useEffect, useCallback } from "react";
+
+interface ExamLiveInterfaceStepProps {
+  onExitExam: () => void;
+}
+
+// 50 Sample Science & Math Olympiad Questions
+const OLYMPIAD_QUESTIONS = [
+  { id: 1, question: "Which of the following is a prime number?", options: ["22", "35", "47", "51"], answer: "C" },
+  { id: 2, question: "What is the speed of light in a vacuum?", options: ["3 × 10^8 m/s", "3 × 10^6 m/s", "300,000 m/s", "3 × 10^10 m/s"], answer: "A" },
+  { id: 3, question: "Which organelle is known as the powerhouse of the cell?", options: ["Ribosome", "Mitochondria", "Nucleus", "Golgi Apparatus"], answer: "B" },
+  { id: 4, question: "If 2x + 5 = 15, what is the value of x?", options: ["3", "5", "10", "7"], answer: "B" },
+  { id: 5, question: "Which element has the chemical symbol 'Fe'?", options: ["Fluorine", "Iron", "Francium", "Fermium"], answer: "B" },
+  { id: 6, question: "What is the unit of electric resistance?", options: ["Volt", "Watt", "Ohm", "Ampere"], answer: "C" },
+  { id: 7, question: "What is the sum of interior angles of a pentagon?", options: ["360°", "540°", "720°", "180°"], answer: "B" },
+  { id: 8, question: "Which gas is essential for photosynthesis in plants?", options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"], answer: "C" },
+  { id: 9, question: "What is the square root of 625?", options: ["15", "25", "35", "45"], answer: "B" },
+  { id: 10, question: "Which vitamin is synthesized when human skin is exposed to sunlight?", options: ["Vitamin A", "Vitamin B12", "Vitamin C", "Vitamin D"], answer: "D" },
+  { id: 11, question: "What is the value of Pi (π) rounded to two decimal places?", options: ["3.12", "3.14", "3.16", "3.18"], answer: "B" },
+  { id: 12, question: "Which planet is known as the Red Planet?", options: ["Venus", "Jupiter", "Mars", "Saturn"], answer: "C" },
+  { id: 13, question: "What is the SI unit of Force?", options: ["Joule", "Pascal", "Newton", "Watt"], answer: "C" },
+  { id: 14, question: "What is the atomic number of Carbon?", options: ["6", "12", "8", "14"], answer: "A" },
+  { id: 15, question: "Solve: (15 × 4) ÷ 3 + 7", options: ["27", "25", "30", "22"], answer: "A" },
+  { id: 16, question: "Which blood group is known as the universal donor?", options: ["A+", "B+", "AB+", "O negative"], answer: "D" },
+  { id: 17, question: "What is the freezing point of water in Celsius?", options: ["-10°C", "0°C", "32°C", "100°C"], answer: "B" },
+  { id: 18, question: "How many sides does an octagon have?", options: ["6", "7", "8", "10"], answer: "C" },
+  { id: 19, question: "What type of lens is used to correct myopia (nearsightedness)?", options: ["Convex Lens", "Concave Lens", "Cylindrical Lens", "Bifocal Lens"], answer: "B" },
+  { id: 20, question: "What is the chemical formula for water?", options: ["H2O", "CO2", "NaCl", "H2SO4"], answer: "A" },
+  { id: 21, question: "What is 15% of 200?", options: ["20", "25", "30", "35"], answer: "C" },
+  { id: 22, question: "Which instrument is used to measure atmospheric pressure?", options: ["Thermometer", "Barometer", "Hygrometer", "Anemometer"], answer: "B" },
+  { id: 23, question: "What is the value of 5^3 (5 cubed)?", options: ["15", "25", "125", "625"], answer: "C" },
+  { id: 24, question: "Which gas makes up approximately 78% of Earth's atmosphere?", options: ["Oxygen", "Nitrogen", "Argon", "Carbon Dioxide"], answer: "B" },
+  { id: 25, question: "What is the smallest prime number?", options: ["0", "1", "2", "3"], answer: "C" },
+  { id: 26, question: "Which layer of Earth's atmosphere contains the ozone layer?", options: ["Troposphere", "Stratosphere", "Mesosphere", "Thermosphere"], answer: "B" },
+  { id: 27, question: "What is the perimeter of a rectangle with length 8cm and width 5cm?", options: ["26 cm", "40 cm", "13 cm", "30 cm"], answer: "A" },
+  { id: 28, question: "Which fundamental force keeps planets in orbit around the Sun?", options: ["Electromagnetic Force", "Strong Nuclear Force", "Gravitational Force", "Weak Nuclear Force"], answer: "C" },
+  { id: 29, question: "What is the chemical symbol for Gold?", options: ["Ag", "Au", "Pb", "Hg"], answer: "B" },
+  { id: 30, question: "Solve for y: 3y - 9 = 21", options: ["8", "10", "12", "6"], answer: "A" },
+  { id: 31, question: "Which part of the brain controls balance and posture?", options: ["Cerebrum", "Cerebellum", "Medulla Oblongata", "Hypothalamus"], answer: "B" },
+  { id: 32, question: "What is the speed of sound in air approximately?", options: ["343 m/s", "1500 m/s", "300 m/s", "3000 m/s"], answer: "A" },
+  { id: 33, question: "What is the area of a circle with radius 7 cm? (Use π = 22/7)", options: ["154 cm²", "44 cm²", "308 cm²", "88 cm²"], answer: "A" },
+  { id: 34, question: "Which acid is present in lemon juice?", options: ["Acetic Acid", "Citric Acid", "Lactic Acid", "Hydrochloric Acid"], answer: "B" },
+  { id: 35, question: "What is the HCF of 24 and 36?", options: ["6", "8", "12", "18"], answer: "C" },
+  { id: 36, question: "Which blood cells are responsible for defending the body against infections?", options: ["Red Blood Cells", "White Blood Cells", "Platelets", "Plasma"], answer: "B" },
+  { id: 37, question: "What is the law of action and reaction also known as?", options: ["Newton's 1st Law", "Newton's 2nd Law", "Newton's 3rd Law", "Law of Gravitation"], answer: "C" },
+  { id: 38, question: "What is the hypotenuse of a right triangle with legs of 6 cm and 8 cm?", options: ["10 cm", "12 cm", "14 cm", "16 cm"], answer: "A" },
+  { id: 39, question: "Which process turns water vapor into liquid water droplets?", options: ["Evaporation", "Condensation", "Sublimation", "Transpiration"], answer: "B" },
+  { id: 40, question: "What is the chemical formula for common salt?", options: ["NaCl", "KCl", "NaOH", "HCl"], answer: "A" },
+  { id: 41, question: "Evaluate: 2^4 + 3^2", options: ["25", "23", "20", "18"], answer: "A" },
+  { id: 42, question: "Which metal is liquid at room temperature?", options: ["Gallium", "Mercury", "Sodium", "Lead"], answer: "B" },
+  { id: 43, question: "What is the sum of angles on a straight line?", options: ["90°", "180°", "270°", "360°"], answer: "B" },
+  { id: 44, question: "Which plant pigment captures light energy for photosynthesis?", options: ["Carotene", "Xanthophyll", "Chlorophyll", "Anthocyanin"], answer: "C" },
+  { id: 45, question: "What is the average of 12, 16, 20, and 24?", options: ["16", "18", "20", "22"], answer: "B" },
+  { id: 46, question: "What is the SI unit of Pressure?", options: ["Pascal", "Joule", "Newton", "Bar"], answer: "A" },
+  { id: 47, question: "Which human organ purifies blood and filters waste?", options: ["Heart", "Lungs", "Kidneys", "Liver"], answer: "C" },
+  { id: 48, question: "If a train travels 120 km in 2 hours, what is its speed?", options: ["50 km/h", "60 km/h", "70 km/h", "80 km/h"], answer: "B" },
+  { id: 49, question: "What is the atomic symbol for Sodium?", options: ["So", "Na", "Sd", "S"], answer: "B" },
+  { id: 50, question: "What is 2^10 equal to?", options: ["512", "1024", "2048", "256"], answer: "B" },
+];
+
+export function ExamLiveInterfaceStep({ onExitExam }: ExamLiveInterfaceStepProps) {
+  const TOTAL_QUESTIONS = 50;
+  const SECONDS_PER_QUESTION = 60; // 1-minute timer per question
+  const OVERALL_TOTAL_SECONDS = 3000; // 50 minutes overall
+
+  const [currentQIndex, setCurrentQIndex] = useState(0);
+  const [questionTimeLeft, setQuestionTimeLeft] = useState(SECONDS_PER_QUESTION);
+  const [overallTimeLeft, setOverallTimeLeft] = useState(OVERALL_TOTAL_SECONDS);
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
+  const [isExamCompleted, setIsExamCompleted] = useState(false);
+
+  const currentQ = OLYMPIAD_QUESTIONS[currentQIndex];
+
+  // Enter browser fullscreen mode when exam starts
+  useEffect(() => {
+    const enterFullscreen = async () => {
+      try {
+        if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+          await document.documentElement.requestFullscreen();
+        }
+      } catch {
+        // Fullscreen may be blocked by browser policy — silently ignore
+      }
+    };
+    enterFullscreen();
+
+    // Exit fullscreen when this component unmounts (e.g. user exits exam)
+    return () => {
+      try {
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        }
+      } catch {
+        // ignore
+      }
+    };
+  }, []);
+
+  // Exit fullscreen when exam is completed
+  useEffect(() => {
+    if (isExamCompleted) {
+      try {
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        }
+      } catch {
+        // ignore
+      }
+    }
+  }, [isExamCompleted]);
+
+  // Function to move to next question automatically or on click
+  const advanceToNextQuestion = useCallback(() => {
+    if (currentQIndex < TOTAL_QUESTIONS - 1) {
+      setCurrentQIndex((prev) => prev + 1);
+      setQuestionTimeLeft(SECONDS_PER_QUESTION);
+    } else {
+      setIsExamCompleted(true);
+    }
+  }, [currentQIndex, TOTAL_QUESTIONS]);
+
+  // Per-Question 1-Minute Countdown Timer
+  useEffect(() => {
+    if (isExamCompleted) return;
+
+    const timer = setInterval(() => {
+      setQuestionTimeLeft((prev) => {
+        if (prev <= 1) {
+          advanceToNextQuestion();
+          return SECONDS_PER_QUESTION;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [advanceToNextQuestion, isExamCompleted]);
+
+  // Overall 50-Minute Exam Countdown Timer
+  useEffect(() => {
+    if (isExamCompleted) return;
+
+    const timer = setInterval(() => {
+      setOverallTimeLeft((prev) => {
+        if (prev <= 1) {
+          setIsExamCompleted(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isExamCompleted]);
+
+  const handleOptionSelect = (option: string) => {
+    setSelectedAnswers((prev) => ({
+      ...prev,
+      [currentQ.id]: option,
+    }));
+  };
+
+  const handleClearSelection = () => {
+    setSelectedAnswers((prev) => {
+      const updated = { ...prev };
+      delete updated[currentQ.id];
+      return updated;
+    });
+  };
+
+  const formatOverallTime = (totalSecs: number) => {
+    const mins = Math.floor(totalSecs / 60);
+    const secs = totalSecs % 60;
+    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  };
+
+  // Calculate score summary upon completion
+  const calculateScore = () => {
+    let score = 0;
+    let correctCount = 0;
+    OLYMPIAD_QUESTIONS.forEach((q) => {
+      if (selectedAnswers[q.id] === q.answer) {
+        score += 2;
+        correctCount += 1;
+      }
+    });
+    return { score, correctCount, attempted: Object.keys(selectedAnswers).length };
+  };
+
+  // Render Completion Summary Screen (Clean White Theme)
+  if (isExamCompleted) {
+    const { score, correctCount, attempted } = calculateScore();
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex items-center justify-center p-6 font-sans">
+        <div className="bg-white border border-slate-200 rounded-3xl p-8 sm:p-12 max-w-xl w-full text-center space-y-6 shadow-xl animate-in zoom-in-95 duration-200">
+          <div className="size-20 rounded-full bg-emerald-100 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto text-3xl font-black shadow-inner">
+            ✓
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Exam Submitted Successfully!</h2>
+            <p className="text-sm font-medium text-slate-500">
+              Science Olympiad 2026 test session is completed.
+            </p>
+          </div>
+
+          {/* Results Summary Box */}
+          <div className="grid grid-cols-3 gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+            <div className="p-3">
+              <span className="text-[11px] font-bold text-slate-500 block uppercase">Score</span>
+              <span className="text-2xl font-black text-violet-600 mt-1 block">{score} / 100</span>
+            </div>
+            <div className="p-3 border-x border-slate-200">
+              <span className="text-[11px] font-bold text-slate-500 block uppercase">Attempted</span>
+              <span className="text-2xl font-black text-indigo-600 mt-1 block">{attempted} / 50</span>
+            </div>
+            <div className="p-3">
+              <span className="text-[11px] font-bold text-slate-500 block uppercase">Correct</span>
+              <span className="text-2xl font-black text-emerald-600 mt-1 block">{correctCount}</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onExitExam}
+            className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-extrabold text-base shadow-xl shadow-violet-600/30 hover:scale-[1.01] active:scale-[0.99] transition cursor-pointer"
+          >
+            Return to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const currentOption = selectedAnswers[currentQ.id];
+
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans antialiased select-none">
+      {/* 1. TOP CLEAN WHITE EXAMINATION HEADER */}
+      <header className="bg-white border-b border-slate-200/90 px-6 sm:px-10 py-4 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+        {/* Left Exam Brand — Click to exit exam and return to My Exams */}
+        <button type="button" onClick={onExitExam} className="flex items-center gap-3.5 cursor-pointer hover:opacity-80 transition">
+          <div className="size-11 rounded-2xl bg-violet-600 text-white flex items-center justify-center font-black text-base shadow-md shadow-violet-600/25">
+            ISO
+          </div>
+          <div>
+            <h1 className="text-lg font-black text-slate-900 leading-tight">
+              Science Olympiad 2026
+            </h1>
+            <p className="text-xs font-bold text-slate-500">
+              50 Questions • 50 Minutes • 100 Marks
+            </p>
+          </div>
+        </button>
+
+        {/* Center Question Timer & Overall Timer */}
+        <div className="flex items-center gap-4 sm:gap-8">
+          {/* Per-Question 1-Minute Timer Box */}
+          <div className="flex items-center gap-3 px-4 py-2 rounded-2xl bg-violet-50/90 border border-violet-100 shadow-xs">
+            <div className="relative size-9 flex items-center justify-center">
+              <svg className="w-9 h-9 transform -rotate-90" viewBox="0 0 36 36">
+                <path
+                  className="text-violet-200"
+                  strokeWidth="3"
+                  stroke="currentColor"
+                  fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path
+                  className={questionTimeLeft <= 10 ? "text-rose-500 animate-pulse" : "text-violet-600"}
+                  strokeDasharray={`${(questionTimeLeft / SECONDS_PER_QUESTION) * 100}, 100`}
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  stroke="currentColor"
+                  fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+              </svg>
+              <span className={`absolute text-xs font-black ${questionTimeLeft <= 10 ? "text-rose-600" : "text-violet-950"}`}>
+                {questionTimeLeft}s
+              </span>
+            </div>
+            <div>
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                Question Time
+              </span>
+              <span className="text-xs font-extrabold text-violet-700">
+                1 Minute Auto-Advance
+              </span>
+            </div>
+          </div>
+
+          {/* Overall 50-Minute Exam Time */}
+          <div className="hidden sm:block text-right">
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+              Total Exam Time
+            </span>
+            <span className="text-sm font-black text-slate-900 font-mono">
+              {formatOverallTime(overallTimeLeft)}
+            </span>
+          </div>
+        </div>
+
+        {/* Right Live Camera Proctoring Indicator */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-extrabold">
+            <span className="size-2 rounded-full bg-emerald-500 animate-ping" />
+            <span>● PROCTORED</span>
+          </div>
+          <div className="hidden md:flex items-center gap-2 pl-3 border-l border-slate-200 text-xs">
+            <span className="font-extrabold text-slate-800">Rahul Sharma</span>
+          </div>
+        </div>
+      </header>
+
+      {/* 2. PROGRESS BAR TOP TRACKER */}
+      <div className="w-full bg-slate-200 h-1.5">
+        <div
+          className="bg-gradient-to-r from-violet-600 to-indigo-600 h-1.5 transition-all duration-300"
+          style={{ width: `${((currentQIndex + 1) / TOTAL_QUESTIONS) * 100}%` }}
+        />
+      </div>
+
+      {/* 3. FULL WIDTH CLEAN WHITE QUESTION WORKSPACE (NO SIDE SPACE) */}
+      <main className="flex-1 w-full p-6 sm:p-10 flex flex-col justify-between space-y-6">
+        <div className="w-full bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
+          {/* Question Header & Mark Badge */}
+          <div className="flex items-center justify-between pb-5 border-b border-slate-100">
+            <div className="flex items-center gap-3.5">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Question {currentQIndex + 1} of {TOTAL_QUESTIONS}
+              </span>
+              <span className="text-xs font-extrabold text-violet-700 bg-violet-50 px-3 py-1 rounded-xl border border-violet-100">
+                2 Marks
+              </span>
+            </div>
+
+            <span className="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-xl">
+              No Backwards Navigation
+            </span>
+          </div>
+
+          {/* Question Text */}
+          <div className="text-xl sm:text-2xl font-bold text-slate-900 leading-relaxed">
+            {currentQ.question}
+          </div>
+
+          {/* 4 Choice Option Cards - FULL WIDTH */}
+          <div className="space-y-4 pt-2">
+            {["A", "B", "C", "D"].map((optLabel, idx) => {
+              const optionText = currentQ.options[idx];
+              const isSelected = currentOption === optLabel;
+
+              return (
+                <button
+                  key={optLabel}
+                  type="button"
+                  onClick={() => handleOptionSelect(optLabel)}
+                  className={`w-full p-5 sm:p-6 rounded-2xl border text-left flex items-center gap-5 transition cursor-pointer ${
+                    isSelected
+                      ? "bg-violet-50/90 border-violet-600 text-violet-950 font-bold shadow-sm ring-2 ring-violet-500/20"
+                      : "bg-slate-50/60 border-slate-200 text-slate-800 hover:bg-white hover:border-violet-300 font-medium"
+                  }`}
+                >
+                  <div
+                    className={`size-9 rounded-2xl border-2 flex items-center justify-center text-sm font-black transition shrink-0 ${
+                      isSelected
+                        ? "border-violet-600 bg-violet-600 text-white shadow-md shadow-violet-600/30"
+                        : "border-slate-300 bg-white text-slate-700"
+                    }`}
+                  >
+                    {optLabel}
+                  </div>
+                  <span className="text-base sm:text-lg font-bold text-slate-900">
+                    {optionText}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 4. BOTTOM FULL WIDTH ACTION BAR */}
+        <div className="w-full pt-4 flex items-center justify-between gap-4">
+          <button
+            type="button"
+            onClick={handleClearSelection}
+            disabled={!currentOption}
+            className={`px-6 py-4 rounded-2xl border text-sm font-bold transition ${
+              !currentOption
+                ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
+                : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50 cursor-pointer shadow-xs"
+            }`}
+          >
+            Clear Selection
+          </button>
+
+          <button
+            type="button"
+            onClick={advanceToNextQuestion}
+            className="py-4 px-8 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 text-white font-extrabold text-base flex items-center gap-2.5 shadow-xl shadow-violet-600/30 hover:scale-[1.01] active:scale-[0.99] transition cursor-pointer"
+          >
+            <span>{currentQIndex === TOTAL_QUESTIONS - 1 ? "Submit Exam" : "Submit Answer & Next"}</span>
+            <span>→</span>
+          </button>
+        </div>
+      </main>
+    </div>
+  );
+}
