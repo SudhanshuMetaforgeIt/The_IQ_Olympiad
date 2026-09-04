@@ -10,7 +10,7 @@ export interface OlympiadResultRecord {
   totalStudents?: number;
   medal: "gold" | "silver" | "bronze" | "none";
   resultStatus: "Qualified" | "Participation" | "Not Qualified";
-  iconType: "science" | "math" | "english" | "cyber" | "reasoning";
+  iconType: "science" | "math" | "english" | "cyber" | "reasoning" | "iq";
 }
 
 export interface PracticeResultRecord {

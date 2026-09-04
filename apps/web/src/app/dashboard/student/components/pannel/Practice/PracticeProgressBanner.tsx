@@ -15,10 +15,10 @@ export function PracticeProgressBanner() {
         </div>
         <div>
           <h3 className="text-xs sm:text-sm font-black text-violet-700 tracking-tight leading-tight">
-            10 Free Practice Tests Per Subject
+            10 Free Practice Tests
           </h3>
           <p className="text-[11px] font-medium text-slate-500 leading-none mt-0.5">
-            You can attempt the first 10 practice tests for free in each subject. Track your subject progress below.
+            You can attempt the first 10 practice tests for free. Track your progress below.
           </p>
         </div>
       </div>

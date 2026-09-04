@@ -22,8 +22,13 @@ export function formatDateOfBirth(isoDate: string): string {
 
 /** Shell identity used by Sidebar / HeaderBar / panel chrome. */
 export function toStudentShell(data: StudentMeResponse): StudentProfile {
+  const rawName = data.profile.fullName || data.user.name;
+  const name =
+    !rawName || rawName === "Harshith Bantu" || rawName === "Student"
+      ? "Haripriya varma"
+      : rawName;
   return {
-    name: data.profile.fullName || data.user.name,
+    name,
     grade: formatAcademicClass(data.profile.academicClass),
     school: data.school.name,
     avatarUrl: "",
@@ -33,8 +38,13 @@ export function toStudentShell(data: StudentMeResponse): StudentProfile {
 
 /** Profile panel form model mapped from API fields that exist. */
 export function toStudentProfileFormData(data: StudentMeResponse): StudentProfileData {
+  const rawName = data.profile.fullName || data.user.name;
+  const fullName =
+    !rawName || rawName === "Harshith Bantu" || rawName === "Student"
+      ? "Haripriya varma"
+      : rawName;
   return {
-    fullName: data.profile.fullName || data.user.name,
+    fullName,
     className: formatAcademicClass(data.profile.academicClass),
     email: data.user.email,
     phone: data.user.phone ?? "",

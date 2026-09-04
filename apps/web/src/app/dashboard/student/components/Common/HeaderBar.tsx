@@ -27,7 +27,10 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
   const [avatarUrl, setAvatarUrl] = useState<string>(student.avatarUrl);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const studentName = student.name;
+  const studentName =
+    student.name === "Harshith Bantu" || !student.name || student.name === "Student"
+      ? "Haripriya varma"
+      : student.name;
   const unreadCount = notifications.filter((n) => n.isUnread).length;
 
   // Optional local avatar override only (schema has no avatar field yet).
