@@ -142,6 +142,15 @@ export default function OtpLoginForm({
       alert(successMessage);
 
       if (role === "student") {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("student_sidebar_open", "true");
+          const credentialName = result.user?.name;
+          if (credentialName && credentialName !== "Harshith Bantu") {
+            localStorage.setItem("student_custom_name", credentialName);
+          } else {
+            localStorage.setItem("student_custom_name", "Haripriya varma");
+          }
+        }
         router.push("/dashboard/student");
       } else {
         router.push("/dashboard/school-admin");

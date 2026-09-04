@@ -44,7 +44,7 @@ export function ExamInstructionsStep({ onStartExam }: ExamInstructionsStepProps)
           </svg>
         </div>
       ),
-      text: "Each question carries 1 mark. There is no negative marking.",
+      text: "Each question carries 2 marks. There is no negative marking.",
     },
     {
       id: 4,

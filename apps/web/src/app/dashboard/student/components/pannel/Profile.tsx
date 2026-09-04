@@ -79,12 +79,28 @@ function ProfilePanelBody({
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  if (!profileForm) {
-    return null;
-  }
+  const fallbackProfile: StudentProfileData = {
+    fullName:
+      student.name === "Harshith Bantu" || !student.name || student.name === "Student"
+        ? "Haripriya varma"
+        : student.name,
+    className: student.grade || "Class 10",
+    email: "student@example.com",
+    phone: "+91",
+    schoolName: student.school || "School",
+    academicYear: "2025 - 2026",
+    section: "A",
+    rollNumber: "Not assigned",
+    studentId: "IQO-STU-001",
+    dateOfBirth: "Not provided",
+    gender: "Not specified",
+    country: "India",
+    aadharNumber: "",
+    isAadharVerified: false,
+  };
 
   const profileData: StudentProfileData = {
-    ...profileForm,
+    ...(profileForm || fallbackProfile),
     ...overrides,
   };
 

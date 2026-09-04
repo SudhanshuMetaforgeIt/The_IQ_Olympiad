@@ -11,7 +11,6 @@ interface AcademicInformationCardProps {
 
 export function AcademicInformationCard({
   profile,
-  onChange,
 }: AcademicInformationCardProps) {
   return (
     <div className="bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 shadow-2xs flex flex-col justify-between h-full">
@@ -34,7 +33,7 @@ export function AcademicInformationCard({
           </div>
         </div>
 
-        {/* Form Fields Stack */}
+        {/* Form Fields Stack (Fixed / Non-editable) */}
         <div className="space-y-2">
           {/* 1. School Name */}
           <div>
@@ -44,9 +43,9 @@ export function AcademicInformationCard({
             <input
               type="text"
               value={profile.schoolName}
-              onChange={(e) => onChange?.("schoolName", e.target.value)}
-              className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-900 font-bold text-xs focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10 transition shadow-2xs"
-              placeholder="Enter school name"
+              readOnly
+              className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-800 font-bold text-xs cursor-default select-all"
+              placeholder="School name"
             />
           </div>
 
@@ -55,22 +54,12 @@ export function AcademicInformationCard({
             <label className="text-[10px] font-bold text-slate-600 block mb-0.5">
               Academic Year
             </label>
-            <div className="relative">
-              <select
-                value={profile.academicYear}
-                onChange={(e) => onChange?.("academicYear", e.target.value)}
-                className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-900 font-bold text-xs focus:outline-none focus:border-violet-500 transition appearance-none cursor-pointer shadow-2xs"
-              >
-                <option value="2024 - 2025">2024 - 2025</option>
-                <option value="2025 - 2026">2025 - 2026</option>
-                <option value="2026 - 2027">2026 - 2027</option>
-              </select>
-              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </div>
-            </div>
+            <input
+              type="text"
+              value={profile.academicYear || "2025 - 2026"}
+              readOnly
+              className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-800 font-bold text-xs cursor-default"
+            />
           </div>
 
           {/* 3. Section */}
@@ -78,23 +67,12 @@ export function AcademicInformationCard({
             <label className="text-[10px] font-bold text-slate-600 block mb-0.5">
               Section
             </label>
-            <div className="relative">
-              <select
-                value={profile.section}
-                onChange={(e) => onChange?.("section", e.target.value)}
-                className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-900 font-bold text-xs focus:outline-none focus:border-violet-500 transition appearance-none cursor-pointer shadow-2xs"
-              >
-                <option value="A">Section A</option>
-                <option value="B">Section B</option>
-                <option value="C">Section C</option>
-                <option value="D">Section D</option>
-              </select>
-              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </div>
-            </div>
+            <input
+              type="text"
+              value={profile.section?.startsWith("Section") ? profile.section : `Section ${profile.section || "A"}`}
+              readOnly
+              className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-800 font-bold text-xs cursor-default"
+            />
           </div>
 
           {/* 4. Roll Number */}
@@ -104,10 +82,9 @@ export function AcademicInformationCard({
             </label>
             <input
               type="text"
-              value={profile.rollNumber}
-              onChange={(e) => onChange?.("rollNumber", e.target.value)}
-              className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-900 font-bold text-xs focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10 transition shadow-2xs"
-              placeholder="Enter roll number"
+              value={profile.rollNumber || "Not assigned"}
+              readOnly
+              className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-800 font-bold text-xs cursor-default"
             />
           </div>
 
@@ -116,8 +93,8 @@ export function AcademicInformationCard({
             <label className="text-[10px] font-bold text-slate-600 block mb-0.5">
               Student ID
             </label>
-            <div className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-violet-700 font-black font-mono text-xs tracking-wider flex items-center justify-between select-all">
-              <span>{profile.studentId}</span>
+            <div className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-violet-700 font-black font-mono text-xs tracking-wider flex items-center justify-between select-all">
+              <span>{profile.studentId || "IQO-STU-001"}</span>
               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest font-sans">
                 Permanent
               </span>

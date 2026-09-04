@@ -40,10 +40,12 @@ export default function ResultsPanel({
       return OLYMPIAD_RESULTS_DATA;
     }
     return OLYMPIAD_RESULTS_DATA.filter((item) => {
-      if (selectedSubject === "Science") return item.iconType === "science";
-      if (selectedSubject === "Mathematics") return item.iconType === "math";
-      if (selectedSubject === "English") return item.iconType === "english";
-      if (selectedSubject === "Cyber") return item.iconType === "cyber";
+      if (selectedSubject === "Science") return item.iconType === "science" || item.subjectSlug === "science";
+      if (selectedSubject === "Mathematics") return item.iconType === "math" || item.subjectSlug === "math" || item.subjectSlug === "mathematics";
+      if (selectedSubject === "English") return item.iconType === "english" || item.subjectSlug === "english";
+      if (selectedSubject === "Cyber") return item.iconType === "cyber" || item.subjectSlug === "cyber";
+      if (selectedSubject === "IQ") return item.iconType === "iq" || item.subjectSlug === "iq" || item.name.toLowerCase().includes("iq");
+      if (selectedSubject === "Logical Reasoning") return item.iconType === "reasoning" || item.subjectSlug.includes("reasoning") || item.name.toLowerCase().includes("reasoning");
       return true;
     });
   }, [selectedSubject]);

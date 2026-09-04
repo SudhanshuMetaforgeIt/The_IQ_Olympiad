@@ -14,6 +14,7 @@ const SUBJECT_OPTIONS = [
   "Mathematics",
   "English",
   "Cyber",
+  "IQ",
   "Logical Reasoning",
 ];
 

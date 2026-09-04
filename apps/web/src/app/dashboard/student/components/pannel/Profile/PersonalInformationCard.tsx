@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import type { StudentProfileData } from "./types";
 
 interface PersonalInformationCardProps {
@@ -15,44 +15,6 @@ export function PersonalInformationCard({
   onSave,
 }: PersonalInformationCardProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Edit toggle & temp state for Full Name
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [tempName, setTempName] = useState(profile.fullName);
-  const [prevFullName, setPrevFullName] = useState(profile.fullName);
-  const [showSavedSuccess, setShowSavedSuccess] = useState(false);
-
-  // Keep temp name in sync when profile.fullName changes from outside (React-recommended render adjustment).
-  if (profile.fullName !== prevFullName) {
-    setPrevFullName(profile.fullName);
-    setTempName(profile.fullName);
-  }
-
-  const handleStartEdit = () => {
-    setTempName(profile.fullName);
-    setIsEditingName(true);
-    setShowSavedSuccess(false);
-  };
-
-  const handleCancelEdit = () => {
-    setTempName(profile.fullName);
-    setIsEditingName(false);
-  };
-
-  const handleSaveName = () => {
-    if (tempName.trim()) {
-      const trimmed = tempName.trim();
-      onChange?.("fullName", trimmed);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("student_custom_name", trimmed);
-        window.dispatchEvent(new Event("student_profile_updated"));
-      }
-      onSave?.("Full Name");
-      setShowSavedSuccess(true);
-      setTimeout(() => setShowSavedSuccess(false), 3500);
-    }
-    setIsEditingName(false);
-  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -94,16 +56,15 @@ export function PersonalInformationCard({
           </div>
         </div>
 
-        {/* Content Layout: Profile Avatar on Left, Inputs on Right */}
+        {/* Content Layout: Editable Profile Avatar on Left, Fixed Inputs on Right */}
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-          {/* Left Profile Avatar Section */}
+          {/* Left Profile Avatar Section (Editable Photo) */}
           <div className="sm:col-span-4 flex flex-col items-center text-center">
             <div className="relative group">
-              {/* Circular Avatar Graphic / Uploaded Image */}
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="size-16 sm:size-18 rounded-full bg-emerald-50 border-2 border-white shadow-2xs overflow-hidden flex items-center justify-center cursor-pointer transition-all hover:scale-[1.02] relative"
-                title="Click to upload/change photo"
+                className="size-16 sm:size-18 rounded-full bg-emerald-50 border-2 border-white shadow-md overflow-hidden flex items-center justify-center cursor-pointer transition-all hover:scale-105 relative"
+                title="Click to change profile photo"
               >
                 {profile.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -125,10 +86,10 @@ export function PersonalInformationCard({
                   </svg>
                 )}
 
-                {/* Subtle Hover Overlay */}
-                <div className="absolute inset-0 bg-slate-900/30 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[8px] font-bold">
+                {/* Subtle Hover Edit Overlay */}
+                <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[9px] font-bold">
                   <span>📷</span>
-                  <span>Change</span>
+                  <span>Edit</span>
                 </div>
               </div>
 
@@ -136,10 +97,11 @@ export function PersonalInformationCard({
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="absolute bottom-0 right-0 size-5 sm:size-6 rounded-full bg-violet-600 hover:bg-violet-700 text-white flex items-center justify-center shadow-2xs cursor-pointer transition-transform hover:scale-110 active:scale-95"
-                title="Upload Passport Size Photo"
+                className="absolute bottom-0 right-0 size-6 rounded-full bg-violet-600 hover:bg-violet-700 text-white flex items-center justify-center shadow-md cursor-pointer transition-transform hover:scale-110 active:scale-95 border-2 border-white"
+                title="Change Photo"
+                aria-label="Change Photo"
               >
-                <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
                   <circle cx="12" cy="13" r="4" />
                 </svg>
@@ -157,77 +119,38 @@ export function PersonalInformationCard({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="text-[10px] font-bold text-slate-800 hover:text-violet-700 mt-1.5 block transition cursor-pointer"
+              className="text-[10px] font-bold text-violet-600 hover:text-violet-800 mt-1.5 transition cursor-pointer"
             >
-              Upload Photo
+              Change Photo
             </button>
-            <span className="text-[9px] text-slate-400 block leading-tight">
-              PNG, JPG up to 5MB
+
+            <span className="text-[11px] font-black text-slate-800 mt-0.5 block truncate max-w-[120px]">
+              {profile.fullName === "Harshith Bantu" || !profile.fullName || profile.fullName === "Student"
+                ? "Haripriya varma"
+                : profile.fullName}
+            </span>
+            <span className="text-[9px] font-semibold text-slate-400 block leading-tight">
+              Registered Profile
             </span>
           </div>
 
-          {/* Right Inputs Column */}
+          {/* Right Inputs Column (Fixed / Non-editable) */}
           <div className="sm:col-span-8 space-y-2">
             {/* 1. Full Name */}
             <div>
-              <div className="flex items-center justify-between mb-0.5">
-                <label className="text-[10px] font-bold text-slate-600 block">
-                  Full Name
-                </label>
-                {!isEditingName && (
-                  <button
-                    type="button"
-                    onClick={handleStartEdit}
-                    className="text-[10px] font-bold text-violet-600 hover:text-violet-800 flex items-center gap-0.5 cursor-pointer"
-                  >
-                    <span>✏️</span>
-                    <span>Edit</span>
-                  </button>
-                )}
-              </div>
-
-              {isEditingName ? (
-                <div className="space-y-1.5">
-                  <input
-                    type="text"
-                    value={tempName}
-                    onChange={(e) => setTempName(e.target.value)}
-                    autoFocus
-                    className="w-full px-2.5 py-1.5 rounded-lg border border-violet-400 bg-white text-slate-900 font-bold text-xs focus:outline-none focus:ring-2 focus:ring-violet-500/20 shadow-2xs"
-                    placeholder="Enter student full name"
-                  />
-                  <div className="flex items-center gap-1.5 justify-end">
-                    <button
-                      type="button"
-                      onClick={handleCancelEdit}
-                      className="px-2.5 py-1 rounded-md text-[10px] font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleSaveName}
-                      className="px-3 py-1 rounded-md text-[10px] font-bold text-white bg-violet-600 hover:bg-violet-700 transition cursor-pointer shadow-2xs"
-                    >
-                      Save
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={profile.fullName}
-                    readOnly
-                    className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-900 font-bold text-xs cursor-default"
-                  />
-                  {showSavedSuccess && (
-                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-black text-emerald-600 flex items-center gap-0.5">
-                      <span>✓</span> Saved
-                    </span>
-                  )}
-                </div>
-              )}
+              <label className="text-[10px] font-bold text-slate-600 block mb-0.5">
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={
+                  profile.fullName === "Harshith Bantu" || !profile.fullName || profile.fullName === "Student"
+                    ? "Haripriya varma"
+                    : profile.fullName
+                }
+                readOnly
+                className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-800 font-bold text-xs cursor-default select-all"
+              />
             </div>
 
             {/* 2. Class / Grade */}
@@ -235,24 +158,12 @@ export function PersonalInformationCard({
               <label className="text-[10px] font-bold text-slate-600 block mb-0.5">
                 Class / Grade
               </label>
-              <div className="relative">
-                <select
-                  value={profile.className}
-                  onChange={(e) => onChange?.("className", e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-900 font-bold text-xs focus:outline-none focus:border-violet-500 transition appearance-none cursor-pointer shadow-2xs"
-                >
-                  {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].map((c) => (
-                    <option key={c} value={c}>
-                      Class {c}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </div>
-              </div>
+              <input
+                type="text"
+                value={profile.className?.startsWith("Class") ? profile.className : `Class ${profile.className || "10"}`}
+                readOnly
+                className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-800 font-bold text-xs cursor-default"
+              />
             </div>
 
             {/* 3. Email Address */}
@@ -263,8 +174,8 @@ export function PersonalInformationCard({
               <input
                 type="email"
                 value={profile.email}
-                onChange={(e) => onChange?.("email", e.target.value)}
-                className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-900 font-bold text-xs focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10 transition shadow-2xs"
+                readOnly
+                className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-800 font-bold text-xs cursor-default select-all"
                 placeholder="student@example.com"
               />
             </div>
@@ -277,8 +188,8 @@ export function PersonalInformationCard({
               <input
                 type="tel"
                 value={profile.phone}
-                onChange={(e) => onChange?.("phone", e.target.value)}
-                className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-900 font-bold text-xs focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10 transition shadow-2xs"
+                readOnly
+                className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-800 font-bold text-xs cursor-default select-all"
                 placeholder="+91"
               />
             </div>
