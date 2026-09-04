@@ -202,7 +202,6 @@ export function UpcomingExamBanner({ exam, onViewDetails, onWriteExam }: Upcomin
               </div>
               <span className="text-slate-300 font-normal">|</span>
               <div className="flex items-center gap-1">
-                <QuestionsIcon className="w-3.5 h-3.5 text-[#6366F1]" />
                 <span>{exam.totalQuestions} Questions</span>
               </div>
             </div>
