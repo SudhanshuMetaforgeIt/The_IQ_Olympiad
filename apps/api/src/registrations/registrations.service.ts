@@ -68,7 +68,10 @@ export class RegistrationsService {
       throw new BadRequestException('Olympiad registration has ended');
     }
 
-    if (!olympiad.eligibleClasses.includes(student.academicClass)) {
+    if (
+      !student.academicClass ||
+      !olympiad.eligibleClasses.includes(student.academicClass)
+    ) {
       throw new ForbiddenException(
         'Your academic class is not eligible for this olympiad',
       );

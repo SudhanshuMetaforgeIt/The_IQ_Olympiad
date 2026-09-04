@@ -28,18 +28,10 @@ export type RegisterStudentGuardianPayload = {
 
 /** Exact request body for POST /api/auth/register/student */
 export type RegisterStudentRequest = {
-  email: string;
-  password: string;
-  name: string;
-  phone: string;
-  schoolCode: string;
   fullName: string;
-  dateOfBirth: string;
-  academicClass: StudentClass;
-  section: string;
-  rollNumber: string;
-  academicYear: string;
-  guardian: RegisterStudentGuardianPayload;
+  email: string;
+  phone: string;
+  password: string;
 };
 
 export type RegisteredUser = {
@@ -54,28 +46,8 @@ export type RegisteredUser = {
 };
 
 export type RegisterStudentResponse = {
-  accessToken: string;
-  tokenType: "Bearer";
-  expiresIn: string;
   user: RegisteredUser;
-  studentProfile: {
-    _id: string;
-    userId: string;
-    schoolId: string;
-    fullName: string;
-    dateOfBirth: string;
-    academicClass: StudentClass;
-    section: string;
-    rollNumber: string;
-    academicYear: string;
-    status: string;
-  };
-  school: {
-    id: string;
-    code: string;
-    name: string;
-    status: string;
-  };
+  message: string;
 };
 
 export const SCHOOL_TYPES = [
@@ -169,4 +141,9 @@ export type VerifyOtpResponse = {
   tokenType: "Bearer";
   expiresIn: string;
   user: RegisteredUser;
+};
+
+export type StudentLoginRequest = {
+  phone: string;
+  password: string;
 };

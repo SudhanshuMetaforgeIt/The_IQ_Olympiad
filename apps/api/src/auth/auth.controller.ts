@@ -12,6 +12,7 @@ import {
   RegisterSchoolDto,
   RegisterStudentDto,
   SendOtpDto,
+  StudentLoginDto,
   VerifyOtpDto,
 } from './dto/auth.dto.js';
 
@@ -35,6 +36,12 @@ export class AuthController {
   @Post('login')
   login(@Body() dto: LoginPasswordDto) {
     return this.authService.loginWithPassword(dto);
+  }
+
+  @Public()
+  @Post('login/student')
+  loginStudent(@Body() dto: StudentLoginDto) {
+    return this.authService.loginStudent(dto);
   }
 
   @Public()

@@ -22,7 +22,7 @@ export default function StepAdminDetails({
   onSubmit,
 }: StepAdminDetailsProps) {
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-10 border border-violet-500 ring-2 ring-violet-500/20 shadow-xl transition-all">
+    <div className="rounded-3xl border border-violet-500/40 bg-white/80 p-5 shadow-xl ring-2 ring-violet-500/10 backdrop-blur-sm transition-all sm:p-8">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-black tracking-widest text-violet-700 bg-violet-50 border border-violet-100 px-3.5 py-1 rounded-full uppercase">
           STEP 1 OF 3
@@ -31,7 +31,7 @@ export default function StepAdminDetails({
       <h3 className="text-2xl font-black text-slate-900 mb-1">
         School Admin Details
       </h3>
-      <p className="text-sm font-medium text-slate-500 mb-8">
+      <p className="mb-4 text-sm font-medium text-slate-500">
         Enter administrator information to get started.
       </p>
 

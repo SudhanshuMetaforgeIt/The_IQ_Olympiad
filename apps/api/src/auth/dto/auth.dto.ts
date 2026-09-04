@@ -1,7 +1,6 @@
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
-  IsDateString,
   IsEmail,
   IsEnum,
   IsInt,
@@ -15,89 +14,29 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { GuardianRelation } from '../../common/enums/guardian-relation.enum.js';
 import { SchoolType } from '../../common/enums/school-type.enum.js';
-import { StudentClass } from '../../common/enums/student-class.enum.js';
 
 const PHONE_REGEX = /^[6-9]\d{9}$/;
-const ACADEMIC_YEAR_REGEX = /^\d{4}-\d{2}$/;
 const SCHOOL_CODE_REGEX = /^[A-Z0-9-]+$/;
 
-export class GuardianDto {
+export class RegisterStudentDto {
   @IsString()
   @MaxLength(120)
-  name: string;
+  fullName: string;
 
-  @Matches(PHONE_REGEX, {
-    message: 'guardian.phone must be a valid 10-digit Indian mobile number',
-  })
-  phone: string;
-
-  @IsOptional()
-  @IsEmail()
-  @MaxLength(255)
-  email?: string;
-
-  @IsEnum(GuardianRelation)
-  relation: GuardianRelation;
-}
-
-export class RegisterStudentDto {
   @IsEmail()
   @MaxLength(255)
   email: string;
-
-  @IsString()
-  @MinLength(8)
-  @MaxLength(72)
-  password: string;
-
-  @IsString()
-  @MaxLength(120)
-  name: string;
 
   @Matches(PHONE_REGEX, {
     message: 'phone must be a valid 10-digit Indian mobile number',
   })
   phone: string;
 
-  @Transform(({ value }: { value: unknown }) =>
-    typeof value === 'string' ? value.trim().toUpperCase() : value,
-  )
   @IsString()
-  @MinLength(6)
-  @MaxLength(20)
-  @Matches(SCHOOL_CODE_REGEX, {
-    message: 'schoolCode must be alphanumeric with optional hyphens',
-  })
-  schoolCode: string;
-
-  @IsString()
-  @MaxLength(120)
-  fullName: string;
-
-  @IsDateString()
-  dateOfBirth: string;
-
-  @IsEnum(StudentClass)
-  academicClass: StudentClass;
-
-  @IsString()
-  @MaxLength(20)
-  section: string;
-
-  @IsString()
-  @MaxLength(40)
-  rollNumber: string;
-
-  @Matches(ACADEMIC_YEAR_REGEX, {
-    message: 'academicYear must match YYYY-YY format (e.g. 2026-27)',
-  })
-  academicYear: string;
-
-  @ValidateNested()
-  @Type(() => GuardianDto)
-  guardian: GuardianDto;
+  @MinLength(8)
+  @MaxLength(72)
+  password: string;
 }
 
 export class SchoolAddressDto {
@@ -189,6 +128,18 @@ export class RegisterSchoolDto {
 export class LoginPasswordDto {
   @IsEmail()
   email: string;
+
+  @IsString()
+  @MinLength(8)
+  @MaxLength(72)
+  password: string;
+}
+
+export class StudentLoginDto {
+  @Matches(PHONE_REGEX, {
+    message: 'phone must be a valid 10-digit Indian mobile number',
+  })
+  phone: string;
 
   @IsString()
   @MinLength(8)

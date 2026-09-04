@@ -3,13 +3,7 @@
 import { useCallback, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { useRouter } from "next/navigation";
 
-import {
-  ApiError,
-  getSchoolByCode,
-  registerStudent,
-  type SchoolByCodeResponse,
-} from "@/lib/api";
-import { setAccessToken } from "@/lib/auth/token-storage";
+import { ApiError, registerStudent } from "@/lib/api";
 
 import {
   buildRegisterStudentPayload,
@@ -20,27 +14,20 @@ import { validateStudentSignupForm } from "./validation";
 
 type UseStudentRegistrationResult = {
   isSubmitting: boolean;
-  isValidatingSchool: boolean;
   fieldErrors: StudentSignupFieldErrors;
   apiError: string | null;
   successMessage: string | null;
-  verifiedSchool: SchoolByCodeResponse | null;
   setFieldErrors: Dispatch<SetStateAction<StudentSignupFieldErrors>>;
   clearFieldError: (field: keyof StudentSignupFormValues) => void;
-  validateSchoolCode: (schoolCode: string) => Promise<boolean>;
   submitRegistration: (values: StudentSignupFormValues) => Promise<void>;
 };
 
 export function useStudentRegistration(): UseStudentRegistrationResult {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isValidatingSchool, setIsValidatingSchool] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<StudentSignupFieldErrors>({});
   const [apiError, setApiError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [verifiedSchool, setVerifiedSchool] =
-    useState<SchoolByCodeResponse | null>(null);
-  const schoolAbortRef = useRef<AbortController | null>(null);
   const submitAbortRef = useRef<AbortController | null>(null);
 
   const clearFieldError = useCallback((field: keyof StudentSignupFormValues) => {
@@ -52,57 +39,6 @@ export function useStudentRegistration(): UseStudentRegistrationResult {
       delete next[field];
       return next;
     });
-  }, []);
-
-  const validateSchoolCode = useCallback(async (schoolCode: string) => {
-    const normalized = schoolCode.trim().toUpperCase();
-    if (!normalized) {
-      setVerifiedSchool(null);
-      setFieldErrors((prev) => ({
-        ...prev,
-        schoolCode: "School code is required",
-      }));
-      return false;
-    }
-
-    schoolAbortRef.current?.abort();
-    const controller = new AbortController();
-    schoolAbortRef.current = controller;
-
-    setIsValidatingSchool(true);
-    setApiError(null);
-
-    try {
-      const school = await getSchoolByCode(normalized, controller.signal);
-      setVerifiedSchool(school);
-      setFieldErrors((prev) => {
-        const next = { ...prev };
-        delete next.schoolCode;
-        return next;
-      });
-      return true;
-    } catch (error) {
-      if (controller.signal.aborted) {
-        return false;
-      }
-      setVerifiedSchool(null);
-      const message =
-        error instanceof ApiError
-          ? error.message
-          : "Unable to verify school code";
-      setFieldErrors((prev) => ({
-        ...prev,
-        schoolCode:
-          error instanceof ApiError && error.statusCode === 404
-            ? "School code not found. Check the code from your school."
-            : message,
-      }));
-      return false;
-    } finally {
-      if (schoolAbortRef.current === controller) {
-        setIsValidatingSchool(false);
-      }
-    }
   }, []);
 
   const submitRegistration = useCallback(
@@ -120,11 +56,6 @@ export function useStudentRegistration(): UseStudentRegistrationResult {
         return;
       }
 
-      const schoolOk = await validateSchoolCode(values.schoolCode);
-      if (!schoolOk) {
-        return;
-      }
-
       submitAbortRef.current?.abort();
       const controller = new AbortController();
       submitAbortRef.current = controller;
@@ -134,10 +65,9 @@ export function useStudentRegistration(): UseStudentRegistrationResult {
 
       try {
         const payload = buildRegisterStudentPayload(values);
-        const result = await registerStudent(payload, controller.signal);
-        setAccessToken(result.accessToken);
-        setSuccessMessage("Account created successfully. Redirecting…");
-        router.push("/dashboard/student");
+        await registerStudent(payload, controller.signal);
+        setSuccessMessage("Account created successfully. Redirecting to login…");
+        router.push("/login?role=student&registered=1");
       } catch (error) {
         if (controller.signal.aborted) {
           return;
@@ -158,19 +88,16 @@ export function useStudentRegistration(): UseStudentRegistrationResult {
         }
       }
     },
-    [isSubmitting, router, validateSchoolCode]
+    [isSubmitting, router]
   );
 
   return {
     isSubmitting,
-    isValidatingSchool,
     fieldErrors,
     apiError,
     successMessage,
-    verifiedSchool,
     setFieldErrors,
     clearFieldError,
-    validateSchoolCode,
     submitRegistration,
   };
 }

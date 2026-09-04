@@ -26,7 +26,7 @@ export default function StepVerifyActivate({
 }: StepVerifyActivateProps) {
   if (createdSchoolCode) {
     return (
-      <div className="bg-white rounded-3xl p-6 sm:p-10 border border-violet-500 ring-2 ring-violet-500/20 shadow-xl">
+      <div className="rounded-3xl border border-violet-500/40 bg-white/80 p-5 shadow-xl ring-2 ring-violet-500/10 backdrop-blur-sm sm:p-8">
         <span className="text-xs font-black tracking-widest text-violet-700 bg-violet-50 border border-violet-100 px-3.5 py-1 rounded-full uppercase">
           Account created
         </span>
@@ -66,7 +66,7 @@ export default function StepVerifyActivate({
   }
 
   return (
-    <div className="bg-white rounded-3xl p-6 sm:p-10 border border-violet-500 ring-2 ring-violet-500/20 shadow-xl transition-all">
+    <div className="rounded-3xl border border-violet-500/40 bg-white/80 p-5 shadow-xl ring-2 ring-violet-500/10 backdrop-blur-sm transition-all sm:p-8">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-black tracking-widest text-violet-700 bg-violet-50 border border-violet-100 px-3.5 py-1 rounded-full uppercase">
           STEP 3 OF 3

@@ -6,6 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import type { Response } from 'express';
+import multer from 'multer';
 
 type ErrorBody = {
   success: false;
@@ -23,11 +24,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<{ url?: string }>();
 
-    const status =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
-
+    const status = this.resolveStatus(exception);
     const { message, errors } = this.normalizeException(exception);
 
     const body: ErrorBody = {
@@ -42,10 +39,30 @@ export class HttpExceptionFilter implements ExceptionFilter {
     response.status(status).json(body);
   }
 
+  private resolveStatus(exception: unknown): number {
+    if (exception instanceof HttpException) {
+      return exception.getStatus();
+    }
+    if (exception instanceof multer.MulterError) {
+      return HttpStatus.BAD_REQUEST;
+    }
+    return HttpStatus.INTERNAL_SERVER_ERROR;
+  }
+
   private normalizeException(exception: unknown): {
     message: string;
     errors?: string[];
   } {
+    if (exception instanceof multer.MulterError) {
+      if (exception.code === 'LIMIT_FILE_SIZE') {
+        return { message: 'photo must be 5MB or smaller' };
+      }
+      if (exception.code === 'LIMIT_UNEXPECTED_FILE') {
+        return { message: 'Unexpected file field. Use field name "photo"' };
+      }
+      return { message: exception.message };
+    }
+
     if (!(exception instanceof HttpException)) {
       return { message: 'Internal server error' };
     }

@@ -6,6 +6,7 @@ import type {
   RegisterStudentResponse,
   SendOtpRequest,
   SendOtpResponse,
+  StudentLoginRequest,
   VerifyOtpRequest,
   VerifyOtpResponse,
 } from "./auth.types";
@@ -48,6 +49,17 @@ export async function verifyOtp(
   signal?: AbortSignal
 ): Promise<VerifyOtpResponse> {
   return apiRequest<VerifyOtpResponse>("/api/auth/otp/verify", {
+    method: "POST",
+    body: payload,
+    signal,
+  });
+}
+
+export async function loginStudent(
+  payload: StudentLoginRequest,
+  signal?: AbortSignal
+): Promise<SendOtpResponse> {
+  return apiRequest<SendOtpResponse>("/api/auth/login/student", {
     method: "POST",
     body: payload,
     signal,

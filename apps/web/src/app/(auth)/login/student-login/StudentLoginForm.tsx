@@ -11,13 +11,16 @@ export default function StudentLoginForm({ onRoleChange }: StudentLoginFormProps
     <OtpLoginForm
       role="student"
       onRoleChange={onRoleChange}
-      subtitle="Log in as a Student or School Admin."
+      subtitle="Continue your Olympiad journey and unlock your potential."
       pillText="For students in Classes 7 to 12"
-      submitLabel="Log in as Student"
-      footerPrompt="New student?"
+      submitLabel="Continue"
+      footerPrompt="New to The IQ Olympiad?"
       footerHref="/signup?role=student"
       footerLinkLabel="Sign up"
+      requirePassword
       successMessage="Login Successful!"
+      heroImage="/student_login.png"
+      heroAlt="Student preparing for The IQ Olympiad"
     />
   );
 }

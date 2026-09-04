@@ -11,3 +11,20 @@ export async function getSchoolByCode(
     signal,
   });
 }
+
+export async function searchSchools(
+  query: string,
+  signal?: AbortSignal
+): Promise<SchoolByCodeResponse[]> {
+  const q = query.trim();
+  if (q.length < 2) {
+    return [];
+  }
+  return apiRequest<SchoolByCodeResponse[]>(
+    `/api/schools/search?q=${encodeURIComponent(q)}`,
+    {
+      method: "GET",
+      signal,
+    }
+  );
+}

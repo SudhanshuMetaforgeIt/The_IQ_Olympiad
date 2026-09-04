@@ -17,6 +17,7 @@ import type {
   RegisterSchoolDto,
   RegisterStudentDto,
   SendOtpDto,
+  StudentLoginDto,
   VerifyOtpDto,
 } from './dto/auth.dto.js';
 import { OtpService } from './otp.service.js';
@@ -46,40 +47,24 @@ export class AuthService {
   ) {}
 
   async registerStudent(dto: RegisterStudentDto) {
-    const school = await this.schoolsService.findByCode(dto.schoolCode);
     const user = await this.usersService.create({
       email: dto.email,
       password: dto.password,
-      name: dto.name,
+      name: dto.fullName,
       phone: dto.phone,
       roles: [UserRole.STUDENT],
     });
 
     try {
-      const studentProfile = await this.studentsService.create({
+      await this.studentsService.create({
         userId: user._id,
-        schoolId: school._id,
         fullName: dto.fullName,
-        dateOfBirth: new Date(dto.dateOfBirth),
-        academicClass: dto.academicClass,
-        section: dto.section,
-        rollNumber: dto.rollNumber,
-        academicYear: dto.academicYear,
-        guardian: dto.guardian,
       });
 
-      const tokens = await this.tokenService.issueTokens(user);
-
       return {
-        ...tokens,
         user: this.toUserView(user),
-        studentProfile,
-        school: {
-          id: school.id,
-          code: school.code,
-          name: school.name,
-          status: school.status,
-        },
+        message:
+          'Account created successfully. Please log in to verify your mobile number.',
       };
     } catch (error) {
       await this.usersService.deleteById(user.id);
@@ -154,6 +139,15 @@ export class AuthService {
 
     this.assertActive(user);
 
+    if (
+      user.roles.includes(UserRole.STUDENT) &&
+      !user.roles.includes(UserRole.SCHOOL_ADMIN)
+    ) {
+      throw new UnauthorizedException(
+        'Students must log in with mobile number and password',
+      );
+    }
+
     const valid = await this.passwordService.verify(
       user.passwordHash,
       dto.password,
@@ -171,6 +165,37 @@ export class AuthService {
     };
   }
 
+  async loginStudent(dto: StudentLoginDto) {
+    const user = await this.usersService.findByPhone(dto.phone, true);
+    if (!user) {
+      throw new UnauthorizedException('Invalid mobile number or password');
+    }
+
+    this.assertActive(user);
+
+    if (!user.roles.includes(UserRole.STUDENT)) {
+      throw new UnauthorizedException('This account is not a student account');
+    }
+
+    const valid = await this.passwordService.verify(
+      user.passwordHash,
+      dto.password,
+    );
+    if (!valid) {
+      throw new UnauthorizedException('Invalid mobile number or password');
+    }
+
+    const result = await this.otpService.sendOtp(dto.phone, {
+      passwordVerified: true,
+    });
+
+    return {
+      phone: dto.phone,
+      ...result,
+      message: 'OTP sent successfully',
+    };
+  }
+
   async sendOtp(dto: SendOtpDto) {
     const user = await this.usersService.findByPhone(dto.phone);
     if (!user) {
@@ -178,6 +203,15 @@ export class AuthService {
     }
 
     this.assertActive(user);
+
+    if (
+      user.roles.includes(UserRole.STUDENT) &&
+      !user.roles.includes(UserRole.SCHOOL_ADMIN)
+    ) {
+      throw new UnauthorizedException(
+        'Students must log in with mobile number and password',
+      );
+    }
 
     const result = await this.otpService.sendOtp(dto.phone);
     return {
@@ -195,9 +229,18 @@ export class AuthService {
 
     this.assertActive(user);
 
-    const ok = this.otpService.verifyOtp(dto.phone, dto.otp);
-    if (!ok) {
+    const result = this.otpService.verifyOtp(dto.phone, dto.otp);
+    if (!result.ok) {
       throw new UnauthorizedException('Invalid or expired OTP');
+    }
+
+    const isStudentOnly =
+      user.roles.includes(UserRole.STUDENT) &&
+      !user.roles.includes(UserRole.SCHOOL_ADMIN);
+    if (isStudentOnly && !result.passwordVerified) {
+      throw new UnauthorizedException(
+        'Verify your password before OTP login',
+      );
     }
 
     await this.usersService.markPhoneVerified(user.id);

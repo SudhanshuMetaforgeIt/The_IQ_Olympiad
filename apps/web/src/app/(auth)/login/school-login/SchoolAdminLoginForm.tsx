@@ -13,13 +13,15 @@ export default function SchoolAdminLoginForm({
     <OtpLoginForm
       role="school"
       onRoleChange={onRoleChange}
-      subtitle="Log in as School Admin."
+      subtitle="Continue your Olympiad journey and unlock your potential."
       pillText="For IQ Coordinators"
-      submitLabel="Log in as School Admin"
-      footerPrompt="New School Admin?"
+      submitLabel="Continue"
+      footerPrompt="New to The IQ Olympiad?"
       footerHref="/signup?role=school"
       footerLinkLabel="Sign up"
       successMessage="School Admin Login Successful!"
+      heroImage="/admin_login_img.png"
+      heroAlt="School administrator managing The IQ Olympiad"
     />
   );
 }

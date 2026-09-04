@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Bell, Mail, ChevronDown } from "lucide-react";
+import { getCurrentAcademicYear } from "@/lib/academicYear";
 
 export const ReportsHeader: React.FC = () => {
   return (
@@ -22,7 +23,7 @@ export const ReportsHeader: React.FC = () => {
             Academic Year
           </div>
           <div className="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
-            <span>2025 - 2026</span>
+            <span>{getCurrentAcademicYear()}</span>
             <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
           </div>
         </div>

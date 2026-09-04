@@ -1,37 +1,70 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
+import { ApiError, uploadStudentProfilePhoto } from "@/lib/api";
+import { getAccessToken } from "@/lib/auth/token-storage";
 import type { StudentProfileData } from "./types";
 
 interface PersonalInformationCardProps {
   profile: StudentProfileData;
   onChange?: (field: keyof StudentProfileData, value: string) => void;
   onSave?: (fieldLabel: string) => void;
+  onPhotoUploaded?: () => void;
 }
 
 export function PersonalInformationCard({
   profile,
   onChange,
   onSave,
+  onPhotoUploaded,
 }: PersonalInformationCardProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === "string") {
-          const dataUrl = reader.result;
-          onChange?.("avatarUrl", dataUrl);
-          if (typeof window !== "undefined") {
-            localStorage.setItem("student_custom_avatar", dataUrl);
-            window.dispatchEvent(new Event("student_profile_updated"));
-          }
-          onSave?.("Profile photo");
-        }
-      };
-      reader.readAsDataURL(file);
+    e.target.value = "";
+    if (!file) {
+      return;
+    }
+
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowed.includes(file.type)) {
+      onSave?.("Profile photo must be JPEG, PNG, or WebP");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      onSave?.("Profile photo must be 5MB or smaller");
+      return;
+    }
+
+    const token = getAccessToken();
+    if (!token) {
+      onSave?.("Please sign in again to update your photo");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      await uploadStudentProfilePhoto(token, file);
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("student_custom_avatar");
+        window.dispatchEvent(new Event("student_profile_updated"));
+        window.alert("Profile photo updated successfully");
+      }
+      onPhotoUploaded?.();
+      onSave?.("Profile photo updated successfully");
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : "Unable to upload profile photo";
+      if (typeof window !== "undefined") {
+        window.alert(message);
+      }
+      onSave?.(message);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -62,7 +95,11 @@ export function PersonalInformationCard({
           <div className="sm:col-span-4 flex flex-col items-center text-center">
             <div className="relative group">
               <div
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => {
+                  if (!isUploading) {
+                    fileInputRef.current?.click();
+                  }
+                }}
                 className="size-16 sm:size-18 rounded-full bg-emerald-50 border-2 border-white shadow-md overflow-hidden flex items-center justify-center cursor-pointer transition-all hover:scale-105 relative"
                 title="Click to change profile photo"
               >
@@ -96,7 +133,11 @@ export function PersonalInformationCard({
               {/* Camera Upload Badge */}
               <button
                 type="button"
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => {
+                  if (!isUploading) {
+                    fileInputRef.current?.click();
+                  }
+                }}
                 className="absolute bottom-0 right-0 size-6 rounded-full bg-violet-600 hover:bg-violet-700 text-white flex items-center justify-center shadow-md cursor-pointer transition-transform hover:scale-110 active:scale-95 border-2 border-white"
                 title="Change Photo"
                 aria-label="Change Photo"
@@ -111,17 +152,23 @@ export function PersonalInformationCard({
                 ref={fileInputRef}
                 type="file"
                 accept="image/png, image/jpeg, image/jpg, image/webp"
-                onChange={handleFileChange}
+                onChange={(event) => void handleFileChange(event)}
+                disabled={isUploading}
                 className="hidden"
               />
             </div>
 
             <button
               type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="text-[10px] font-bold text-violet-600 hover:text-violet-800 mt-1.5 transition cursor-pointer"
+              onClick={() => {
+                if (!isUploading) {
+                  fileInputRef.current?.click();
+                }
+              }}
+              disabled={isUploading}
+              className="text-[10px] font-bold text-violet-600 hover:text-violet-800 mt-1.5 transition cursor-pointer disabled:opacity-60"
             >
-              Change Photo
+              {isUploading ? "Uploading…" : "Change Photo"}
             </button>
 
             <span className="text-[11px] font-black text-slate-800 mt-0.5 block truncate max-w-[120px]">
@@ -160,7 +207,7 @@ export function PersonalInformationCard({
               </label>
               <input
                 type="text"
-                value={profile.className?.startsWith("Class") ? profile.className : `Class ${profile.className || "10"}`}
+                value={profile.className?.startsWith("Class") ? profile.className : profile.className || "Not provided"}
                 readOnly
                 className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-800 font-bold text-xs cursor-default"
               />

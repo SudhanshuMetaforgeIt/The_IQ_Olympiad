@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useStudentMe } from "../../StudentMeProvider";
 import {
   UPCOMING_EXAM,
   DASHBOARD_STATS,
@@ -31,6 +32,8 @@ interface StudentDashboardProps {
 }
 
 export default function StudentDashboard({ activeTab = "dashboard", onSelectTab }: StudentDashboardProps) {
+  const { data } = useStudentMe();
+  const profileCompletion = data?.profileCompletion;
   const [isPerformanceModalOpen, setIsPerformanceModalOpen] = useState(false);
   const [isBadgesModalOpen, setIsBadgesModalOpen] = useState(false);
   const [selectedSubjectResult, setSelectedSubjectResult] = useState<ExamResultItem | null>(null);
@@ -93,6 +96,26 @@ export default function StudentDashboard({ activeTab = "dashboard", onSelectTab 
           {/* Normal Dashboard Overview View */}
           {!activeExamStep && (
             <>
+              {profileCompletion && !profileCompletion.isComplete ? (
+                <div className="rounded-2xl border border-violet-200 bg-white px-4 py-4 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+                  <div>
+                    <p className="text-sm font-black text-slate-900">
+                      Complete your profile
+                    </p>
+                    <p className="text-[11px] font-medium text-slate-500 mt-0.5">
+                      Add your school and academic details to finish setup. {profileCompletion.percentage}% complete.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onSelectTab?.("profile")}
+                    className="shrink-0 rounded-xl bg-violet-600 px-4 py-2.5 text-[11px] font-extrabold text-white hover:bg-violet-700 cursor-pointer"
+                  >
+                    Complete your profile
+                  </button>
+                </div>
+              ) : null}
+
               {/* Upcoming Exam Hero Banner */}
               <UpcomingExamBanner
                 exam={UPCOMING_EXAM}

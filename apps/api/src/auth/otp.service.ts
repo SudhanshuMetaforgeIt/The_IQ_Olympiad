@@ -5,6 +5,7 @@ type OtpRecord = {
   codeHash: string;
   expiresAt: number;
   attempts: number;
+  passwordVerified: boolean;
 };
 
 /**
@@ -20,12 +21,14 @@ export class OtpService {
 
   async sendOtp(
     phone: string,
+    options?: { passwordVerified?: boolean },
   ): Promise<{ expiresInSeconds: number; debugCode?: string }> {
     const code = randomInt(100000, 999999).toString();
     this.store.set(phone, {
       codeHash: this.hash(code),
       expiresAt: Date.now() + this.ttlMs,
       attempts: 0,
+      passwordVerified: options?.passwordVerified === true,
     });
 
     const isProd = process.env.NODE_ENV === 'production';
@@ -39,30 +42,34 @@ export class OtpService {
     };
   }
 
-  verifyOtp(phone: string, otp: string): boolean {
+  verifyOtp(
+    phone: string,
+    otp: string,
+  ): { ok: boolean; passwordVerified: boolean } {
     const record = this.store.get(phone);
     if (!record) {
-      return false;
+      return { ok: false, passwordVerified: false };
     }
 
     if (Date.now() > record.expiresAt) {
       this.store.delete(phone);
-      return false;
+      return { ok: false, passwordVerified: false };
     }
 
     if (record.attempts >= this.maxAttempts) {
       this.store.delete(phone);
-      return false;
+      return { ok: false, passwordVerified: false };
     }
 
     record.attempts += 1;
 
     if (record.codeHash !== this.hash(otp)) {
-      return false;
+      return { ok: false, passwordVerified: record.passwordVerified };
     }
 
+    const passwordVerified = record.passwordVerified;
     this.store.delete(phone);
-    return true;
+    return { ok: true, passwordVerified };
   }
 
   private hash(value: string): string {
