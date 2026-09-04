@@ -38,7 +38,7 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
     const syncAvatar = () => {
       if (typeof window === "undefined") return;
       const savedAvatar = localStorage.getItem("student_custom_avatar");
-      setAvatarUrl(savedAvatar || student.avatarUrl);
+      setAvatarUrl(student.avatarUrl || savedAvatar || "");
     };
 
     syncAvatar();

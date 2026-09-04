@@ -17,6 +17,7 @@ import { UserRole } from '../common/enums/user-role.enum.js';
 import {
   ListSchoolChildrenQueryDto,
   ListSchoolsQueryDto,
+  SearchSchoolsQueryDto,
   UpdateSchoolDto,
   UpdateSchoolStatusDto,
 } from './dto/schools.dto.js';
@@ -30,6 +31,12 @@ export class SchoolsController {
   @Get('code/:code')
   findByCode(@Param('code') code: string) {
     return this.schoolsService.getByCodeForSignup(code);
+  }
+
+  @Public()
+  @Get('search')
+  search(@Query() query: SearchSchoolsQueryDto) {
+    return this.schoolsService.searchPublic(query);
   }
 
   @Roles(UserRole.SUPER_ADMIN, UserRole.SCHOOL_ADMIN)

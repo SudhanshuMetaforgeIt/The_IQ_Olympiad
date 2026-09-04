@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft, Bell, Mail, ChevronDown, Menu, User, Plus } from "lucide-react";
+import { getAcademicYearOptions, getCurrentAcademicYear } from "@/lib/academicYear";
 import { SchoolProfile } from "../../_types/dashboard";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { MailDropdown } from "./MailDropdown";
@@ -16,7 +17,7 @@ interface HeaderProps {
 export function Header({ profile, onToggleSidebar, onBack }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const [selectedYear, setSelectedYear] = useState("2025 - 2026");
+  const [selectedYear, setSelectedYear] = useState(getCurrentAcademicYear());
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(5);
   const [showMail, setShowMail] = useState(false);
@@ -135,9 +136,11 @@ export function Header({ profile, onToggleSidebar, onBack }: HeaderProps) {
               onChange={(e) => setSelectedYear(e.target.value)}
               className="appearance-none bg-transparent text-menu font-bold text-slate-800 cursor-pointer focus:outline-none"
             >
-              <option value="2025 - 2026">2025 - 2026</option>
-              <option value="2024 - 2025">2024 - 2025</option>
-              <option value="2026 - 2027">2026 - 2027</option>
+              {getAcademicYearOptions(selectedYear).map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
             </select>
           </div>
           <ChevronDown className="w-4 h-4 text-slate-500 absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none" />

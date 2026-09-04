@@ -21,7 +21,7 @@ export default function PhoneInput({
   return (
     <div className="flex gap-2">
       <div
-        className={`flex items-center gap-1.5 ${prefixPadding} rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-700`}
+        className={`flex items-center gap-1.5 ${prefixPadding} rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-700`}
       >
         {showFlag && <span>🇮🇳</span>}
         <span>+91</span>

@@ -1,4 +1,5 @@
 export * from "./types";
+export * from "./CompleteProfileCard";
 export * from "./PersonalInformationCard";
 export * from "./AcademicInformationCard";
 export * from "./IdentityInformationCard";

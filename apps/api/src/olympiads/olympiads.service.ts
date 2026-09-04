@@ -256,7 +256,7 @@ export class OlympiadsService {
     } else if (this.hasRole(user, UserRole.STUDENT)) {
       filter.status = { $in: STUDENT_VISIBLE_STATUSES };
       const profile = await this.studentsService.findByUserId(user.userId);
-      filter.eligibleClasses = profile.academicClass;
+      filter.eligibleClasses = profile.academicClass ?? { $in: [] };
     } else {
       throw new ForbiddenException('Insufficient permissions');
     }
@@ -280,7 +280,10 @@ export class OlympiadsService {
     if (query.eligibleClass) {
       if (this.hasRole(user, UserRole.STUDENT)) {
         const profile = await this.studentsService.findByUserId(user.userId);
-        if (query.eligibleClass !== profile.academicClass) {
+        if (
+          !profile.academicClass ||
+          query.eligibleClass !== profile.academicClass
+        ) {
           throw new ForbiddenException(
             'Students can only view olympiads for their own class',
           );
@@ -329,7 +332,10 @@ export class OlympiadsService {
         throw new ForbiddenException('Olympiad is not available');
       }
       const profile = await this.studentsService.findByUserId(user.userId);
-      if (!olympiad.eligibleClasses.includes(profile.academicClass)) {
+      if (
+        !profile.academicClass ||
+        !olympiad.eligibleClasses.includes(profile.academicClass)
+      ) {
         throw new ForbiddenException(
           'This olympiad is not available for your class',
         );

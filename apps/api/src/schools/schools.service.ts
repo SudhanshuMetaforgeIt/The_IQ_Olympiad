@@ -21,6 +21,7 @@ import { StudentsService } from '../students/students.service.js';
 import type {
   ListSchoolChildrenQueryDto,
   ListSchoolsQueryDto,
+  SearchSchoolsQueryDto,
   UpdateSchoolDto,
   UpdateSchoolStatusDto,
 } from './dto/schools.dto.js';
@@ -129,6 +130,28 @@ export class SchoolsService {
   async getByCodeForSignup(code: string): Promise<PublicSchoolLookup> {
     const school = await this.findByCode(code);
     return this.toPublicLookup(school);
+  }
+
+  async searchPublic(
+    query: SearchSchoolsQueryDto,
+  ): Promise<PublicSchoolLookup[]> {
+    const pattern = new RegExp(this.escapeRegex(query.q.trim()), 'i');
+    const limit = query.limit ?? 8;
+    const items = await this.schoolModel
+      .find({
+        status: { $in: [SchoolStatus.ACTIVE, SchoolStatus.PENDING] },
+        $or: [
+          { name: pattern },
+          { code: pattern },
+          { branch: pattern },
+          { 'address.city': pattern },
+        ],
+      })
+      .sort({ name: 1 })
+      .limit(limit)
+      .exec();
+
+    return items.map((school) => this.toPublicLookup(school));
   }
 
   async getByIdForUser(
@@ -353,7 +376,7 @@ export class SchoolsService {
 
     if (this.hasRole(user, UserRole.STUDENT)) {
       const profile = await this.studentsService.findByUserId(user.userId);
-      if (profile.schoolId.toString() !== schoolId) {
+      if (!profile.schoolId || profile.schoolId.toString() !== schoolId) {
         throw new ForbiddenException('You do not have access to this school');
       }
       return;

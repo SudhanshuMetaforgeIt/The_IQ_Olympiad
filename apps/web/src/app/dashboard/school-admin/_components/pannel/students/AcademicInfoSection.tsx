@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
+import { getAcademicYearOptions } from "@/lib/academicYear";
 import { StudentFormData } from "./types";
 
 interface AcademicInfoProps {
@@ -74,9 +75,11 @@ export function AcademicInfoSection({ formData, handleChange }: AcademicInfoProp
               required
             >
               <option value="">Select academic year</option>
-              <option value="2025 - 2026">2025 - 2026</option>
-              <option value="2024 - 2025">2024 - 2025</option>
-              <option value="2026 - 2027">2026 - 2027</option>
+              {getAcademicYearOptions(formData.academicYear).map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
             </select>
             <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>

@@ -11,8 +11,8 @@ export const mockSchoolProfile: SchoolProfile = {
   name: "The Green Valley public school",
   welcomeMessage: "Welcome back, School Administrator!",
   adminName: "Admin",
-  academicYears: ["2025 - 2026", "2024 - 2025", "2023 - 2024"],
-  currentAcademicYear: "2025 - 2026",
+  academicYears: ["2026-27", "2025-26", "2024-25"],
+  currentAcademicYear: "2026-27",
   unreadNotifications: 1,
 };
 

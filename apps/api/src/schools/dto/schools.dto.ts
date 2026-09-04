@@ -21,6 +21,20 @@ import {
 } from '../../common/enums/school-status.enum.js';
 import { SchoolType } from '../../common/enums/school-type.enum.js';
 
+export class SearchSchoolsQueryDto {
+  @IsString()
+  @MinLength(2)
+  @MaxLength(100)
+  q: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(20)
+  limit = 8;
+}
+
 export class ListSchoolsQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsString()

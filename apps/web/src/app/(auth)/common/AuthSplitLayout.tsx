@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { motion } from "framer-motion";
 
 type AuthSplitLayoutProps = {
   children: ReactNode;
@@ -9,16 +12,18 @@ type AuthSplitLayoutProps = {
 export default function AuthSplitLayout({
   children,
   sidePanel,
-  maxWidthClass = "max-w-5xl",
 }: AuthSplitLayoutProps) {
   return (
-    <div className="min-h-screen w-full bg-slate-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-      <div
-        className={`w-full ${maxWidthClass} bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden grid grid-cols-1 lg:grid-cols-12`}
-      >
-        <div className="lg:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col justify-between">
+    <div className="relative h-dvh max-h-dvh overflow-hidden bg-[radial-gradient(circle_at_top_left,#efe7ff,transparent_42%),radial-gradient(circle_at_80%_20%,#ddd6fe,transparent_36%),linear-gradient(180deg,#f6f3ff_0%,#eee9ff_48%,#f8f6ff_100%)]">
+      <div className="grid h-full w-full grid-cols-1 lg:grid-cols-12">
+        <motion.div
+          className="flex h-full min-h-0 flex-col px-5 py-4 sm:px-8 lg:col-span-7 lg:px-12 lg:py-6"
+          initial={false}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        >
           {children}
-        </div>
+        </motion.div>
         {sidePanel}
       </div>
     </div>

@@ -14,6 +14,7 @@ import {
   ActivitySummaryCard,
   PrivacyBanner,
   ChangePasswordModal,
+  CompleteProfileCard,
   type StudentProfileData,
 } from "./Profile/index";
 
@@ -68,7 +69,7 @@ function ProfilePanelBody({
   onSelectTab?: (tabId: string, subtabId?: string) => void;
   student: StudentProfile;
 }) {
-  const { profileForm } = useStudentMe();
+  const { profileForm, refetch } = useStudentMe();
   const storedSnapshot = useSyncExternalStore(
     subscribeToStudentProfileStore,
     getStudentProfileStoreSnapshot,
@@ -88,7 +89,7 @@ function ProfilePanelBody({
     email: "student@example.com",
     phone: "+91",
     schoolName: student.school || "School",
-    academicYear: "2025 - 2026",
+    academicYear: "2026-27",
     section: "A",
     rollNumber: "Not assigned",
     studentId: "IQO-STU-001",
@@ -107,8 +108,8 @@ function ProfilePanelBody({
   const mergedProfile: StudentProfileData = {
     ...profileData,
     fullName: storedProfile.fullName || profileData.fullName,
-    ...(storedProfile.avatarUrl || profileData.avatarUrl
-      ? { avatarUrl: storedProfile.avatarUrl || profileData.avatarUrl }
+    ...(profileData.avatarUrl || storedProfile.avatarUrl
+      ? { avatarUrl: profileData.avatarUrl || storedProfile.avatarUrl }
       : {}),
   };
 
@@ -119,8 +120,8 @@ function ProfilePanelBody({
     }));
   };
 
-  const handleSaveField = () => {
-    setToastMessage("Saved successfully!");
+  const handleSaveField = (fieldLabel?: string) => {
+    setToastMessage(fieldLabel || "Saved successfully!");
     setTimeout(() => setToastMessage(null), 3000);
   };
 
@@ -155,11 +156,14 @@ function ProfilePanelBody({
             </p>
           </div>
 
+          <CompleteProfileCard />
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 items-stretch">
             <PersonalInformationCard
               profile={mergedProfile}
               onChange={handleFieldChange}
               onSave={handleSaveField}
+              onPhotoUploaded={refetch}
             />
 
             <AcademicInformationCard

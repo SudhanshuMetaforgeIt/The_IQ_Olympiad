@@ -42,7 +42,7 @@ export function AcademicInformationCard({
             </label>
             <input
               type="text"
-              value={profile.schoolName}
+              value={profile.schoolName || "Not linked"}
               readOnly
               className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-800 font-bold text-xs cursor-default select-all"
               placeholder="School name"
@@ -56,7 +56,7 @@ export function AcademicInformationCard({
             </label>
             <input
               type="text"
-              value={profile.academicYear || "2025 - 2026"}
+              value={profile.academicYear || "Not provided"}
               readOnly
               className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-800 font-bold text-xs cursor-default"
             />
@@ -69,7 +69,13 @@ export function AcademicInformationCard({
             </label>
             <input
               type="text"
-              value={profile.section?.startsWith("Section") ? profile.section : `Section ${profile.section || "A"}`}
+              value={
+                profile.section
+                  ? profile.section.startsWith("Section")
+                    ? profile.section
+                    : `Section ${profile.section}`
+                  : "Not provided"
+              }
               readOnly
               className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50/70 text-slate-800 font-bold text-xs cursor-default"
             />

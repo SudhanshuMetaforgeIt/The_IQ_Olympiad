@@ -22,7 +22,7 @@ function SignupPageContent() {
   }, [roleParam]);
 
   if (activeRole === "school") {
-    return <SchoolAdminSignup />;
+    return <SchoolAdminSignup onRoleChange={setActiveRole} />;
   }
 
   return <StudentSignupForm onRoleChange={setActiveRole} />;
@@ -32,7 +32,7 @@ export default function SignupPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center font-bold text-slate-500">
+        <div className="flex h-dvh max-h-dvh items-center justify-center bg-[#f6f3ff] font-bold text-slate-500">
           Loading signup...
         </div>
       }

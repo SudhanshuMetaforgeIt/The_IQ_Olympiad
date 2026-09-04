@@ -1,3 +1,7 @@
+"use client";
+
+import { motion } from "framer-motion";
+
 type SignupStep = 1 | 2 | 3;
 
 type SignupStepperProps = {
@@ -15,20 +19,18 @@ export default function SignupStepper({
   currentStep,
   onStepChange,
 }: SignupStepperProps) {
+  const progress =
+    currentStep === 1 ? "0%" : currentStep === 2 ? "50%" : "calc(100% - 6rem)";
+
   return (
-    <div className="w-full max-w-3xl bg-white rounded-3xl p-6 shadow-sm border border-slate-100 mb-6">
-      <div className="relative flex items-start justify-between max-w-xl mx-auto px-6">
-        <div className="absolute top-[20px] left-12 right-12 h-1 bg-slate-200 -translate-y-1/2 z-0 rounded-full" />
-        <div
-          className="absolute top-[20px] left-12 h-1 bg-gradient-to-r from-violet-600 to-indigo-600 -translate-y-1/2 z-0 rounded-full transition-all duration-500"
-          style={{
-            width:
-              currentStep === 1
-                ? "0%"
-                : currentStep === 2
-                  ? "50%"
-                  : "calc(100% - 6rem)",
-          }}
+    <div className="mb-3 w-full shrink-0">
+      <div className="relative mx-auto flex max-w-xl items-start justify-between px-6">
+        <div className="absolute top-[20px] left-12 right-12 z-0 h-1 -translate-y-1/2 rounded-full bg-slate-200" />
+        <motion.div
+          className="absolute top-[20px] left-12 z-0 h-1 -translate-y-1/2 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600"
+          initial={false}
+          animate={{ width: progress }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
         />
 
         {STEPS.map(({ step, label }) => (
@@ -36,17 +38,20 @@ export default function SignupStepper({
             key={step}
             type="button"
             onClick={() => onStepChange(step)}
-            className="relative z-10 flex flex-col items-center gap-2 group cursor-pointer"
+            className="group relative z-10 flex cursor-pointer flex-col items-center gap-2"
           >
-            <div
-              className={`size-10 rounded-full flex items-center justify-center font-black text-sm transition-all ${
+            <motion.div
+              initial={false}
+              animate={{ scale: currentStep === step ? 1.08 : 1 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className={`flex size-10 items-center justify-center rounded-full text-sm font-black ${
                 currentStep >= step
                   ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/30 ring-4 ring-white"
                   : "bg-slate-200 text-slate-500 ring-4 ring-white"
               }`}
             >
               {step}
-            </div>
+            </motion.div>
             <span
               className={`text-xs font-black ${
                 currentStep === step ? "text-violet-700" : "text-slate-500"

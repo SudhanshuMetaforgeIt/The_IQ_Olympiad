@@ -105,10 +105,9 @@ export class StudentProfile {
   @Prop({
     type: SchemaTypes.ObjectId,
     ref: School.name,
-    required: true,
     index: true,
   })
-  schoolId: Types.ObjectId;
+  schoolId?: Types.ObjectId;
 
   @Prop({
     required: true,
@@ -119,51 +118,60 @@ export class StudentProfile {
 
   @Prop({
     type: Date,
-    required: true,
     cast: 'dateOfBirth must be a valid date',
     validate: {
-      validator: isValidStudentDateOfBirth,
+      validator: (value: Date) =>
+        value == null || isValidStudentDateOfBirth(value),
       message:
         'dateOfBirth must be in the past and represent an age of 30 years or less',
     },
   })
-  dateOfBirth: Date;
+  dateOfBirth?: Date;
 
   @Prop({
     type: String,
     enum: STUDENT_CLASSES,
-    required: true,
     index: true,
   })
-  academicClass: StudentClass;
+  academicClass?: StudentClass;
 
   @Prop({
-    required: true,
     trim: true,
     uppercase: true,
     maxlength: 20,
   })
-  section: string;
+  section?: string;
 
   @Prop({
-    required: true,
     trim: true,
     maxlength: 40,
   })
-  rollNumber: string;
+  rollNumber?: string;
 
   @Prop({
-    required: true,
+    trim: true,
+    match: /^\d{12}$/,
+    unique: true,
+    sparse: true,
+  })
+  aadharNumber?: string;
+
+  @Prop({
     trim: true,
     match: /^\d{4}-\d{2}$/,
   })
-  academicYear: string;
+  academicYear?: string;
 
   @Prop({
     type: StudentGuardianSchema,
-    required: true,
   })
-  guardian: StudentGuardian;
+  guardian?: StudentGuardian;
+
+  @Prop({
+    trim: true,
+    maxlength: 500,
+  })
+  profilePhoto?: string;
 
   @Prop({
     type: String,
@@ -179,7 +187,15 @@ export const StudentProfileSchema =
 
 StudentProfileSchema.index(
   { schoolId: 1, academicYear: 1, rollNumber: 1 },
-  { unique: true },
+  {
+    unique: true,
+    name: 'uniq_school_year_roll',
+    partialFilterExpression: {
+      schoolId: { $exists: true },
+      academicYear: { $exists: true },
+      rollNumber: { $exists: true },
+    },
+  },
 );
 StudentProfileSchema.index({ schoolId: 1, academicClass: 1, section: 1 });
 StudentProfileSchema.index({ status: 1, createdAt: -1 });

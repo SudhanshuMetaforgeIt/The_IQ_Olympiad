@@ -5,6 +5,7 @@ type AuthRoleSwitcherProps = {
   onChange: (role: AuthRole) => void;
   showIcons?: boolean;
   className?: string;
+  pill?: boolean;
 };
 
 export default function AuthRoleSwitcher({
@@ -12,16 +13,21 @@ export default function AuthRoleSwitcher({
   onChange,
   showIcons = false,
   className = "mb-8",
+  pill = false,
 }: AuthRoleSwitcherProps) {
   const tabClass = (role: AuthRole) =>
-    `flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-black transition-all cursor-pointer ${
+    `flex items-center justify-center gap-2 text-sm font-black transition-all cursor-pointer ${
       activeRole === role
         ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-500/25"
-        : "text-slate-600 hover:text-slate-900"
-    }`;
+        : "text-slate-600 hover:text-slate-900 bg-transparent"
+    } ${pill ? "rounded-full py-2" : "rounded-xl py-3"}`;
 
   return (
-    <div className={`grid grid-cols-2 p-1.5 bg-slate-100/90 rounded-2xl ${className}`}>
+    <div
+      className={`grid grid-cols-2 p-1.5 ${
+        pill ? "rounded-full bg-slate-100" : "rounded-2xl bg-slate-100/90"
+      } ${className}`}
+    >
       <button type="button" onClick={() => onChange("student")} className={tabClass("student")}>
         {showIcons && (
           <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
