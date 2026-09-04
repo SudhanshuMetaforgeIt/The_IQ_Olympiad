@@ -33,7 +33,7 @@ export function ExamInstructionsStep({ onStartExam }: ExamInstructionsStepProps)
           <ClockIcon className="w-3.5 h-3.5" />
         </div>
       ),
-      text: "The total duration of the exam will be shown before you start.",
+      text: "The total duration of the exam is 50 minutes for 50 questions (100 marks).",
     },
     {
       id: 3,
@@ -44,7 +44,7 @@ export function ExamInstructionsStep({ onStartExam }: ExamInstructionsStepProps)
           </svg>
         </div>
       ),
-      text: "Each question carries 2 marks. There is no negative marking.",
+      text: "Each question carries 2 marks (100 marks total). There is no negative marking.",
     },
     {
       id: 4,
@@ -66,7 +66,7 @@ export function ExamInstructionsStep({ onStartExam }: ExamInstructionsStepProps)
           </svg>
         </div>
       ),
-      text: "Do not refresh or close the browser tab during the exam.",
+      text: "Selecting an answer will automatically advance to the next question. You cannot return to previous questions.",
     },
     {
       id: 6,
@@ -77,7 +77,7 @@ export function ExamInstructionsStep({ onStartExam }: ExamInstructionsStepProps)
           </svg>
         </div>
       ),
-      text: "The exam will start in full screen mode and cannot be exited.",
+      text: "The exam will run in full screen mode and cannot be exited until all questions are completed.",
     },
     {
       id: 7,
@@ -86,7 +86,7 @@ export function ExamInstructionsStep({ onStartExam }: ExamInstructionsStepProps)
           <TimerIcon className="w-3.5 h-3.5" />
         </div>
       ),
-      text: "Once you start the exam, the timer will begin automatically.",
+      text: "Once you start the exam, the 50-minute timer will begin automatically.",
     },
     {
       id: 8,
@@ -117,23 +117,22 @@ export function ExamInstructionsStep({ onStartExam }: ExamInstructionsStepProps)
         {/* Info Chips */}
         <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-bold text-slate-700">
           <div className="flex items-center gap-1.5">
-            <CalendarIcon className="w-3.5 h-3.5 text-violet-600" />
-            <span>—</span>
+            <span>50 Questions</span>
           </div>
           <span className="text-slate-300">|</span>
           <div className="flex items-center gap-1.5">
             <ClockIcon className="w-3.5 h-3.5 text-violet-600" />
-            <span>—</span>
+            <span>50 Minutes</span>
           </div>
           <span className="text-slate-300">|</span>
           <div className="flex items-center gap-1.5">
             <TimerIcon className="w-3.5 h-3.5 text-violet-600" />
-            <span>—</span>
+            <span>100 Marks</span>
           </div>
           <span className="text-slate-300">|</span>
           <div className="flex items-center gap-1.5">
-            <QuestionsIcon className="w-3.5 h-3.5 text-violet-600" />
-            <span>—</span>
+            <CalendarIcon className="w-3.5 h-3.5 text-violet-600" />
+            <span>+2 Marks / Q</span>
           </div>
         </div>
       </div>

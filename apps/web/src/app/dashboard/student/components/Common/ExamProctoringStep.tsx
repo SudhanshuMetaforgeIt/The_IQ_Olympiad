@@ -44,7 +44,6 @@ export function ExamProctoringStep({ onProceedToLiveExam }: ExamProctoringStepPr
           </div>
           <span className="text-slate-300">|</span>
           <div className="flex items-center gap-1.5">
-            <QuestionsIcon className="w-4 h-4 text-violet-600" />
             <span>—</span>
           </div>
         </div>

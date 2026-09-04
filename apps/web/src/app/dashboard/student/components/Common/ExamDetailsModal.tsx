@@ -181,7 +181,6 @@ export function ExamDetailsModal({
             {/* Card 4: TOTAL QUESTIONS */}
             <div className="bg-white border border-slate-200/90 rounded-2xl p-3.5 shadow-2xs space-y-0.5">
               <div className="flex items-center gap-1.5 text-violet-600 mb-1">
-                <QuestionsIcon className="w-3.5 h-3.5" />
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">TOTAL QUESTIONS</span>
               </div>
               <span className="text-sm sm:text-base font-black text-slate-900 block">{examQuestions != null ? `${examQuestions} Questions` : "—"}</span>
