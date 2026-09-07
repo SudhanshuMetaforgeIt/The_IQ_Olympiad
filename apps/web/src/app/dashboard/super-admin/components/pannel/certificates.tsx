@@ -1,77 +1,193 @@
 "use client";
 
-import React from "react";
-import { Award, Search, Download, CheckCircle2 } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { LayoutDashboard } from "lucide-react";
+import CertificatesStatCards from "./certificates/CertificatesStatCards";
+import CertificatesFilterBar from "./certificates/CertificatesFilterBar";
+import CertificatesStudentsTable from "./certificates/CertificatesStudentsTable";
+import CertificateTemplatesCard from "./certificates/CertificateTemplatesCard";
+import CertificatesMeritIssuedTable from "./certificates/CertificatesMeritIssuedTable";
+import CertificatesParticipationIssuedTable from "./certificates/CertificatesParticipationIssuedTable";
+import CertificatesPendingTable from "./certificates/CertificatesPendingTable";
+import CertificatesTotalIssuedTable from "./certificates/CertificatesTotalIssuedTable";
+import CertificatesPagination from "./certificates/CertificatesPagination";
+import CertificateModal, { downloadCertificateImage } from "./certificates/CertificateModal";
+import {
+  initialCertificatesData,
+  participationCertificatesData,
+  pendingCertificatesData,
+  totalCertificatesData,
+} from "./certificates/mockData";
+import { CertificateRecord, CertificatesFilterState, CertificatesViewMode } from "./certificates/types";
 
 export default function CertificatesPanel() {
-  const certificateList = [
-    { id: "1", type: "Gold Award Certificate", exam: "IMO Round 1", recipient: "Arjun Mehta", issuedDate: "15 May 2025", verificationId: "CERT-IMO-9941" },
-    { id: "2", type: "Merit Certificate", exam: "SOF Science Level 1", recipient: "Priya Sharma", issuedDate: "14 May 2025", verificationId: "CERT-SOF-8832" },
-    { id: "3", type: "Distinction Certificate", exam: "Cyber Olympiad 2025", recipient: "Rohan Verma", issuedDate: "13 May 2025", verificationId: "CERT-CYB-7723" },
-    { id: "4", type: "Participation Certificate", exam: "English Olympiad 2025", recipient: "Ananya Gupta", issuedDate: "12 May 2025", verificationId: "CERT-ENG-6614" },
-    { id: "5", type: "Merit Certificate", exam: "GK Olympiad 2025", recipient: "Kavya Patel", issuedDate: "11 May 2025", verificationId: "CERT-GKO-5505" },
-  ];
+  const [data] = useState<CertificateRecord[]>(initialCertificatesData);
+  const [participationData] = useState<CertificateRecord[]>(participationCertificatesData);
+  const [pendingData] = useState<CertificateRecord[]>(pendingCertificatesData);
+  const [totalData] = useState<CertificateRecord[]>(totalCertificatesData);
+  const [viewMode, setViewMode] = useState<CertificatesViewMode>("default");
+  const [filters, setFilters] = useState<CertificatesFilterState>({
+    olympiad: "All",
+    school: "All",
+    classNum: "All",
+    certificateTypeFilter: "All Types",
+    categoryFilter: "All Categories",
+    status: "Issued",
+    searchQuery: "",
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<CertificateRecord | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<"Merit" | "Participation" | null>(null);
+
+  const handleFilterChange = (key: keyof CertificatesFilterState, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setCurrentPage(1);
+  };
+
+  const handleSelectCardMode = (mode: CertificatesViewMode) => {
+    setViewMode(mode);
+    if (mode === "merit") {
+      setFilters((prev) => ({ ...prev, certificateTypeFilter: "Merit Certificates", status: "Issued" }));
+    } else if (mode === "participation") {
+      setFilters((prev) => ({ ...prev, certificateTypeFilter: "Participation Certificates", status: "Issued" }));
+    } else if (mode === "pending") {
+      setFilters((prev) => ({ ...prev, certificateTypeFilter: "Pending Certificates", status: "Pending" }));
+    } else if (mode === "total") {
+      setFilters((prev) => ({ ...prev, certificateTypeFilter: "All Types", categoryFilter: "All Categories", status: "All" }));
+    }
+  };
+
+  const filteredData = useMemo(() => {
+    const dataset =
+      viewMode === "total"
+        ? totalData
+        : viewMode === "pending"
+          ? pendingData
+          : viewMode === "participation"
+            ? participationData
+            : data;
+    return dataset.filter((item) => {
+      if (filters.olympiad !== "All" && !item.examName.includes(filters.olympiad)) return false;
+      if (filters.classNum !== "All" && item.classNum !== filters.classNum) return false;
+      if (filters.searchQuery.trim()) {
+        const query = filters.searchQuery.toLowerCase();
+        const matchName = item.studentName.toLowerCase().includes(query);
+        const matchReg = item.registrationId.toLowerCase().includes(query);
+        const matchRoll = item.rollNo.toLowerCase().includes(query);
+        if (!matchName && !matchReg && !matchRoll) return false;
+      }
+      return true;
+    });
+  }, [data, participationData, pendingData, totalData, filters, viewMode]);
+
+  const handleViewCertificate = (student: CertificateRecord) => {
+    setSelectedStudent(student);
+    setSelectedTemplate(null);
+    setIsModalOpen(true);
+  };
+
+  const handlePreviewTemplate = (type: "Merit" | "Participation") => {
+    setSelectedStudent(null);
+    setSelectedTemplate(type);
+    setIsModalOpen(true);
+  };
+
+  const handleDownloadCertificates = () => {
+    if (filteredData.length > 0) {
+      filteredData.slice(0, 5).forEach((student, index) => {
+        setTimeout(() => {
+          downloadCertificateImage({
+            name: student.studentName,
+            exam: student.examName,
+            regId: student.registrationId,
+            percentage: student.percentage,
+            isMerit: student.certificateType === "Merit",
+          });
+        }, index * 300);
+      });
+    }
+  };
+
+  const handleDownloadSingleCertificate = (student: CertificateRecord) => {
+    downloadCertificateImage({
+      name: student.studentName,
+      exam: student.examName,
+      regId: student.registrationId,
+      percentage: student.percentage,
+      isMerit: student.certificateType === "Merit",
+    });
+  };
 
   return (
     <div className="space-y-6 pb-8 font-sans">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-2xs">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <Award className="w-6 h-6 text-purple-600" />
-            Certificates Management
-          </h2>
-          <p className="text-sm font-semibold text-slate-500 mt-1">
-            Issue, verify, and manage official digital certificates of achievement
-          </p>
-        </div>
+      <div className="flex justify-end">
         <button
           type="button"
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs sm:text-sm hover:bg-purple-700 transition-colors shadow-md shadow-purple-600/20 cursor-pointer self-start sm:self-auto"
+          onClick={() => {
+            setViewMode("default");
+            setFilters({
+              olympiad: "All",
+              school: "All",
+              classNum: "All",
+              certificateTypeFilter: "All Types",
+              categoryFilter: "All Categories",
+              status: "Issued",
+              searchQuery: "",
+            });
+            setCurrentPage(1);
+          }}
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer shadow-2xs border ${
+            viewMode === "default"
+              ? "bg-[#3B1EAE] text-white border-[#3B1EAE] shadow-purple-600/20"
+              : "bg-white text-slate-700 hover:bg-slate-50 border-slate-200/80 hover:text-purple-700"
+          }`}
         >
-          <Download className="w-4 h-4 stroke-[2.5]" />
-          <span>Batch Generate</span>
+          <LayoutDashboard className="w-4 h-4" />
+          <span>Overview</span>
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
-        <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 max-w-md">
-          <Search className="w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search recipient or verification ID..."
-            className="w-full bg-transparent text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none"
-          />
-        </div>
+      <CertificatesStatCards selectedCardMode={viewMode} onSelectCardMode={handleSelectCardMode} />
+      <CertificatesFilterBar
+        filters={filters}
+        viewMode={viewMode}
+        onFilterChange={handleFilterChange}
+        onDownload={handleDownloadCertificates}
+        onExport={handleDownloadCertificates}
+      />
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-slate-100 text-xs sm:text-sm font-extrabold text-slate-400 uppercase tracking-wider">
-                <th className="py-3 px-3">Certificate Type</th>
-                <th className="py-3 px-3">Exam</th>
-                <th className="py-3 px-3">Recipient</th>
-                <th className="py-3 px-3">Verification ID</th>
-                <th className="py-3 px-3 text-right">Issued Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-xs sm:text-sm font-semibold text-slate-700">
-              {certificateList.map((cert) => (
-                <tr key={cert.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="py-3.5 px-3 font-bold text-purple-700 flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                    <span>{cert.type}</span>
-                  </td>
-                  <td className="py-3.5 px-3 font-bold text-slate-900">{cert.exam}</td>
-                  <td className="py-3.5 px-3 text-slate-700 font-semibold">{cert.recipient}</td>
-                  <td className="py-3.5 px-3 font-mono text-slate-500">{cert.verificationId}</td>
-                  <td className="py-3.5 px-3 text-right text-slate-500">{cert.issuedDate}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {viewMode === "total" ? (
+        <div className="w-full">
+          <CertificatesTotalIssuedTable data={filteredData} onViewCertificate={handleViewCertificate} onDownloadCertificate={handleViewCertificate} />
         </div>
-      </div>
+      ) : viewMode === "pending" ? (
+        <div className="w-full">
+          <CertificatesPendingTable data={filteredData} onIssueCertificate={handleViewCertificate} />
+        </div>
+      ) : viewMode === "merit" ? (
+        <div className="w-full">
+          <CertificatesMeritIssuedTable data={filteredData} onViewCertificate={handleViewCertificate} onDownloadCertificate={handleViewCertificate} />
+        </div>
+      ) : viewMode === "participation" ? (
+        <div className="w-full">
+          <CertificatesParticipationIssuedTable data={filteredData} onViewCertificate={handleViewCertificate} onDownloadCertificate={handleViewCertificate} />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
+          <div className="xl:col-span-7 space-y-4">
+            <CertificatesStudentsTable data={filteredData} onViewCertificate={handleViewCertificate} onDownloadCertificate={handleViewCertificate} />
+            <CertificatesPagination currentPage={currentPage} totalPages={1} totalResults={filteredData.length} onPageChange={(page) => setCurrentPage(page)} />
+          </div>
+          <div className="xl:col-span-5 h-full">
+            <CertificateTemplatesCard onPreviewTemplate={handlePreviewTemplate} />
+          </div>
+        </div>
+      )}
+
+      <CertificateModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} student={selectedStudent} templateType={selectedTemplate} />
     </div>
   );
 }
-

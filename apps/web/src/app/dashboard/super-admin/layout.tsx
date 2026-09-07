@@ -18,17 +18,29 @@ export default function SuperAdminDashboardLayout({
   children: React.ReactNode;
 }) {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [olympiadInitialFilter, setOlympiadInitialFilter] = useState<string>("all");
+  const [studentInitialCard, setStudentInitialCard] = useState<string | null>("total");
+
+  const handleSelectTab = (tabId: string, filter?: string) => {
+    setActiveTab(tabId);
+    if (tabId === "students") {
+      setStudentInitialCard(filter || "total");
+    }
+    if (tabId === "olympiads") {
+      setOlympiadInitialFilter(filter || "all");
+    }
+  };
 
   const renderActiveTab = () => {
     switch (activeTab) {
       case "dashboard":
-        return typeof SuperAdminDashboard === "function" ? <SuperAdminDashboard onSelectTab={setActiveTab} /> : null;
+        return typeof SuperAdminDashboard === "function" ? <SuperAdminDashboard onSelectTab={handleSelectTab} /> : null;
       case "schools":
         return typeof SchoolsPanel === "function" ? <SchoolsPanel /> : null;
       case "students":
-        return typeof StudentsPanel === "function" ? <StudentsPanel /> : null;
+        return typeof StudentsPanel === "function" ? <StudentsPanel initialCard={studentInitialCard} /> : null;
       case "olympiads":
-        return typeof OlympiadsPanel === "function" ? <OlympiadsPanel /> : null;
+        return typeof OlympiadsPanel === "function" ? <OlympiadsPanel initialFilter={olympiadInitialFilter} /> : null;
       case "results":
         return typeof ResultsPanel === "function" ? <ResultsPanel /> : null;
       case "certificates":
@@ -38,7 +50,7 @@ export default function SuperAdminDashboardLayout({
       case "settings":
         return typeof SettingsPanel === "function" ? <SettingsPanel /> : null;
       default:
-        return typeof SuperAdminDashboard === "function" ? <SuperAdminDashboard onSelectTab={setActiveTab} /> : null;
+        return typeof SuperAdminDashboard === "function" ? <SuperAdminDashboard onSelectTab={handleSelectTab} /> : null;
     }
   };
 
@@ -50,7 +62,7 @@ export default function SuperAdminDashboardLayout({
       {/* Main Right Shell */}
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         {/* Top Header */}
-        <Header activeTab={activeTab} />
+        <Header activeTab={activeTab} onSelectTab={setActiveTab} />
 
         {/* Dynamic Panel Content Canvas */}
         <main className="flex-1 p-6 md:p-8 space-y-6 overflow-y-auto w-full">

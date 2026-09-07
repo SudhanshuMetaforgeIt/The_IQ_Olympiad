@@ -5,9 +5,10 @@ import { Bell, ChevronDown, User, ChevronRight } from "lucide-react";
 
 interface HeaderProps {
   activeTab?: string;
+  onSelectTab?: (tabId: string) => void;
 }
 
-export function Header({ activeTab = "dashboard" }: HeaderProps) {
+export function Header({ activeTab = "dashboard", onSelectTab }: HeaderProps) {
   return (
     <header className="bg-[#F8FAFC] px-6 md:px-8 py-4 sticky top-0 z-20 font-sans border-b border-slate-200/60">
       <div className="flex items-center justify-between relative">
@@ -29,10 +30,9 @@ export function Header({ activeTab = "dashboard" }: HeaderProps) {
           </div>
         )}
 
-
-
         {/* Right Bell & Profile */}
         <div className="flex items-center gap-4">
+
           {/* Bell Icon */}
           <button
             type="button"

@@ -7,12 +7,14 @@ interface StudentsFilterBarProps {
   selectedCard: string | null;
   onSelectCard: (id: string | null) => void;
   onClearCardFilter: () => void;
+  onAddStudentClick?: () => void;
 }
 
 export function StudentsFilterBar({
   selectedCard,
   onSelectCard,
   onClearCardFilter,
+  onAddStudentClick,
 }: StudentsFilterBarProps) {
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
@@ -91,6 +93,7 @@ export function StudentsFilterBar({
         <div>
           <button
             type="button"
+            onClick={onAddStudentClick}
             className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#3B1EAE] text-white text-xs sm:text-sm font-extrabold hover:bg-purple-800 transition-colors cursor-pointer shadow-xs"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />

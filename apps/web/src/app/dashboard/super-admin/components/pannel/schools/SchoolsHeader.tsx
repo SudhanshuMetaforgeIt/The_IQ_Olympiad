@@ -3,7 +3,11 @@
 import React from "react";
 import { Building2, Plus } from "lucide-react";
 
-export function SchoolsHeader() {
+interface SchoolsHeaderProps {
+  onAddSchoolClick?: () => void;
+}
+
+export function SchoolsHeader({ onAddSchoolClick }: SchoolsHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div className="flex items-center gap-3">
@@ -22,6 +26,7 @@ export function SchoolsHeader() {
 
       <button
         type="button"
+        onClick={onAddSchoolClick}
         className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#3B1EAE] text-white text-xs sm:text-sm font-extrabold hover:bg-purple-800 transition-colors shadow-xs cursor-pointer self-start sm:self-auto"
       >
         <Plus className="w-4 h-4 stroke-[2.5]" />

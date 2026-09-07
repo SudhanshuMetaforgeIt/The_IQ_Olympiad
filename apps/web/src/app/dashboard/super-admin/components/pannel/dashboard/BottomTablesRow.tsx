@@ -4,7 +4,7 @@ import React from "react";
 import { topSchools, activeExamsList } from "./mockData";
 
 interface BottomTablesRowProps {
-  onSelectTab?: (tabId: string) => void;
+  onSelectTab?: (tabId: string, filter?: string) => void;
 }
 
 export function BottomTablesRow({ onSelectTab }: BottomTablesRowProps) {
@@ -57,7 +57,7 @@ export function BottomTablesRow({ onSelectTab }: BottomTablesRowProps) {
           <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">Active Exams (Live Now)</h3>
           <button
             type="button"
-            onClick={() => onSelectTab?.("olympiads")}
+            onClick={() => onSelectTab?.("olympiads", "Active")}
             className="text-xs sm:text-sm font-bold text-[#3B1EAE] hover:text-purple-900 border border-slate-200 rounded-lg px-2.5 py-1 cursor-pointer transition-colors"
           >
             View all

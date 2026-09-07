@@ -1,76 +1,227 @@
 "use client";
 
-import React from "react";
-import { TrendingUp, Search, Download } from "lucide-react";
+import React, { useState } from "react";
+import { ResultsStatCards } from "./results/ResultsStatCards";
+import { ResultsFilterBar } from "./results/ResultsFilterBar";
+import { ResultsRankSheetTable } from "./results/ResultsRankSheetTable";
+import { ResultsAllStudentsTable } from "./results/ResultsAllStudentsTable";
+import { ResultsRegisteredStudentsTable } from "./results/ResultsRegisteredStudentsTable";
+import { ResultsMeritListTable } from "./results/ResultsMeritListTable";
+import { ResultsPublishedTable } from "./results/ResultsPublishedTable";
+import { ResultsPagination } from "./results/ResultsPagination";
+import {
+  initialRankSheetData,
+  allStudentsData,
+  registeredStudentsData,
+  meritListData,
+  publishedResultsData,
+} from "./results/mockData";
+import { ResultsFilterState } from "./results/types";
 
 export default function ResultsPanel() {
-  const resultList = [
-    { id: "1", exam: "IMO Round 1", category: "Mathematics", publishedDate: "14 May 2025", totalEvaluated: 1245, passRate: "92%", topScorer: "Arjun Mehta (98%)" },
-    { id: "2", exam: "SOF Science Level 1", category: "Science", publishedDate: "13 May 2025", totalEvaluated: 962, passRate: "88%", topScorer: "Priya Sharma (96%)" },
-    { id: "3", exam: "Cyber Olympiad 2025", category: "Computer Science", publishedDate: "12 May 2025", totalEvaluated: 765, passRate: "86%", topScorer: "Rohan Verma (95%)" },
-    { id: "4", exam: "English Olympiad 2025", category: "English", publishedDate: "11 May 2025", totalEvaluated: 632, passRate: "90%", topScorer: "Ananya Gupta (97%)" },
-    { id: "5", exam: "GK Olympiad 2025", category: "General Knowledge", publishedDate: "10 May 2025", totalEvaluated: 592, passRate: "85%", topScorer: "Kavya Patel (94%)" },
-  ];
+  const [selectedCardId, setSelectedCardId] = useState<string>("");
+  const [rankSheetList] = useState(initialRankSheetData);
+  const [allStudentsList] = useState(allStudentsData);
+  const [registeredStudentsList] = useState(registeredStudentsData);
+  const [meritList] = useState(meritListData);
+  const [publishedResultsList] = useState(publishedResultsData);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [filters, setFilters] = useState<ResultsFilterState>({
+    olympiad: "All Olympiads",
+    school: "All Schools",
+    classNum: "All Classes",
+    status: "Published",
+    dateRange: "01 May 2026 - 12 May 2026",
+    searchQuery: "",
+    medal: "All Medals",
+  });
+
+  const handleFilterChange = (key: keyof ResultsFilterState, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setCurrentPage(1);
+  };
+
+  const isTotalStudentsView = selectedCardId === "total";
+  const isRegisteredStudentsView = selectedCardId === "registered";
+  const isMeritListView = selectedCardId === "merit";
+  const isPublishedResultsView = selectedCardId === "published";
+
+  // Filter published results
+  const filteredPublishedResults = publishedResultsList.filter((item) => {
+    const q = filters.searchQuery.toLowerCase().trim();
+    return (
+      !q ||
+      item.olympiadName.toLowerCase().includes(q) ||
+      item.examCode.toLowerCase().includes(q)
+    );
+  });
+
+  // Filter merit list
+  const filteredMeritList = meritList.filter((item) => {
+    const q = filters.searchQuery.toLowerCase().trim();
+    const matchesSearch =
+      !q ||
+      item.studentName.toLowerCase().includes(q) ||
+      item.registrationId.toLowerCase().includes(q) ||
+      item.rollNo.toLowerCase().includes(q) ||
+      item.schoolName.toLowerCase().includes(q);
+
+    const matchesSchool =
+      filters.school === "All Schools" || item.schoolName === filters.school;
+
+    const matchesMedal =
+      !filters.medal ||
+      filters.medal === "All Medals" ||
+      item.medal === filters.medal;
+
+    return matchesSearch && matchesSchool && matchesMedal;
+  });
+
+  // Filter rank sheet
+  const filteredRankSheet = rankSheetList.filter((item) => {
+    const q = filters.searchQuery.toLowerCase().trim();
+    const matchesSearch =
+      !q ||
+      item.studentName.toLowerCase().includes(q) ||
+      item.registrationId.toLowerCase().includes(q) ||
+      item.rollNo.toLowerCase().includes(q) ||
+      item.schoolName.toLowerCase().includes(q);
+
+    const matchesSchool =
+      filters.school === "All Schools" || item.schoolName === filters.school;
+
+    return matchesSearch && matchesSchool;
+  });
+
+  // Filter all students
+  const filteredAllStudents = allStudentsList.filter((item) => {
+    const q = filters.searchQuery.toLowerCase().trim();
+    const matchesSearch =
+      !q ||
+      item.studentName.toLowerCase().includes(q) ||
+      item.registrationId.toLowerCase().includes(q) ||
+      item.rollNo.toLowerCase().includes(q) ||
+      item.schoolName.toLowerCase().includes(q);
+
+    const matchesSchool =
+      filters.school === "All Schools" || item.schoolName === filters.school;
+
+    return matchesSearch && matchesSchool;
+  });
+
+  // Filter registered students
+  const filteredRegisteredStudents = registeredStudentsList.filter((item) => {
+    const q = filters.searchQuery.toLowerCase().trim();
+    const matchesSearch =
+      !q ||
+      item.studentName.toLowerCase().includes(q) ||
+      item.registrationId.toLowerCase().includes(q) ||
+      item.rollNo.toLowerCase().includes(q) ||
+      item.schoolName.toLowerCase().includes(q);
+
+    const matchesSchool =
+      filters.school === "All Schools" || item.schoolName === filters.school;
+
+    return matchesSearch && matchesSchool;
+  });
+
+  const handleExport = () => {
+    const dataToExport = isPublishedResultsView
+      ? filteredPublishedResults
+      : isMeritListView
+      ? filteredMeritList
+      : isRegisteredStudentsView
+      ? filteredRegisteredStudents
+      : isTotalStudentsView
+      ? filteredAllStudents
+      : filteredRankSheet;
+    const jsonStr = JSON.stringify(dataToExport, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = isPublishedResultsView
+      ? "published_results.json"
+      : isMeritListView
+      ? "merit_list.json"
+      : isRegisteredStudentsView
+      ? "registered_students.json"
+      : isTotalStudentsView
+      ? "all_students.json"
+      : "rank_sheet.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handlePublish = () => {
+    alert("Action completed successfully!");
+  };
+
+  const totalItemsCount = isPublishedResultsView
+    ? filteredPublishedResults.length
+    : isMeritListView
+    ? filteredMeritList.length
+    : isRegisteredStudentsView
+    ? filteredRegisteredStudents.length
+    : isTotalStudentsView
+    ? filteredAllStudents.length
+    : filteredRankSheet.length;
 
   return (
-    <div className="space-y-6 pb-8 font-sans">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-2xs">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <TrendingUp className="w-6 h-6 text-purple-600" />
-            Exam Results & Scorecards
-          </h2>
-          <p className="text-sm font-semibold text-slate-500 mt-1">
-            Review performance metrics, percentile ranks, and published scorecard reports
-          </p>
-        </div>
-        <button
-          type="button"
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs sm:text-sm hover:bg-purple-700 transition-colors shadow-md shadow-purple-600/20 cursor-pointer self-start sm:self-auto"
-        >
-          <Download className="w-4 h-4 stroke-[2.5]" />
-          <span>Export All Results</span>
-        </button>
-      </div>
+    <div className="space-y-6 pb-8 font-sans text-slate-900">
+      {/* 1. Top Stat Cards */}
+      <ResultsStatCards
+        selectedCardId={selectedCardId}
+        onSelectCard={(id) => {
+          const nextCardId = selectedCardId === id ? "" : id;
+          setSelectedCardId(nextCardId);
+          setFilters((prev) => ({
+            ...prev,
+            status:
+              nextCardId === "registered"
+                ? "Registered"
+                : nextCardId === "total"
+                ? "All Status"
+                : "Published",
+            medal: "All Medals",
+          }));
+          setCurrentPage(1);
+        }}
+      />
 
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-2xs space-y-4">
-        <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 max-w-md">
-          <Search className="w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search exam or scorecard..."
-            className="w-full bg-transparent text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none"
-          />
-        </div>
+      {/* 2. Filter Bar */}
+      <ResultsFilterBar
+        filters={filters}
+        isTotalStudentsView={isTotalStudentsView}
+        isRegisteredStudentsView={isRegisteredStudentsView}
+        isMeritListView={isMeritListView}
+        isPublishedResultsView={isPublishedResultsView}
+        onFilterChange={handleFilterChange}
+        onPublish={handlePublish}
+        onExport={handleExport}
+      />
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-slate-100 text-xs sm:text-sm font-extrabold text-slate-400 uppercase tracking-wider">
-                <th className="py-3 px-3">Exam Name</th>
-                <th className="py-3 px-3">Category</th>
-                <th className="py-3 px-3">Published Date</th>
-                <th className="py-3 px-3 text-right">Evaluated</th>
-                <th className="py-3 px-3 text-right">Pass Rate</th>
-                <th className="py-3 px-3 text-right">Top Scorer</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-xs sm:text-sm font-semibold text-slate-700">
-              {resultList.map((res) => (
-                <tr key={res.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="py-3.5 px-3 font-bold text-slate-900">{res.exam}</td>
-                  <td className="py-3.5 px-3 text-purple-700 font-bold">{res.category}</td>
-                  <td className="py-3.5 px-3 text-slate-500">{res.publishedDate}</td>
-                  <td className="py-3.5 px-3 text-right font-bold text-slate-800">{res.totalEvaluated.toLocaleString()}</td>
-                  <td className="py-3.5 px-3 text-right font-bold text-emerald-600">{res.passRate}</td>
-                  <td className="py-3.5 px-3 text-right font-bold text-slate-900">{res.topScorer}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* 3. Main Dynamic Table View */}
+      {isPublishedResultsView ? (
+        <ResultsPublishedTable results={filteredPublishedResults} />
+      ) : isMeritListView ? (
+        <ResultsMeritListTable students={filteredMeritList} />
+      ) : isRegisteredStudentsView ? (
+        <ResultsRegisteredStudentsTable students={filteredRegisteredStudents} />
+      ) : isTotalStudentsView ? (
+        <ResultsAllStudentsTable students={filteredAllStudents} />
+      ) : (
+        <ResultsRankSheetTable records={filteredRankSheet} />
+      )}
+
+      {/* 4. Pagination */}
+      <ResultsPagination
+        currentPage={currentPage}
+        totalPages={1}
+        totalItems={totalItemsCount}
+        onPageChange={(p) => setCurrentPage(p)}
+      />
     </div>
   );
 }
-

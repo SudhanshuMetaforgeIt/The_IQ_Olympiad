@@ -1,48 +1,136 @@
 "use client";
 
-import React from "react";
-import { BarChart3, Download } from "lucide-react";
+import React, { useState } from "react";
+import { LayoutDashboard } from "lucide-react";
+import ReportsStatCards from "./reports/ReportsStatCards";
+import ReportsFilterBar from "./reports/ReportsFilterBar";
+import ReportsSchoolsFilterBar from "./reports/ReportsSchoolsFilterBar";
+import ReportsStudentsFilterBar from "./reports/ReportsStudentsFilterBar";
+import ReportsTestsFilterBar from "./reports/ReportsTestsFilterBar";
+import ReportsParticipationFilterBar from "./reports/ReportsParticipationFilterBar";
+import ReportsAvgScoreFilterBar from "./reports/ReportsAvgScoreFilterBar";
+import ReportsPerformanceOverviewCard from "./reports/ReportsPerformanceOverviewCard";
+import ReportsStudentsByClassCard from "./reports/ReportsStudentsByClassCard";
+import ReportsStudentsByClassTop6Card from "./reports/ReportsStudentsByClassTop6Card";
+import ReportsStudentsTrendCard from "./reports/ReportsStudentsTrendCard";
+import ReportsTestsConductedTrendCard from "./reports/ReportsTestsConductedTrendCard";
+import ReportsTestsByTypeCard from "./reports/ReportsTestsByTypeCard";
+import ReportsParticipationRateTrendCard from "./reports/ReportsParticipationRateTrendCard";
+import ReportsParticipationRateByClassCard from "./reports/ReportsParticipationRateByClassCard";
+import ReportsAverageScoreTrendCard from "./reports/ReportsAverageScoreTrendCard";
+import ReportsAverageScoreByClassCard from "./reports/ReportsAverageScoreByClassCard";
+import ReportsSchoolsByStateCard from "./reports/ReportsSchoolsByStateCard";
+import ReportsSchoolsByTypeCard from "./reports/ReportsSchoolsByTypeCard";
+import ReportsSchoolsTrendCard from "./reports/ReportsSchoolsTrendCard";
+import ReportsTopPerformingSchoolsTable from "./reports/ReportsTopPerformingSchoolsTable";
+import ReportsStudentsTopPerformingSchoolsTable from "./reports/ReportsStudentsTopPerformingSchoolsTable";
+import ReportsTopTestsConductedTable from "./reports/ReportsTopTestsConductedTable";
+import ReportsParticipationRateByOlympiadTable from "./reports/ReportsParticipationRateByOlympiadTable";
+import ReportsTopOlympiadsByAverageScoreTable from "./reports/ReportsTopOlympiadsByAverageScoreTable";
+import ReportsRecentReportsList from "./reports/ReportsRecentReportsList";
+import ReportsParticipationByOlympiad from "./reports/ReportsParticipationByOlympiad";
+import ReportsTotalSchoolsTable from "./reports/ReportsTotalSchoolsTable";
+import ReportsPagination from "./reports/ReportsPagination";
+import { ReportsFilterState, ReportsViewMode } from "./reports/types";
 
 export default function ReportsPanel() {
-  const reportSummary = [
-    { title: "Total Revenue Generated", value: "₹45,82,000", change: "+14.2% vs last month" },
-    { title: "Platform Active Rate", value: "98.4%", change: "+2.1% uptime" },
-    { title: "Avg. Test Completion", value: "94.8%", change: "+1.5% completion" },
-  ];
+  const [viewMode, setViewMode] = useState<ReportsViewMode>("default");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState<ReportsFilterState>({
+    olympiad: "All", school: "All", classNum: "All", city: "All", state: "All",
+    dateRange: "01 May 2026 - 12 May 2026", searchQuery: "",
+  });
+
+  const handleFilterChange = (key: keyof ReportsFilterState, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleResetFilters = () => {
+    setFilters({
+      olympiad: "All", school: "All", classNum: "All", city: "All", state: "All",
+      dateRange: "01 May 2026 - 12 May 2026", searchQuery: "",
+    });
+  };
 
   return (
     <div className="space-y-6 pb-8 font-sans">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-2xs">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <BarChart3 className="w-6 h-6 text-purple-600" />
-            Analytics & Platform Reports
-          </h2>
-          <p className="text-sm font-semibold text-slate-500 mt-1">
-            Deep dive into platform usage metrics, school participation, and financial statistics
-          </p>
-        </div>
+      <div className="flex justify-end">
         <button
           type="button"
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs sm:text-sm hover:bg-purple-700 transition-colors shadow-md shadow-purple-600/20 cursor-pointer self-start sm:self-auto"
+          onClick={() => setViewMode("default")}
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer shadow-2xs border ${viewMode === "default"
+            ? "bg-[#3B1EAE] text-white border-[#3B1EAE] shadow-purple-600/20"
+            : "bg-white text-slate-700 hover:bg-slate-50 border-slate-200/80 hover:text-purple-700"
+            }`}
         >
-          <Download className="w-4 h-4 stroke-[2.5]" />
-          <span>Download PDF Report</span>
+          <LayoutDashboard className="w-4 h-4" />
+          <span>Overview</span>
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {reportSummary.map((item, idx) => (
-          <div key={idx} className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs">
-            <p className="text-xs sm:text-sm font-bold text-slate-500">{item.title}</p>
-            <h3 className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 tracking-tight">{item.value}</h3>
-            <span className="text-xs font-extrabold text-emerald-600 mt-2 inline-block">
-              {item.change}
-            </span>
+      <ReportsStatCards selectedCardMode={viewMode} onSelectCardMode={(mode) => setViewMode(mode)} />
+
+      {viewMode === "schools" ? (
+        <>
+          <ReportsSchoolsFilterBar filters={filters} onFilterChange={handleFilterChange} onResetFilters={handleResetFilters} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+            <ReportsSchoolsByStateCard />
+            <ReportsSchoolsByTypeCard />
+            <ReportsSchoolsTrendCard />
           </div>
-        ))}
-      </div>
+          <ReportsTotalSchoolsTable />
+        </>
+      ) : viewMode === "students" ? (
+        <>
+          <ReportsStudentsFilterBar filters={filters} onFilterChange={handleFilterChange} onResetFilters={handleResetFilters} />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            <div className="lg:col-span-7"><ReportsStudentsTrendCard /></div>
+            <div className="lg:col-span-5"><ReportsStudentsByClassTop6Card /></div>
+          </div>
+          <ReportsStudentsTopPerformingSchoolsTable />
+        </>
+      ) : viewMode === "tests" ? (
+        <>
+          <ReportsTestsFilterBar filters={filters} onFilterChange={handleFilterChange} onResetFilters={handleResetFilters} />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            <div className="lg:col-span-7"><ReportsTestsConductedTrendCard /></div>
+            <div className="lg:col-span-5"><ReportsTestsByTypeCard /></div>
+          </div>
+          <ReportsTopTestsConductedTable />
+        </>
+      ) : viewMode === "participation" ? (
+        <>
+          <ReportsParticipationFilterBar filters={filters} onFilterChange={handleFilterChange} onResetFilters={handleResetFilters} />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            <div className="lg:col-span-7"><ReportsParticipationRateTrendCard /></div>
+            <div className="lg:col-span-5"><ReportsParticipationRateByClassCard /></div>
+          </div>
+          <ReportsParticipationRateByOlympiadTable />
+        </>
+      ) : viewMode === "avg_score" ? (
+        <>
+          <ReportsAvgScoreFilterBar filters={filters} onFilterChange={handleFilterChange} onResetFilters={handleResetFilters} />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            <div className="lg:col-span-7"><ReportsAverageScoreTrendCard /></div>
+            <div className="lg:col-span-5"><ReportsAverageScoreByClassCard /></div>
+          </div>
+          <ReportsTopOlympiadsByAverageScoreTable />
+        </>
+      ) : (
+        <>
+          <ReportsFilterBar filters={filters} onFilterChange={handleFilterChange} />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+            <div className="lg:col-span-2"><ReportsPerformanceOverviewCard /></div>
+            <div className="lg:col-span-1"><ReportsStudentsByClassCard /></div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
+            <ReportsTopPerformingSchoolsTable />
+            <ReportsRecentReportsList />
+            <ReportsParticipationByOlympiad />
+          </div>
+          <ReportsPagination currentPage={currentPage} totalPages={20} totalResults={24} onPageChange={(page) => setCurrentPage(page)} />
+        </>
+      )}
     </div>
   );
 }
-

@@ -55,6 +55,21 @@ export const recentActivities = [
   { id: "5", title: "Certificate Generated", subtitle: "IMO Round 1", time: "3 hr ago", icon: Award, bg: "bg-blue-100", text: "text-blue-600" },
 ];
 
+export const allRecentActivities = [
+  { id: "1", title: "New School Registered", subtitle: "Greenfield Public School", time: "10 min ago", date: "15 May 2025, 10:45 AM", category: "School", icon: Building2, bg: "bg-purple-100", text: "text-purple-600" },
+  { id: "2", title: "Exam Started", subtitle: "IMO Round 1", time: "25 min ago", date: "15 May 2025, 10:30 AM", category: "Exam", icon: FileText, bg: "bg-blue-100", text: "text-blue-600" },
+  { id: "3", title: "New Student Registered", subtitle: "Arjun Mehta (Class 8)", time: "1 hr ago", date: "15 May 2025, 09:55 AM", category: "Student", icon: Users, bg: "bg-emerald-100", text: "text-emerald-600" },
+  { id: "4", title: "Results Published", subtitle: "SOF Science Level 1", time: "2 hr ago", date: "15 May 2025, 08:50 AM", category: "Result", icon: MessageSquare, bg: "bg-pink-100", text: "text-pink-600" },
+  { id: "5", title: "Certificate Generated", subtitle: "IMO Round 1 Merit Certificates", time: "3 hr ago", date: "15 May 2025, 07:45 AM", category: "Certificate", icon: Award, bg: "bg-blue-100", text: "text-blue-600" },
+  { id: "6", title: "Bulk Students Uploaded", subtitle: "Sunrise International (250 Students)", time: "4 hr ago", date: "15 May 2025, 06:30 AM", category: "Student", icon: Users, bg: "bg-emerald-100", text: "text-emerald-600" },
+  { id: "7", title: "Practice Series Created", subtitle: "NSO Level 1 Mock Series", time: "5 hr ago", date: "15 May 2025, 05:15 AM", category: "Exam", icon: BookOpen, bg: "bg-purple-100", text: "text-purple-600" },
+  { id: "8", title: "New School Registered", subtitle: "Bright Future Academy", time: "6 hr ago", date: "15 May 2025, 04:00 AM", category: "School", icon: Building2, bg: "bg-purple-100", text: "text-purple-600" },
+  { id: "9", title: "Exam Completed", subtitle: "Cyber Olympiad 2025", time: "8 hr ago", date: "14 May 2025, 10:00 PM", category: "Exam", icon: FileText, bg: "bg-blue-100", text: "text-blue-600" },
+  { id: "10", title: "Results Verified", subtitle: "English Olympiad 2025", time: "10 hr ago", date: "14 May 2025, 08:15 PM", category: "Result", icon: MessageSquare, bg: "bg-pink-100", text: "text-pink-600" },
+  { id: "11", title: "School Admin Approved", subtitle: "Silver Oak School Admin", time: "12 hr ago", date: "14 May 2025, 06:00 PM", category: "School", icon: Building2, bg: "bg-purple-100", text: "text-purple-600" },
+  { id: "12", title: "Certificates Dispatched", subtitle: "General Knowledge Olympiad", time: "1 day ago", date: "14 May 2025, 02:30 PM", category: "Certificate", icon: Award, bg: "bg-blue-100", text: "text-blue-600" },
+];
+
 export const topSchools = [
   { rank: 1, name: "Greenfield Public School", students: "1,245", exams: "24" },
   { rank: 2, name: "Sunrise International School", students: "962", exams: "20" },
