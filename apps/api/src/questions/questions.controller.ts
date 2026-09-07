@@ -12,11 +12,14 @@ import {
   CurrentUser,
   type AuthUser,
 } from '../common/decorators/current-user.decorator.js';
+import { Public } from '../common/decorators/public.decorator.js';
 import { Roles } from '../common/decorators/roles.decorator.js';
 import { UserRole } from '../common/enums/user-role.enum.js';
 import {
   CreateQuestionDto,
+  ListApprovedQuestionsQueryDto,
   ListQuestionsQueryDto,
+  SubmitDemoExamAnswersDto,
   UpdateQuestionDto,
   UpdateQuestionStatusDto,
 } from './dto/questions.dto.js';
@@ -32,10 +35,43 @@ export class QuestionsController {
     return this.questionsService.create(user, dto);
   }
 
+  /**
+   * Admin question bank list (full documents, including answers).
+   * Remains SUPER_ADMIN-only so student-safe routes can coexist.
+   */
   @Roles(UserRole.SUPER_ADMIN)
   @Get()
   list(@CurrentUser() user: AuthUser, @Query() query: ListQuestionsQueryDto) {
     return this.questionsService.list(user, query);
+  }
+
+  /**
+   * Student-facing approved questions (no answers / explanations / generation).
+   * Optional filters: cognitiveDomain, difficulty.
+   */
+  @Public()
+  @Get('approved')
+  listApproved(@Query() query: ListApprovedQuestionsQueryDto) {
+    return this.questionsService.listApproved(query);
+  }
+
+  /**
+   * Curated demo exam set: all APPROVED seeded questions in exam order.
+   */
+  @Public()
+  @Get('demo')
+  getDemoExamQuestions() {
+    return this.questionsService.getDemoExamQuestions();
+  }
+
+  /**
+   * Demo-only: score student selections server-side against APPROVED questions.
+   * Does not persist an ExamAttempt.
+   */
+  @Public()
+  @Post('demo/submit')
+  submitDemoExam(@Body() dto: SubmitDemoExamAnswersDto) {
+    return this.questionsService.submitDemoExam(dto);
   }
 
   @Roles(UserRole.SUPER_ADMIN)

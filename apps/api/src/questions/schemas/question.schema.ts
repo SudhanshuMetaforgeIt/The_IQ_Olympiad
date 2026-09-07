@@ -71,6 +71,19 @@ export const QuestionGenerationSchema =
   collection: 'questions',
 })
 export class Question {
+  /**
+   * Optional stable source ID (e.g. curated demo question_id).
+   * Used for idempotent seeding without wiping unrelated questions.
+   */
+  @Prop({
+    trim: true,
+    maxlength: 80,
+    sparse: true,
+    unique: true,
+    index: true,
+  })
+  externalId?: string;
+
   @Prop({
     required: true,
     trim: true,

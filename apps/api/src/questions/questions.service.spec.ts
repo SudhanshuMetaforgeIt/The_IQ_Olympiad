@@ -252,6 +252,350 @@ describe('QuestionsService', () => {
     });
   });
 
+  describe('student-facing approved questions', () => {
+    function mockApprovedFind(docs: Record<string, unknown>[]) {
+      questionModel.find.mockReturnValue({
+        select: vi.fn().mockReturnThis(),
+        lean: vi.fn().mockReturnThis(),
+        exec: vi.fn().mockResolvedValue(docs),
+      });
+    }
+
+    it('returns only safe fields for APPROVED questions', async () => {
+      mockApprovedFind([
+        {
+          _id: { toString: () => questionId },
+          questionText: 'What is 2 + 2?',
+          questionType: QuestionType.MCQ,
+          cognitiveDomain: CognitiveDomain.THINK,
+          difficulty: QuestionDifficulty.EASY,
+          options: [
+            { id: 'A', text: '3' },
+            { id: 'B', text: '4' },
+          ],
+          marks: 2,
+          externalId: 'THINK_001',
+          correctOptionIds: ['B'],
+          explanation: 'secret',
+          generation: { source: QuestionSource.AI },
+        },
+      ]);
+
+      const result = await service.listApproved({});
+
+      expect(questionModel.find).toHaveBeenCalledWith({
+        status: QuestionStatus.APPROVED,
+      });
+      expect(result).toHaveLength(1);
+      expect(result[0]).toEqual({
+        id: questionId,
+        questionText: 'What is 2 + 2?',
+        questionType: QuestionType.MCQ,
+        cognitiveDomain: CognitiveDomain.THINK,
+        difficulty: QuestionDifficulty.EASY,
+        options: [
+          { id: 'A', text: '3' },
+          { id: 'B', text: '4' },
+        ],
+        marks: 2,
+      });
+      expect(result[0]).not.toHaveProperty('correctOptionIds');
+      expect(result[0]).not.toHaveProperty('explanation');
+      expect(result[0]).not.toHaveProperty('generation');
+      expect(result[0]).not.toHaveProperty('externalId');
+    });
+
+    it('applies optional cognitiveDomain and difficulty filters', async () => {
+      mockApprovedFind([]);
+
+      await service.listApproved({
+        cognitiveDomain: CognitiveDomain.SOLVE,
+        difficulty: QuestionDifficulty.HARD,
+      });
+
+      expect(questionModel.find).toHaveBeenCalledWith({
+        status: QuestionStatus.APPROVED,
+        cognitiveDomain: CognitiveDomain.SOLVE,
+        difficulty: QuestionDifficulty.HARD,
+      });
+    });
+
+    it('returns a demo exam payload sorted by domain then externalId', async () => {
+      mockApprovedFind([
+        {
+          _id: { toString: () => 'id-analyse' },
+          questionText: 'Analyse Q',
+          questionType: QuestionType.MCQ,
+          cognitiveDomain: CognitiveDomain.ANALYSE,
+          difficulty: QuestionDifficulty.MEDIUM,
+          options: [{ id: 'A', text: '1' }, { id: 'B', text: '2' }],
+          marks: 2,
+          externalId: 'ANALYSE_001',
+        },
+        {
+          _id: { toString: () => 'id-think-2' },
+          questionText: 'Think Q2',
+          questionType: QuestionType.MCQ,
+          cognitiveDomain: CognitiveDomain.THINK,
+          difficulty: QuestionDifficulty.HARD,
+          options: [{ id: 'A', text: '1' }, { id: 'B', text: '2' }],
+          marks: 2,
+          externalId: 'THINK_002',
+        },
+        {
+          _id: { toString: () => 'id-think-1' },
+          questionText: 'Think Q1',
+          questionType: QuestionType.MCQ,
+          cognitiveDomain: CognitiveDomain.THINK,
+          difficulty: QuestionDifficulty.MEDIUM,
+          options: [{ id: 'A', text: '1' }, { id: 'B', text: '2' }],
+          marks: 2,
+          externalId: 'THINK_001',
+        },
+      ]);
+
+      const demo = await service.getDemoExamQuestions();
+
+      expect(demo.title).toBe('The IQ Olympiad');
+      expect(demo.totalQuestions).toBe(3);
+      expect(demo.totalMarks).toBe(6);
+      expect(demo.marksPerQuestion).toBe(2);
+      expect(demo.questions.map((q) => q.id)).toEqual([
+        'id-think-1',
+        'id-think-2',
+        'id-analyse',
+      ]);
+    });
+
+    it('throws NotFound when no approved demo questions exist', async () => {
+      mockApprovedFind([]);
+
+      await expect(service.getDemoExamQuestions()).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('submitDemoExam', () => {
+    const thinkId = '64b64c4f2f1c2a3b4c5d6eb1';
+    const analyseId = '64b64c4f2f1c2a3b4c5d6eb5';
+    const solveId = '64b64c4f2f1c2a3b4c5d6eb6';
+
+    function paperQuestion(
+      id: string,
+      domain: CognitiveDomain,
+      correct: string,
+      externalId: string,
+    ) {
+      return {
+        _id: { toString: () => id },
+        cognitiveDomain: domain,
+        marks: 2,
+        options: [
+          { id: 'A', text: '1' },
+          { id: 'B', text: '2' },
+          { id: 'C', text: '3' },
+          { id: 'D', text: '4' },
+        ],
+        correctOptionIds: [correct],
+        externalId,
+      };
+    }
+
+    function mockPaper(docs: Record<string, unknown>[]) {
+      questionModel.find.mockReturnValue({
+        select: vi.fn().mockReturnThis(),
+        lean: vi.fn().mockReturnThis(),
+        exec: vi.fn().mockResolvedValue(docs),
+      });
+    }
+
+    const defaultPaper = [
+      paperQuestion(thinkId, CognitiveDomain.THINK, 'A', 'THINK_001'),
+      paperQuestion(analyseId, CognitiveDomain.ANALYSE, 'B', 'ANALYSE_001'),
+      paperQuestion(solveId, CognitiveDomain.SOLVE, 'C', 'SOLVE_001'),
+    ];
+
+    it('scores all correct answers', async () => {
+      mockPaper(defaultPaper);
+
+      const result = await service.submitDemoExam({
+        answers: [
+          { questionId: thinkId, selectedOptionIds: ['A'] },
+          { questionId: analyseId, selectedOptionIds: ['B'] },
+          { questionId: solveId, selectedOptionIds: ['C'] },
+        ],
+      });
+
+      expect(result).toEqual({
+        totalScore: 6,
+        totalMarks: 6,
+        attempted: 3,
+        correctAnswers: 3,
+        incorrectAnswers: 0,
+        unattempted: 0,
+        sectionScores: expect.arrayContaining([
+          expect.objectContaining({
+            cognitiveDomain: CognitiveDomain.THINK,
+            score: 2,
+            maxScore: 2,
+            attempted: 1,
+            correct: 1,
+          }),
+          expect.objectContaining({
+            cognitiveDomain: CognitiveDomain.ANALYSE,
+            score: 2,
+            maxScore: 2,
+            attempted: 1,
+            correct: 1,
+          }),
+          expect.objectContaining({
+            cognitiveDomain: CognitiveDomain.SOLVE,
+            score: 2,
+            maxScore: 2,
+            attempted: 1,
+            correct: 1,
+          }),
+        ]),
+      });
+      expect(result).not.toHaveProperty('correctOptionIds');
+    });
+
+    it('scores all incorrect answers as zero', async () => {
+      mockPaper(defaultPaper);
+
+      const result = await service.submitDemoExam({
+        answers: [
+          { questionId: thinkId, selectedOptionIds: ['D'] },
+          { questionId: analyseId, selectedOptionIds: ['D'] },
+          { questionId: solveId, selectedOptionIds: ['D'] },
+        ],
+      });
+
+      expect(result.totalScore).toBe(0);
+      expect(result.correctAnswers).toBe(0);
+      expect(result.incorrectAnswers).toBe(3);
+      expect(result.attempted).toBe(3);
+      expect(result.unattempted).toBe(0);
+    });
+
+    it('scores a partially attempted exam', async () => {
+      mockPaper(defaultPaper);
+
+      const result = await service.submitDemoExam({
+        answers: [
+          { questionId: thinkId, selectedOptionIds: ['A'] },
+          { questionId: analyseId, selectedOptionIds: ['D'] },
+        ],
+      });
+
+      expect(result.totalScore).toBe(2);
+      expect(result.attempted).toBe(2);
+      expect(result.correctAnswers).toBe(1);
+      expect(result.incorrectAnswers).toBe(1);
+      expect(result.unattempted).toBe(1);
+    });
+
+    it('scores a completely unattempted exam', async () => {
+      mockPaper(defaultPaper);
+
+      const result = await service.submitDemoExam({ answers: [] });
+
+      expect(result).toMatchObject({
+        totalScore: 0,
+        totalMarks: 6,
+        attempted: 0,
+        correctAnswers: 0,
+        incorrectAnswers: 0,
+        unattempted: 3,
+      });
+    });
+
+    it('rejects duplicate question IDs', async () => {
+      await expect(
+        service.submitDemoExam({
+          answers: [
+            { questionId: thinkId, selectedOptionIds: ['A'] },
+            { questionId: thinkId, selectedOptionIds: ['B'] },
+          ],
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    it('rejects non-existent question IDs', async () => {
+      mockPaper(defaultPaper);
+      const unknownId = '64b64c4f2f1c2a3b4c5d6eff';
+
+      await expect(
+        service.submitDemoExam({
+          answers: [{ questionId: unknownId, selectedOptionIds: ['A'] }],
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    it('rejects invalid option IDs', async () => {
+      mockPaper(defaultPaper);
+
+      await expect(
+        service.submitDemoExam({
+          answers: [{ questionId: thinkId, selectedOptionIds: ['Z'] }],
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    it('calculates section-wise scores across domains', async () => {
+      mockPaper(defaultPaper);
+
+      const result = await service.submitDemoExam({
+        answers: [
+          { questionId: thinkId, selectedOptionIds: ['A'] },
+          { questionId: analyseId, selectedOptionIds: ['A'] },
+        ],
+      });
+
+      const think = result.sectionScores.find(
+        (s) => s.cognitiveDomain === CognitiveDomain.THINK,
+      );
+      const analyse = result.sectionScores.find(
+        (s) => s.cognitiveDomain === CognitiveDomain.ANALYSE,
+      );
+      const solve = result.sectionScores.find(
+        (s) => s.cognitiveDomain === CognitiveDomain.SOLVE,
+      );
+
+      expect(think).toMatchObject({
+        score: 2,
+        maxScore: 2,
+        attempted: 1,
+        correct: 1,
+      });
+      expect(analyse).toMatchObject({
+        score: 0,
+        maxScore: 2,
+        attempted: 1,
+        correct: 0,
+      });
+      expect(solve).toMatchObject({
+        score: 0,
+        maxScore: 2,
+        attempted: 0,
+        correct: 0,
+      });
+    });
+
+    it('treats empty selectedOptionIds as unattempted', async () => {
+      mockPaper(defaultPaper);
+
+      const result = await service.submitDemoExam({
+        answers: [{ questionId: thinkId, selectedOptionIds: [] }],
+      });
+
+      expect(result.attempted).toBe(0);
+      expect(result.unattempted).toBe(3);
+      expect(result.totalScore).toBe(0);
+    });
+  });
+
   describe('update', () => {
     it('updates a DRAFT question', async () => {
       const doc = createQuestionDoc();
