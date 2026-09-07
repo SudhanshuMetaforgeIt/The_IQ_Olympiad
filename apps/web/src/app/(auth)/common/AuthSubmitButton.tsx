@@ -1,7 +1,4 @@
-"use client";
-
 import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { motion } from "framer-motion";
 import { authSubmitClass } from "./styles";
 
 type AuthSubmitButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -16,17 +13,10 @@ export default function AuthSubmitButton({
   ...props
 }: AuthSubmitButtonProps) {
   return (
-    <motion.button
-      type="submit"
-      className={`${authSubmitClass} ${className}`}
-      whileHover={{ scale: 1.015 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-      {...props}
-    >
+    <button type="submit" className={`${authSubmitClass} ${className}`} {...props}>
       {children}
       {icon}
-    </motion.button>
+    </button>
   );
 }
 
