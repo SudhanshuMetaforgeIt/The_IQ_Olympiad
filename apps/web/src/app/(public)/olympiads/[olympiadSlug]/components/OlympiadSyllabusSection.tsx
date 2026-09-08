@@ -1,6 +1,5 @@
 import React from "react";
-import Link from "next/link";
-import { BookOpen, ArrowRight, Atom, FlaskConical, Leaf, Check, Calculator, Cpu } from "lucide-react";
+import { BookOpen, Atom, FlaskConical, Leaf, Check, Calculator, Cpu } from "lucide-react";
 import { DetailedOlympiadInfo, DetailSubjectCategory } from "../data/olympiadDetailData";
 
 interface OlympiadSyllabusSectionProps {
@@ -53,24 +52,14 @@ export default function OlympiadSyllabusSection({ data }: OlympiadSyllabusSectio
 
   return (
     <div className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-7 shadow-xs mt-6">
-      {/* Header with Title and "View Full Syllabus" */}
-      <div className="flex items-center justify-between gap-4 mb-5">
-        <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-purple-100 text-purple-700">
-            <BookOpen className="size-4.5 stroke-[2.2]" />
-          </div>
-          <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
-            Syllabus
-          </h2>
+      {/* Header with Title */}
+      <div className="flex items-center gap-3 mb-5">
+        <div className="flex size-9 items-center justify-center rounded-xl bg-purple-100 text-purple-700">
+          <BookOpen className="size-4.5 stroke-[2.2]" />
         </div>
-
-        <Link
-          href="#syllabus"
-          className="inline-flex items-center gap-1 text-xs font-bold text-purple-600 hover:text-purple-800 transition-colors"
-        >
-          <span>View Full Syllabus</span>
-          <ArrowRight className="size-3" />
-        </Link>
+        <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
+          Syllabus
+        </h2>
       </div>
 
       {/* 3 Subject Cards Grid */}

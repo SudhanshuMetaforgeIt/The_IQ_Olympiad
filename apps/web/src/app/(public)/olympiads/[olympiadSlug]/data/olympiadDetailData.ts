@@ -12,7 +12,7 @@ export const BASE_OLYMPIADS_DETAILS_MAP: Record<string, DetailedOlympiadInfo> = 
     iconBgColor: "bg-[#e8fbe8] text-emerald-600",
     badgeText: "Registration Open",
     examDate: "Dec 07, 2025",
-    duration: "1.5 Hours",
+    duration: "50 Mins",
     classes: "7 - 12",
     participants: "8,400",
     difficulty: "Moderate",
@@ -29,7 +29,7 @@ export const BASE_OLYMPIADS_DETAILS_MAP: Record<string, DetailedOlympiadInfo> = 
     ],
     examPattern: {
       questions: 50,
-      duration: "90 Minutes",
+      duration: "50 Minutes",
       questionType: "MCQ",
       negativeMarking: "No",
     },
