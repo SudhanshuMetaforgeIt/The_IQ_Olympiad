@@ -16,6 +16,20 @@ export {
   resolveApiAssetUrl,
   uploadStudentProfilePhoto,
 } from "./services/students.service";
+export {
+  getApprovedQuestions,
+  getDemoExamQuestions,
+  submitDemoExamAnswers,
+} from "./services/questions.service";
+export type {
+  ApprovedQuestionsQuery,
+  DemoExamAnswerPayload,
+  DemoExamQuestionsResponse,
+  DemoExamResult,
+  DemoExamSectionScore,
+  StudentQuestion,
+  StudentQuestionOption,
+} from "./services/questions.service";
 export type {
   GuardianRelation,
   RegisterSchoolRequest,

@@ -4,6 +4,7 @@ import {
   IsDateString,
   IsEnum,
   IsInt,
+  IsMongoId,
   IsOptional,
   IsString,
   Max,
@@ -195,3 +196,69 @@ export class UpdateQuestionStatusDto {
   })
   status: QuestionStatus;
 }
+
+/** Student-facing filters for approved questions (status is always APPROVED). */
+export class ListApprovedQuestionsQueryDto {
+  @IsOptional()
+  @IsEnum(CognitiveDomain)
+  cognitiveDomain?: CognitiveDomain;
+
+  @IsOptional()
+  @IsEnum(QuestionDifficulty)
+  difficulty?: QuestionDifficulty;
+}
+
+/** Safe question payload — never includes answers, explanations, or generation metadata. */
+export type StudentQuestionResponse = {
+  id: string;
+  questionText: string;
+  questionType: QuestionType;
+  cognitiveDomain: CognitiveDomain;
+  difficulty: QuestionDifficulty;
+  options: QuestionOptionDto[];
+  marks: number;
+};
+
+export type DemoExamQuestionsResponse = {
+  title: string;
+  totalQuestions: number;
+  totalMarks: number;
+  marksPerQuestion: number;
+  questions: StudentQuestionResponse[];
+};
+
+/** One student answer for the demo paper (option IDs only — never correct keys). */
+export class DemoExamAnswerDto {
+  @IsMongoId()
+  questionId: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  selectedOptionIds: string[];
+}
+
+export class SubmitDemoExamAnswersDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => DemoExamAnswerDto)
+  answers: DemoExamAnswerDto[];
+}
+
+export type DemoExamSectionScoreResponse = {
+  cognitiveDomain: CognitiveDomain;
+  score: number;
+  maxScore: number;
+  attempted: number;
+  correct: number;
+};
+
+/** Safe demo result — never includes correctOptionIds or explanations. */
+export type DemoExamResultResponse = {
+  totalScore: number;
+  totalMarks: number;
+  attempted: number;
+  correctAnswers: number;
+  incorrectAnswers: number;
+  unattempted: number;
+  sectionScores: DemoExamSectionScoreResponse[];
+};

@@ -22,9 +22,6 @@ import { ExamTipsBanner } from "../Common/ExamTipsBanner";
 import { PerformanceModal } from "../Common/PerformanceModal";
 import { EarnedBadgesModal } from "../Common/EarnedBadgesModal";
 import { SubjectResultModal } from "../Common/SubjectResultModal";
-import { ExamInstructionsStep } from "../Common/ExamInstructionsStep";
-import { ExamProctoringStep } from "../Common/ExamProctoringStep";
-import { ExamLiveInterfaceStep } from "../Common/ExamLiveInterfaceStep";
 
 interface StudentDashboardProps {
   activeTab?: string;
@@ -37,16 +34,6 @@ export default function StudentDashboard({ activeTab = "dashboard", onSelectTab 
   const [isPerformanceModalOpen, setIsPerformanceModalOpen] = useState(false);
   const [isBadgesModalOpen, setIsBadgesModalOpen] = useState(false);
   const [selectedSubjectResult, setSelectedSubjectResult] = useState<ExamResultItem | null>(null);
-  const [activeExamStep, setActiveExamStep] = useState<"instructions" | "proctoring" | "live_exam" | null>(null);
-
-  // Render Full Screen Exam Workspace
-  if (activeExamStep === "live_exam") {
-    return (
-      <ExamLiveInterfaceStep
-        onExitExam={() => setActiveExamStep(null)}
-      />
-    );
-  }
 
   return (
     <StudentPanelChrome activeTab={activeTab} onSelectTab={onSelectTab}>
@@ -62,100 +49,64 @@ export default function StudentDashboard({ activeTab = "dashboard", onSelectTab 
 
         {/* Scrollable Dashboard Body */}
         <main className="flex-1 p-4 md:p-6 space-y-4 sm:space-y-5">
-          {/* Multi-Step Exam Flow Mode */}
-          {activeExamStep === "instructions" && (
-            <div className="space-y-4">
-              <button
-                type="button"
-                onClick={() => setActiveExamStep(null)}
-                className="text-xs font-bold text-violet-600 hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                ← Back to Dashboard
-              </button>
-              <ExamInstructionsStep
-                onStartExam={() => setActiveExamStep("proctoring")}
-              />
-            </div>
-          )}
-
-          {activeExamStep === "proctoring" && (
-            <div className="space-y-4">
-              <button
-                type="button"
-                onClick={() => setActiveExamStep("instructions")}
-                className="text-xs font-bold text-violet-600 hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                ← Back to Instructions
-              </button>
-              <ExamProctoringStep
-                onProceedToLiveExam={() => setActiveExamStep("live_exam")}
-              />
-            </div>
-          )}
-
-          {/* Normal Dashboard Overview View */}
-          {!activeExamStep && (
-            <>
-              {profileCompletion && !profileCompletion.isComplete ? (
-                <div className="rounded-2xl border border-violet-200 bg-white px-4 py-4 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
-                  <div>
-                    <p className="text-sm font-black text-slate-900">
-                      Complete your profile
-                    </p>
-                    <p className="text-[11px] font-medium text-slate-500 mt-0.5">
-                      Add your school and academic details to finish setup. {profileCompletion.percentage}% complete.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => onSelectTab?.("profile")}
-                    className="shrink-0 rounded-xl bg-violet-600 px-4 py-2.5 text-[11px] font-extrabold text-white hover:bg-violet-700 cursor-pointer"
-                  >
-                    Complete your profile
-                  </button>
-                </div>
-              ) : null}
-
-              {/* Upcoming Exam Hero Banner */}
-              <UpcomingExamBanner
-                exam={UPCOMING_EXAM}
-                onViewDetails={() => setIsPerformanceModalOpen(true)}
-                onWriteExam={() => onSelectTab?.("exams", "upcoming")}
-              />
-
-              {/* Main Grid: Left Analytics & Right Achievements */}
-              <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 sm:gap-5 items-stretch">
-                {/* Left 8 Columns */}
-                <div className="xl:col-span-8 space-y-4 sm:space-y-5">
-                  {/* Quick Stats Grid */}
-                  <StatsRow stats={DASHBOARD_STATS} onSelectTab={onSelectTab} />
-
-                  {/* 2-Column Grid (Recent Results & Performance Overview) */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
-                    <RecentResults
-                      results={RECENT_RESULTS}
-                      onViewAll={() => onSelectTab?.("results")}
-                      onSelectResult={(item) => setSelectedSubjectResult(item)}
-                    />
-                    <PerformanceOverview
-                      metrics={PERFORMANCE_METRICS}
-                      onViewDetails={() => setIsPerformanceModalOpen(true)}
-                    />
-                  </div>
-
-                  {/* Exam Tips Banner */}
-                  <ExamTipsBanner tip={EXAM_TIP} />
-                </div>
-
-                {/* Right 4 Columns: Achievements Sidebar */}
-                <div className="xl:col-span-4 h-full">
-                  <AchievementsCard
-                    onViewAll={() => onSelectTab?.("certificates", "badges")}
-                  />
-                </div>
+          {profileCompletion && !profileCompletion.isComplete ? (
+            <div className="rounded-2xl border border-violet-200 bg-white px-4 py-4 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+              <div>
+                <p className="text-sm font-black text-slate-900">
+                  Complete your profile
+                </p>
+                <p className="text-[11px] font-medium text-slate-500 mt-0.5">
+                  Add your school and academic details to finish setup. {profileCompletion.percentage}% complete.
+                </p>
               </div>
-            </>
-          )}
+              <button
+                type="button"
+                onClick={() => onSelectTab?.("profile")}
+                className="shrink-0 rounded-xl bg-violet-600 px-4 py-2.5 text-[11px] font-extrabold text-white hover:bg-violet-700 cursor-pointer"
+              >
+                Complete your profile
+              </button>
+            </div>
+          ) : null}
+
+          {/* Upcoming Exam Hero Banner */}
+          <UpcomingExamBanner
+            exam={UPCOMING_EXAM}
+            onViewDetails={() => setIsPerformanceModalOpen(true)}
+            onWriteExam={() => onSelectTab?.("exams", "upcoming")}
+          />
+
+          {/* Main Grid: Left Analytics & Right Achievements */}
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 sm:gap-5 items-stretch">
+            {/* Left 8 Columns */}
+            <div className="xl:col-span-8 space-y-4 sm:space-y-5">
+              {/* Quick Stats Grid */}
+              <StatsRow stats={DASHBOARD_STATS} onSelectTab={onSelectTab} />
+
+              {/* 2-Column Grid (Recent Results & Performance Overview) */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+                <RecentResults
+                  results={RECENT_RESULTS}
+                  onViewAll={() => onSelectTab?.("results")}
+                  onSelectResult={(item) => setSelectedSubjectResult(item)}
+                />
+                <PerformanceOverview
+                  metrics={PERFORMANCE_METRICS}
+                  onViewDetails={() => setIsPerformanceModalOpen(true)}
+                />
+              </div>
+
+              {/* Exam Tips Banner */}
+              <ExamTipsBanner tip={EXAM_TIP} />
+            </div>
+
+            {/* Right 4 Columns: Achievements Sidebar */}
+            <div className="xl:col-span-4 h-full">
+              <AchievementsCard
+                onViewAll={() => onSelectTab?.("certificates", "badges")}
+              />
+            </div>
+          </div>
         </main>
       </div>
 

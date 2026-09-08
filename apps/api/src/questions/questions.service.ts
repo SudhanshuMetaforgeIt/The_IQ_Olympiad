@@ -16,11 +16,17 @@ import {
 import { QuestionStatus } from '../common/enums/question-status.enum.js';
 import { QuestionType } from '../common/enums/question-type.enum.js';
 import { UserRole } from '../common/enums/user-role.enum.js';
+import { CognitiveDomain } from '../common/enums/cognitive-domain.enum.js';
 import type {
   CreateQuestionDto,
+  DemoExamQuestionsResponse,
+  DemoExamResultResponse,
+  ListApprovedQuestionsQueryDto,
   ListQuestionsQueryDto,
   QuestionGenerationDto,
   QuestionOptionDto,
+  StudentQuestionResponse,
+  SubmitDemoExamAnswersDto,
   UpdateQuestionDto,
   UpdateQuestionStatusDto,
 } from './dto/questions.dto.js';
@@ -34,9 +40,18 @@ import {
   type QuestionGeneration,
   type QuestionOption,
 } from './schemas/question.schema.js';
+import { selectedOptionsMatchCorrect } from './utils/selected-options-match.js';
 import { validateQuestionAnswers } from './validators/question-content.validator.js';
 
 type QuestionFilter = Record<string, unknown>;
+
+const DEMO_DOMAIN_ORDER: CognitiveDomain[] = [
+  CognitiveDomain.THINK,
+  CognitiveDomain.ANALYSE,
+  CognitiveDomain.SOLVE,
+  CognitiveDomain.DECIDE,
+  CognitiveDomain.CREATE,
+];
 
 const ALLOWED_STATUS_TRANSITIONS: Record<QuestionStatus, QuestionStatus[]> = {
   [QuestionStatus.DRAFT]: [QuestionStatus.APPROVED, QuestionStatus.REJECTED],
@@ -123,6 +138,222 @@ export class QuestionsService {
     ]);
 
     return buildPaginatedResult(items, total, page, limit);
+  }
+
+  /**
+   * Student-facing approved question list.
+   * Never returns answers, explanations, or generation metadata.
+   */
+  async listApproved(
+    query: ListApprovedQuestionsQueryDto,
+  ): Promise<StudentQuestionResponse[]> {
+    const filter: QuestionFilter = {
+      status: QuestionStatus.APPROVED,
+    };
+
+    if (query.cognitiveDomain) {
+      filter.cognitiveDomain = query.cognitiveDomain;
+    }
+    if (query.difficulty) {
+      filter.difficulty = query.difficulty;
+    }
+
+    const questions = await this.questionModel
+      .find(filter)
+      .select({
+        questionText: 1,
+        questionType: 1,
+        cognitiveDomain: 1,
+        difficulty: 1,
+        options: 1,
+        marks: 1,
+        externalId: 1,
+      })
+      .lean()
+      .exec();
+
+    return this.sortDemoQuestions(questions).map((question) =>
+      this.toStudentQuestion(question),
+    );
+  }
+
+  /**
+   * Full curated demo paper: all APPROVED seeded questions in exam order.
+   */
+  async getDemoExamQuestions(): Promise<DemoExamQuestionsResponse> {
+    const questions = await this.listApproved({});
+
+    if (questions.length === 0) {
+      throw new NotFoundException(
+        'No approved demo questions found. Run the question seed first.',
+      );
+    }
+
+    const marksPerQuestion = questions[0]?.marks ?? 2;
+
+    return {
+      title: 'The IQ Olympiad',
+      totalQuestions: questions.length,
+      totalMarks: questions.reduce((sum, question) => sum + question.marks, 0),
+      marksPerQuestion,
+      questions,
+    };
+  }
+
+  /**
+   * Demo-only server-side scoring against live APPROVED questions.
+   * Does not persist an ExamAttempt; returns a safe result payload only.
+   */
+  async submitDemoExam(
+    dto: SubmitDemoExamAnswersDto,
+  ): Promise<DemoExamResultResponse> {
+    const answers = dto.answers ?? [];
+    const submittedIds = answers.map((answer) => answer.questionId);
+
+    if (new Set(submittedIds).size !== submittedIds.length) {
+      throw new BadRequestException('Payload contains duplicate question IDs');
+    }
+
+    for (const questionId of submittedIds) {
+      this.assertObjectId(questionId, 'Question');
+    }
+
+    for (const answer of answers) {
+      const selected = answer.selectedOptionIds ?? [];
+      if (new Set(selected).size !== selected.length) {
+        throw new BadRequestException(
+          'selectedOptionIds must not contain duplicates',
+        );
+      }
+    }
+
+    const paperQuestions = await this.questionModel
+      .find({ status: QuestionStatus.APPROVED })
+      .select({
+        cognitiveDomain: 1,
+        marks: 1,
+        options: 1,
+        correctOptionIds: 1,
+        externalId: 1,
+      })
+      .lean()
+      .exec();
+
+    if (paperQuestions.length === 0) {
+      throw new NotFoundException(
+        'No approved demo questions found. Run the question seed first.',
+      );
+    }
+
+    const sortedPaper = this.sortDemoQuestions(paperQuestions);
+    const paperById = new Map(
+      sortedPaper.map((question) => [question._id.toString(), question]),
+    );
+
+    for (const answer of answers) {
+      const question = paperById.get(answer.questionId);
+      if (!question) {
+        throw new BadRequestException(
+          `Question ${answer.questionId} is not part of the approved demo paper`,
+        );
+      }
+
+      const optionIds = new Set(
+        (question.options ?? []).map((option) => option.id),
+      );
+      const selected = answer.selectedOptionIds ?? [];
+      if (selected.some((id) => !optionIds.has(id))) {
+        throw new BadRequestException(
+          `One or more selected option IDs are invalid for question ${answer.questionId}`,
+        );
+      }
+    }
+
+    const answerMap = new Map(
+      answers.map((answer) => [answer.questionId, answer.selectedOptionIds ?? []]),
+    );
+
+    let totalScore = 0;
+    let totalMarks = 0;
+    let attempted = 0;
+    let correctAnswers = 0;
+    let incorrectAnswers = 0;
+
+    const sectionStats = new Map<
+      CognitiveDomain,
+      { score: number; maxScore: number; attempted: number; correct: number }
+    >();
+
+    for (const domain of DEMO_DOMAIN_ORDER) {
+      sectionStats.set(domain, {
+        score: 0,
+        maxScore: 0,
+        attempted: 0,
+        correct: 0,
+      });
+    }
+
+    for (const question of sortedPaper) {
+      const questionId = question._id.toString();
+      const marks = question.marks;
+      const domain = question.cognitiveDomain;
+      const section = sectionStats.get(domain) ?? {
+        score: 0,
+        maxScore: 0,
+        attempted: 0,
+        correct: 0,
+      };
+
+      totalMarks += marks;
+      section.maxScore += marks;
+
+      const selected = answerMap.get(questionId);
+      const hasAttempt =
+        selected !== undefined && selected.length > 0;
+
+      if (!hasAttempt) {
+        sectionStats.set(domain, section);
+        continue;
+      }
+
+      attempted += 1;
+      section.attempted += 1;
+
+      const isCorrect = selectedOptionsMatchCorrect(
+        selected,
+        question.correctOptionIds ?? [],
+      );
+
+      if (isCorrect) {
+        totalScore += marks;
+        correctAnswers += 1;
+        section.score += marks;
+        section.correct += 1;
+      } else {
+        incorrectAnswers += 1;
+      }
+
+      sectionStats.set(domain, section);
+    }
+
+    return {
+      totalScore,
+      totalMarks,
+      attempted,
+      correctAnswers,
+      incorrectAnswers,
+      unattempted: sortedPaper.length - attempted,
+      sectionScores: DEMO_DOMAIN_ORDER.map((domain) => {
+        const section = sectionStats.get(domain)!;
+        return {
+          cognitiveDomain: domain,
+          score: section.score,
+          maxScore: section.maxScore,
+          attempted: section.attempted,
+          correct: section.correct,
+        };
+      }),
+    };
   }
 
   async getById(user: AuthUser, questionId: string): Promise<QuestionDocument> {
@@ -397,5 +628,57 @@ export class QuestionsService {
 
   private escapeRegex(value: string): string {
     return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  private toStudentQuestion(question: {
+    _id: Types.ObjectId;
+    questionText: string;
+    questionType: Question['questionType'];
+    cognitiveDomain: Question['cognitiveDomain'];
+    difficulty: Question['difficulty'];
+    options: QuestionOption[];
+    marks: number;
+  }): StudentQuestionResponse {
+    return {
+      id: question._id.toString(),
+      questionText: question.questionText,
+      questionType: question.questionType,
+      cognitiveDomain: question.cognitiveDomain,
+      difficulty: question.difficulty,
+      options: (question.options ?? []).map((option) => ({
+        id: option.id,
+        text: option.text,
+      })),
+      marks: question.marks,
+    };
+  }
+
+  private sortDemoQuestions<
+    T extends {
+      cognitiveDomain: CognitiveDomain;
+      externalId?: string | null;
+    },
+  >(questions: T[]): T[] {
+    return [...questions].sort((a, b) => {
+      const domainDiff =
+        DEMO_DOMAIN_ORDER.indexOf(a.cognitiveDomain) -
+        DEMO_DOMAIN_ORDER.indexOf(b.cognitiveDomain);
+      if (domainDiff !== 0) {
+        return domainDiff;
+      }
+
+      return (
+        this.extractExternalSequence(a.externalId) -
+        this.extractExternalSequence(b.externalId)
+      );
+    });
+  }
+
+  private extractExternalSequence(externalId?: string | null): number {
+    if (!externalId) {
+      return Number.MAX_SAFE_INTEGER;
+    }
+    const match = externalId.match(/_(\d+)/);
+    return match ? Number.parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
   }
 }
