@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import type { ExamDetails } from "../_data/examQuestions";
+import { VerificationMediaPipeFeed } from "../cam-monitoring";
 
 interface ExamProctoringViewProps {
   exam: ExamDetails;
@@ -28,22 +29,31 @@ export function ExamProctoringView({
 
   const [networkPing, setNetworkPing] = useState<number>(24);
   const [activeStepIndex, setActiveStepIndex] = useState<number>(1);
-  const [isAllComplete, setIsAllComplete] = useState<boolean>(false);
 
-  // Silent full-screen trigger scoped specifically to this exam page
-  const triggerFullscreenSilently = useCallback(async () => {
-    try {
-      if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-        await document.documentElement.requestFullscreen();
-      }
-    } catch {
-      // Browser will require user click gesture, which is handled directly on "Next: Take Exam"
-    }
-  }, []);
+  // Live biometric & proctoring status reported directly by VerificationMediaPipeFeed
+  const [feedFaceCount, setFeedFaceCount] = useState<number>(0);
+  const [feedFaceCentered, setFeedFaceCentered] = useState<boolean>(false);
+  const [feedPhoneDetected, setFeedPhoneDetected] = useState<boolean>(false);
+  const [feedVoicePassed, setFeedVoicePassed] = useState<boolean>(false);
 
-  useEffect(() => {
-    triggerFullscreenSilently();
-  }, [triggerFullscreenSilently]);
+  const handleVerificationStatusChange = useCallback(
+    (
+      _isVerified: boolean,
+      faceCount: number,
+      _isDisqualified?: boolean,
+      audioPassed?: boolean,
+      phoneDetected?: boolean,
+      detailedStatus?: any
+    ) => {
+      setFeedFaceCount(faceCount);
+      setFeedFaceCentered(detailedStatus?.isFaceCentered ?? (faceCount === 1));
+      setFeedPhoneDetected(!!phoneDetected);
+      setFeedVoicePassed(!!audioPassed);
+    },
+    []
+  );
+
+
 
   // Sequential Check Step 1: Internet Status
   useEffect(() => {
@@ -92,10 +102,19 @@ export function ExamProctoringView({
     const initCamera = async () => {
       try {
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          const mediaStream = await navigator.mediaDevices.getUserMedia({
-            video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" },
-            audio: false,
-          }).catch(() => null);
+          let mediaStream: MediaStream | null = null;
+          try {
+            mediaStream = await navigator.mediaDevices.getUserMedia({
+              video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" },
+              audio: true,
+            });
+          } catch {
+            // Fallback if microphone permission denied or device not found
+            mediaStream = await navigator.mediaDevices.getUserMedia({
+              video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" },
+              audio: false,
+            }).catch(() => null);
+          }
 
           if (mediaStream && !isCancelled) {
             setStream(mediaStream);
@@ -153,14 +172,28 @@ export function ExamProctoringView({
 
     const timer = setTimeout(() => {
       setSystemStatus("passed");
-      setIsAllComplete(true);
     }, 800);
 
     return () => clearTimeout(timer);
   }, [systemStatus]);
 
+  // Overall readiness: Strictly all environmental & proctoring criteria must pass simultaneously
+  const isInternetPassed = internetStatus === "passed";
+  const isBrowserPassed = browserStatus === "passed";
+  const isCameraLive = cameraStatus === "passed" && !!stream;
+  const isSingleCandidatePassed = feedFaceCount === 1 && feedFaceCentered && !feedPhoneDetected;
+  const isVoiceCompliant = feedVoicePassed;
+
+  const allRequirementsMet =
+    isInternetPassed &&
+    isBrowserPassed &&
+    isCameraLive &&
+    isSingleCandidatePassed &&
+    isVoiceCompliant;
+
   // When clicking Next: Explicitly enters Full Screen mode and starts the live exam
   const handleProceedToExam = async () => {
+    if (!allRequirementsMet) return;
     try {
       if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
         await document.documentElement.requestFullscreen();
@@ -190,26 +223,42 @@ export function ExamProctoringView({
     },
     {
       id: 3,
-      name: "Camera Hardware",
-      description: "Verifying webcam hardware...",
-      successText: "Camera Hardware Connected & Ready",
-      status: cameraStatus,
-      icon: "📷",
+      name: "Candidate & Face Calibration",
+      description:
+        feedFaceCount > 1
+          ? `Multiple people detected (${feedFaceCount} in frame) — Candidate must be alone`
+          : feedPhoneDetected
+            ? "Mobile phone detected in frame — Remove immediately"
+            : feedFaceCount === 0 && cameraStatus === "passed"
+              ? "No face detected — Position face clearly in front of camera"
+              : !feedFaceCentered && cameraStatus === "passed"
+                ? "Face not centered — Look directly into the camera"
+                : "Verifying single candidate face...",
+      successText: "Single Candidate Verified & Centered",
+      status:
+        !isCameraLive
+          ? cameraStatus
+          : feedFaceCount > 1 || feedPhoneDetected || feedFaceCount === 0
+            ? ("failed" as CheckStatus)
+            : !feedFaceCentered
+              ? ("in_progress" as CheckStatus)
+              : ("passed" as CheckStatus),
+      icon: feedFaceCount > 1 ? "👥" : feedPhoneDetected ? "📱" : "📷",
     },
     {
       id: 4,
-      name: "Microphone Audio",
-      description: "Checking audio input stream...",
-      successText: "Microphone Calibrated & Ready",
-      status: micStatus,
+      name: "Microphone & Voice Verification",
+      description: "Read aloud the prompt sentence below camera preview to verify...",
+      successText: "Microphone Calibrated & Voice Verified",
+      status: feedVoicePassed ? ("passed" as CheckStatus) : ("in_progress" as CheckStatus),
       icon: "🎙️",
     },
     {
       id: 5,
-      name: "System Readiness",
-      description: "Preparing live proctoring sandbox...",
+      name: "Exam Proctoring Sandbox",
+      description: "Waiting for all criteria above to be satisfied...",
       successText: "Full Screen & Proctoring Ready",
-      status: systemStatus,
+      status: allRequirementsMet ? ("passed" as CheckStatus) : ("waiting" as CheckStatus),
       icon: "⚡",
     },
   ];
@@ -252,9 +301,9 @@ export function ExamProctoringView({
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-violet-50 border border-violet-200 text-violet-700 text-xs font-bold">
             <span className="size-2 rounded-full bg-violet-600 animate-pulse" />
             <span>
-              {isAllComplete
+              {allRequirementsMet
                 ? "All System Requirements Verified"
-                : `Verifying System Status: Check ${activeStepIndex} of 5...`}
+                : `Verifying Requirements: ${checks.filter((c) => c.status === "passed").length} of 5 Passed`}
             </span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
@@ -278,54 +327,23 @@ export function ExamProctoringView({
                   </h3>
                 </div>
 
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-violet-50 text-violet-700 border border-violet-200">
-                  {stream ? "Live Video Feed" : "Camera Stream Ready"}
-                </span>
-              </div>
-
-              {/* Video Player Box */}
-              <div className="relative w-full aspect-video rounded-2xl bg-slate-900 overflow-hidden border border-slate-200 flex items-center justify-center shadow-inner">
-                {/* Video element if real stream is available */}
                 {stream ? (
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="w-full h-full object-cover transform -scale-x-100 block"
-                  />
-                ) : (
-                  /* Stylized Simulated Proctoring Stream */
-                  <div className="w-full h-full bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 flex flex-col items-center justify-center relative overflow-hidden">
-                    <div className="size-20 rounded-full bg-violet-600/30 border-2 border-violet-400/50 flex items-center justify-center text-3xl shadow-lg mb-2 animate-pulse text-white">
-                      👤
-                    </div>
-                    <span className="text-xs font-bold text-white">
-                      Proctoring Camera Stream
-                    </span>
-                    <span className="text-[11px] text-emerald-400 font-semibold mt-1">
-                      ✓ Hardware Active & Calibrated
-                    </span>
-                  </div>
-                )}
-
-                {/* Face positioning target guide */}
-                <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                  <div className="w-44 h-56 rounded-full border-2 border-violet-400/40 border-dashed flex items-center justify-center">
-                    <span className="text-[10px] font-bold text-white bg-slate-950/80 px-2.5 py-0.5 rounded-full">
-                      Facial Boundary
-                    </span>
-                  </div>
-                </div>
-
-                {/* Live stream badge */}
-                <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-2 border border-slate-700">
-                  <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[10px] font-black text-white uppercase tracking-wider">
-                    PROCTORING ACTIVE
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Camera Connected
                   </span>
-                </div>
+                ) : (
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-violet-50 text-violet-700 border border-violet-200">
+                    Camera Stream Ready
+                  </span>
+                )}
               </div>
+
+              {/* MediaPipe Video & Detection Feed */}
+              <VerificationMediaPipeFeed
+                stream={stream}
+                className="w-full aspect-video shadow-inner"
+                onVerificationStatusChange={handleVerificationStatusChange}
+              />
             </div>
 
             {/* Bottom Camera Note */}
@@ -333,10 +351,10 @@ export function ExamProctoringView({
               <div className="flex items-center gap-2">
                 <span className="size-2 rounded-full bg-emerald-500" />
                 <span className="font-semibold text-slate-700">
-                  {stream ? "HD Webcam connected & streaming" : "Proctoring feed verified & active"}
+                  {stream ? "HD Webcam connected • Ready for verification" : "Proctoring feed verified & active"}
                 </span>
               </div>
-              <span className="text-emerald-600 font-bold text-xs">✓ Ready</span>
+              <span className="text-emerald-600 font-bold text-xs">✓ Camera Ready</span>
             </div>
           </div>
 
@@ -375,13 +393,12 @@ export function ExamProctoringView({
                       className={`p-3 rounded-2xl border transition-all flex items-center justify-between gap-3 ${cardBorder}`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className={`size-8 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 ${
-                          isPassed
+                        <div className={`size-8 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 ${isPassed
                             ? "bg-emerald-100 text-emerald-700"
                             : isInProgress
-                            ? "bg-violet-100 text-violet-700"
-                            : "bg-slate-100 text-slate-500"
-                        }`}>
+                              ? "bg-violet-100 text-violet-700"
+                              : "bg-slate-100 text-slate-500"
+                          }`}>
                           {check.icon}
                         </div>
                         <div className="min-w-0">
@@ -392,8 +409,8 @@ export function ExamProctoringView({
                             {isPassed
                               ? check.successText
                               : isInProgress
-                              ? check.description
-                              : "Waiting to verify..."}
+                                ? check.description
+                                : "Waiting to verify..."}
                           </span>
                         </div>
                       </div>
@@ -431,33 +448,63 @@ export function ExamProctoringView({
 
             {/* Bottom Next Action Box */}
             <div className="space-y-3 pt-2">
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center">
-                {isAllComplete ? (
-                  <p className="text-xs font-bold text-emerald-700 flex items-center justify-center gap-1.5">
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                {allRequirementsMet ? (
+                  <p className="text-xs font-bold text-emerald-700 flex items-center justify-center gap-1.5 animate-in fade-in">
                     <span>✓</span>
-                    <span>All checks passed! Click Next to launch exam in full-screen mode.</span>
+                    <span>All requirements verified! Click Next to launch exam in full-screen mode.</span>
+                  </p>
+                ) : feedFaceCount > 1 ? (
+                  <p className="text-xs font-bold text-rose-700 flex items-center justify-center gap-1.5 animate-in fade-in">
+                    <span>👥</span>
+                    <span>Multiple people detected ({feedFaceCount} faces). Examination rules require candidate to be alone.</span>
+                  </p>
+                ) : feedPhoneDetected ? (
+                  <p className="text-xs font-bold text-rose-700 flex items-center justify-center gap-1.5 animate-in fade-in">
+                    <span>📱</span>
+                    <span>Mobile phone detected in view. Please remove it from the examination area.</span>
+                  </p>
+                ) : feedFaceCount === 0 && cameraStatus === "passed" ? (
+                  <p className="text-xs font-bold text-amber-700 flex items-center justify-center gap-1.5 animate-in fade-in">
+                    <span>👤</span>
+                    <span>No face detected. Please position yourself clearly in front of the camera.</span>
+                  </p>
+                ) : !feedVoicePassed ? (
+                  <p className="text-xs font-bold text-violet-700 flex items-center justify-center gap-1.5 animate-in fade-in">
+                    <span>🎙️</span>
+                    <span>Voice verification required: Click "Speak & Verify Voice" below camera preview.</span>
                   </p>
                 ) : (
                   <p className="text-xs font-semibold text-slate-500 flex items-center justify-center gap-1.5">
                     <span className="size-2 rounded-full bg-violet-600 animate-pulse" />
-                    <span>Running verification diagnostics one by one...</span>
+                    <span>Verifying proctoring and environmental requirements...</span>
                   </p>
                 )}
               </div>
 
-              {/* NEXT BUTTON: Direct Fullscreen Mode on Click */}
+              {/* NEXT BUTTON: Strictly disabled until allRequirementsMet */}
               <button
                 type="button"
-                disabled={!isAllComplete}
+                disabled={!allRequirementsMet}
                 onClick={handleProceedToExam}
-                className={`w-full py-4 px-6 rounded-2xl font-black text-base flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-lg ${
-                  isAllComplete
-                    ? "bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 text-white shadow-violet-600/25 hover:scale-[1.01] active:scale-[0.99]"
-                    : "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 shadow-none opacity-60"
-                }`}
+                className={`w-full py-4 px-6 rounded-2xl font-black text-base flex items-center justify-center gap-2.5 transition-all shadow-lg ${allRequirementsMet
+                    ? "bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 text-white shadow-violet-600/25 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                    : "bg-slate-100 text-slate-400 border border-slate-200 shadow-none opacity-60 cursor-not-allowed"
+                  }`}
               >
-                <span>Next: Take Exam</span>
-                <span>→</span>
+                <span>
+                  {allRequirementsMet
+                    ? "Next: Take Exam →"
+                    : feedFaceCount > 1
+                      ? "Cannot Start: Multiple People In Frame"
+                      : feedPhoneDetected
+                        ? "Cannot Start: Remove Mobile Phone"
+                        : feedFaceCount === 0 && cameraStatus === "passed"
+                          ? "Cannot Start: Position Face in Camera"
+                          : !feedVoicePassed
+                            ? "Cannot Start: Verify Voice First"
+                            : "Cannot Start: Complete Checks First"}
+                </span>
               </button>
             </div>
           </div>
