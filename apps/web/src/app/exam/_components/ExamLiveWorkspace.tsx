@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { getExamPartLabel, type ExamDetails } from "../_data/examQuestions";
+import { InExamProctorWidget } from "../cam-monitoring";
+import type { TerminationEvent, ProctoringViolationEvent } from "../cam-monitoring/types";
 
 interface ExamLiveWorkspaceProps {
   exam: ExamDetails;
@@ -14,8 +16,6 @@ export function ExamLiveWorkspace({
   cameraStream,
   onFinishExam,
 }: ExamLiveWorkspaceProps) {
-  const miniVideoRef = useRef<HTMLVideoElement | null>(null);
-
   const TOTAL_QUESTIONS = exam.questions.length; // 50
   const SECONDS_PER_QUESTION = 60; // 1 minute per question
   const OVERALL_TOTAL_SECONDS = TOTAL_QUESTIONS * SECONDS_PER_QUESTION; // 50 * 60 = 3000s
@@ -25,16 +25,11 @@ export function ExamLiveWorkspace({
   const [overallSecondsRemaining, setOverallSecondsRemaining] = useState(OVERALL_TOTAL_SECONDS);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [tabSwitchWarning, setTabSwitchWarning] = useState(false);
-  const [tabSwitchCount, setTabSwitchCount] = useState(0);
   const [fullscreenWarning, setFullscreenWarning] = useState(false);
 
-  // Attach camera stream to picture-in-picture proctoring preview
-  useEffect(() => {
-    if (miniVideoRef.current && cameraStream) {
-      miniVideoRef.current.srcObject = cameraStream;
-    }
-  }, [cameraStream]);
+  // Strict Proctoring Termination state
+  const [isTerminated, setIsTerminated] = useState(false);
+  const [terminationEvent, setTerminationEvent] = useState<TerminationEvent | null>(null);
 
   // Maintain strict full-screen mode during exam
   const ensureFullscreen = useCallback(async () => {
@@ -52,29 +47,26 @@ export function ExamLiveWorkspace({
     ensureFullscreen();
 
     const handleFullscreenChange = () => {
-      if (!document.fullscreenElement && !isSubmitted) {
+      if (!document.fullscreenElement && !isSubmitted && !isTerminated) {
         setFullscreenWarning(true);
       } else {
         setFullscreenWarning(false);
       }
     };
 
-    // Tab switch detection
-    const handleVisibilityChange = () => {
-      if (document.hidden && !isSubmitted) {
-        setTabSwitchCount((c) => c + 1);
-        setTabSwitchWarning(true);
-      }
-    };
-
     document.addEventListener("fullscreenchange", handleFullscreenChange);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [ensureFullscreen, isSubmitted]);
+  }, [ensureFullscreen, isSubmitted, isTerminated]);
+
+  // Handle termination from AI proctor
+  const handleExamTerminated = useCallback((event: TerminationEvent) => {
+    console.warn("[Live Exam] Exam terminated due to proctoring violation limit:", event);
+    setIsTerminated(true);
+    setTerminationEvent(event);
+  }, []);
 
   const questionStartTimeRef = useRef(Date.now());
   const isTransitioningRef = useRef(false);
@@ -82,7 +74,7 @@ export function ExamLiveWorkspace({
 
   // Strictly advance one question after another every 60 seconds (1 minute per question)
   useEffect(() => {
-    if (isSubmitted) return;
+    if (isSubmitted || isTerminated) return;
 
     // Reset timestamp and transition guard for the current question
     questionStartTimeRef.current = Date.now();
@@ -111,11 +103,11 @@ export function ExamLiveWorkspace({
     }, 250);
 
     return () => clearInterval(interval);
-  }, [currentQIndex, isSubmitted, TOTAL_QUESTIONS, SECONDS_PER_QUESTION]);
+  }, [currentQIndex, isSubmitted, isTerminated, TOTAL_QUESTIONS, SECONDS_PER_QUESTION]);
 
   // Overall Exam Countdown Timer (Drift-free, timestamp synchronized)
   useEffect(() => {
-    if (isSubmitted) return;
+    if (isSubmitted || isTerminated) return;
 
     const overallTimer = setInterval(() => {
       const elapsedSeconds = Math.floor((Date.now() - examStartTimeRef.current) / 1000);
@@ -129,13 +121,13 @@ export function ExamLiveWorkspace({
     }, 1000);
 
     return () => clearInterval(overallTimer);
-  }, [isSubmitted, OVERALL_TOTAL_SECONDS]);
+  }, [isSubmitted, isTerminated, OVERALL_TOTAL_SECONDS]);
 
   const currentQ = exam.questions[currentQIndex];
 
   // Selecting an option: stays on the question so student can change or clear response during the 1 minute
   const handleSelectOption = (opt: string) => {
-    if (!currentQ || isSubmitted) return;
+    if (!currentQ || isSubmitted || isTerminated) return;
     setSelectedAnswers((prev) => ({
       ...prev,
       [currentQ.id]: opt,
@@ -144,7 +136,7 @@ export function ExamLiveWorkspace({
 
   // Clear Response for current question
   const handleClearResponse = () => {
-    if (!currentQ || isSubmitted) return;
+    if (!currentQ || isSubmitted || isTerminated) return;
     setSelectedAnswers((prev) => {
       const copy = { ...prev };
       delete copy[currentQ.id];
@@ -288,32 +280,18 @@ export function ExamLiveWorkspace({
             <span className="font-mono font-black text-slate-900 text-sm">{formatTimer(overallSecondsRemaining)}</span>
           </div>
 
-          {/* Mini Camera Proctoring Preview */}
-          <div className="relative w-24 sm:w-28 h-14 sm:h-16 rounded-xl bg-slate-900 border-2 border-violet-500/80 overflow-hidden shadow-sm shrink-0 flex items-center justify-center">
-            {cameraStream ? (
-              <video
-                ref={miniVideoRef}
-                autoPlay
-                playsInline
-                muted
-                className="w-full h-full object-cover transform -scale-x-100"
-              />
-            ) : (
-              <div className="flex flex-col items-center justify-center text-center">
-                <span className="text-xs">👤</span>
-                <span className="text-[8px] font-black text-violet-300">PROCTOR</span>
-              </div>
-            )}
-            <div className="absolute top-1 left-1.5 flex items-center gap-1 bg-black/70 backdrop-blur-xs px-1.5 py-0.5 rounded-full">
-              <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[8px] font-black text-white uppercase tracking-wider">LIVE</span>
-            </div>
-          </div>
+          {/* In-Exam AI Proctoring Widget */}
+          <InExamProctorWidget
+            stream={cameraStream}
+            onExamTerminated={handleExamTerminated}
+            onReturnToDashboard={handleExitToDashboard}
+            className="shadow-sm"
+          />
         </div>
       </header>
 
-      {/* Fullscreen Warning Modal if student exited fullscreen */}
-      {fullscreenWarning && (
+      {/* Fullscreen Warning Modal if student exited fullscreen and exam is not terminated */}
+      {fullscreenWarning && !isTerminated && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in">
           <div className="bg-white border-2 border-rose-500 rounded-3xl p-6 sm:p-8 max-w-md w-full text-center space-y-4 shadow-2xl">
             <div className="size-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-3xl mx-auto">
@@ -334,22 +312,8 @@ export function ExamLiveWorkspace({
         </div>
       )}
 
-      {/* Tab Switch Warning Banner */}
-      {tabSwitchWarning && (
-        <div className="bg-rose-50 text-rose-800 px-4 py-2 text-xs font-bold flex items-center justify-between border-b border-rose-200 animate-in fade-in">
-          <span>⚠️ Warning: Tab switching detected ({tabSwitchCount} times). You cannot leave this window until the exam is completed.</span>
-          <button
-            type="button"
-            onClick={() => setTabSwitchWarning(false)}
-            className="text-rose-900 underline ml-3 cursor-pointer"
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
-
-      {/* Main Single Workspace: Fixed top-aligned, clean, NO centering shift, NO side panel */}
-      <main className="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-8 flex flex-col">
+      {/* Main Single Workspace: Fixed top-aligned, clean, locked when terminated */}
+      <main className={`flex-1 max-w-4xl w-full mx-auto p-4 sm:p-8 flex flex-col ${isTerminated ? "pointer-events-none opacity-40 select-none" : ""}`}>
         {/* Dedicated 1-Minute Question Timer Banner - Placed Directly Above The Question */}
         <div className="mb-4 bg-white border border-slate-200/90 rounded-2xl p-4 sm:px-6 sm:py-3.5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 w-full sm:w-auto">

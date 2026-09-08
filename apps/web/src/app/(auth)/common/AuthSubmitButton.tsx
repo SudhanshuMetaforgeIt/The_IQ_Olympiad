@@ -1,7 +1,14 @@
+<<<<<<< HEAD
+"use client";
+
+import type { ReactNode } from "react";
+import { motion, type HTMLMotionProps } from "framer-motion";
+=======
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+>>>>>>> origin
 import { authSubmitClass } from "./styles";
 
-type AuthSubmitButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+type AuthSubmitButtonProps = HTMLMotionProps<"button"> & {
   children: ReactNode;
   icon?: ReactNode;
 };

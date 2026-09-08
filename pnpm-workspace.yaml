@@ -3,6 +3,7 @@ packages:
   - "packages/*"
 allowBuilds:
   argon2: false
+  pnpm: false
   unrs-resolver: false
 peerDependencyRules:
   allowedVersions:
