@@ -20,13 +20,7 @@ export default function MyExamsPanel({ activeTab = "exams", onSelectTab, examId 
   const handleStartExam = () => {
     const examUrl = `/exam/${examId}`;
     if (typeof window !== "undefined") {
-      const width = window.screen.availWidth || window.innerWidth;
-      const height = window.screen.availHeight || window.innerHeight;
-      window.open(
-        examUrl,
-        "_blank",
-        `left=0,top=0,width=${width},height=${height}`
-      );
+      window.open(examUrl, "_blank");
     } else {
       router.push(examUrl);
     }
