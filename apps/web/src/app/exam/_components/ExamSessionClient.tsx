@@ -2,16 +2,18 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { ExamDetails } from "../_data/examQuestions";
+import { getDefaultDemoExam, type ExamDetails } from "../_data/examQuestions";
 import { ExamProctoringView } from "./ExamProctoringView";
 import { ExamLiveWorkspace } from "./ExamLiveWorkspace";
 
 interface ExamSessionClientProps {
-  exam: ExamDetails;
+  exam?: ExamDetails;
+  examId?: string;
 }
 
-export function ExamSessionClient({ exam }: ExamSessionClientProps) {
+export function ExamSessionClient({ exam: propExam, examId }: ExamSessionClientProps) {
   const router = useRouter();
+  const exam = propExam ?? getDefaultDemoExam(examId);
   const [currentStep, setCurrentStep] = useState<"proctoring" | "live_exam">("proctoring");
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const handleProceedToLiveExam = (stream: MediaStream | null) => {

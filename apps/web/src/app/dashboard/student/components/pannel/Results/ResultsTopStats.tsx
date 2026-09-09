@@ -1,10 +1,39 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { RESULTS_TOP_METRICS } from "./mockResultsData";
+import { getCompletedExamResults } from "../../../lib/examResultsStorage";
 
 export function ResultsTopStats() {
-  const metrics = RESULTS_TOP_METRICS;
+  const [completed, setCompleted] = useState<ReturnType<typeof getCompletedExamResults>>([]);
+
+  useEffect(() => {
+    setCompleted(getCompletedExamResults());
+  }, []);
+
+  const metrics = useMemo(() => {
+    if (RESULTS_TOP_METRICS) return RESULTS_TOP_METRICS;
+    if (!completed.length) return null;
+
+    const bestRank = Math.min(...completed.map((c) => c.nationalRank));
+    const avgPercentage = Math.round(completed.reduce((acc, c) => acc + c.percentage, 0) / completed.length);
+    const gold = completed.filter((c) => c.medal === "gold").length;
+    const silver = completed.filter((c) => c.medal === "silver").length;
+    const bronze = completed.filter((c) => c.medal === "bronze").length;
+
+    return {
+      nationalRank: bestRank,
+      totalStudents: 15000,
+      topPercentage: Math.max(1, Math.round((bestRank / 15000) * 100)),
+      percentage: avgPercentage,
+      improvementPercentage: 12,
+      totalMedals: gold + silver + bronze,
+      goldMedals: gold,
+      silverMedals: silver,
+      bronzeMedals: bronze,
+    };
+  }, [completed]);
+
   const hasData = metrics != null;
 
   return (

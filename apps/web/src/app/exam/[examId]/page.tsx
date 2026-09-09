@@ -1,4 +1,5 @@
 import { ExamSessionClient } from "../_components/ExamSessionClient";
+import { getDefaultDemoExam } from "../_data/examQuestions";
 
 interface ExamPageProps {
   params: Promise<{
@@ -8,6 +9,7 @@ interface ExamPageProps {
 
 export default async function ExamDynamicPage({ params }: ExamPageProps) {
   const { examId } = await params;
+  const exam = getDefaultDemoExam(examId);
 
-  return <ExamSessionClient examId={examId} />;
+  return <ExamSessionClient exam={exam} examId={examId} />;
 }

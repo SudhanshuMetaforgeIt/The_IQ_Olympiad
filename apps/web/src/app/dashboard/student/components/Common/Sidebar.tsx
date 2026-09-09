@@ -2,19 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import type { StudentProfile } from "../../types";
-import { clearAccessToken } from "@/lib/auth/token-storage";
-import { LogoutConfirmModal } from "./LogoutConfirmModal";
 import {
   TrophyLogoIcon,
-  UserIcon,
   DashboardIcon,
   ExamsIcon,
   TargetIcon,
   DiamondIcon,
   TrendingUpIcon,
   CertificateIcon,
-  SettingsIcon,
-  LogoutIcon,
 } from "./icons";
 
 interface SidebarProps {
@@ -36,9 +31,6 @@ const NAV_ITEMS: NavItem[] = [
   { id: "practice", label: "Practice / Mock", icon: DiamondIcon },
   { id: "results", label: "Results", icon: TrendingUpIcon },
   { id: "certificates", label: "Certificates", icon: CertificateIcon },
-  { id: "profile", label: "Profile", icon: UserIcon },
-  { id: "settings", label: "Settings", icon: SettingsIcon },
-  { id: "logout", label: "Logout", icon: LogoutIcon },
 ];
 
 export function Sidebar({ activeTab = "dashboard", onSelectTab }: SidebarProps) {
@@ -55,8 +47,6 @@ export function Sidebar({ activeTab = "dashboard", onSelectTab }: SidebarProps) 
     }
     return true;
   });
-
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   // Sync state if storage changes
   useEffect(() => {
@@ -86,30 +76,11 @@ export function Sidebar({ activeTab = "dashboard", onSelectTab }: SidebarProps) 
   };
 
   const handleItemClick = (item: NavItem) => {
-    if (item.id === "logout") {
-      setIsLogoutModalOpen(true);
-      return;
-    }
     onSelectTab?.(item.id);
   };
 
-  const handleConfirmLogout = () => {
-    setIsLogoutModalOpen(false);
-    if (typeof window !== "undefined") {
-      clearAccessToken();
-      localStorage.removeItem("student_active_tab");
-      localStorage.setItem("student_sidebar_open", "true");
-      window.location.href = "/";
-    }
-  };
-
-  const handleCancelLogout = () => {
-    setIsLogoutModalOpen(false);
-  };
-
   return (
-    <>
-      <aside
+    <aside
         className={`bg-[#090E24] text-white flex flex-col justify-between shrink-0 h-screen select-none border-r border-slate-800/60 transition-all duration-300 ease-in-out relative ${
           isOpen ? "w-60 p-4" : "w-[72px] p-2.5"
         } sticky top-0 left-0 z-40`}
@@ -254,13 +225,5 @@ export function Sidebar({ activeTab = "dashboard", onSelectTab }: SidebarProps) 
           </div>
         )}
       </aside>
-
-      {/* Logout Confirmation Dialog Modal */}
-      <LogoutConfirmModal
-        isOpen={isLogoutModalOpen}
-        onConfirm={handleConfirmLogout}
-        onCancel={handleCancelLogout}
-      />
-    </>
   );
 }

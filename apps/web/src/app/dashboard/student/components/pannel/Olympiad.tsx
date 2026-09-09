@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { StudentPanelChrome } from "../Common/StudentPanelChrome";
 import { Sidebar } from "../Common/Sidebar";
 import { HeaderBar } from "../Common/HeaderBar";
@@ -10,7 +10,15 @@ import { OLYMPIAD_EXAMS } from "./Olympiad/olympiadData";
 import { OlympiadTabs } from "./Olympiad/OlympiadTabs";
 import { OlympiadCard } from "./Olympiad/OlympiadCard";
 import { OlympiadBottomBanner } from "./Olympiad/OlympiadBottomBanner";
-import type { FilterTab } from "./Olympiad/types";
+import type { FilterTab, OlympiadExam } from "./Olympiad/types";
+import {
+  getCompletedExamResults,
+  mapStoredResultToOlympiadExam,
+  mapStoredResultToOlympiadResultRecord,
+  type StoredExamResult,
+} from "../../lib/examResultsStorage";
+import { OlympiadScorecardModal } from "./Results/OlympiadScorecardModal";
+import type { OlympiadResultRecord } from "./Results/types";
 
 interface PanelProps {
   activeTab?: string;
@@ -30,6 +38,12 @@ export default function OlympiadPanel({
   const [registeredExamIds, setRegisteredExamIds] = useState<number[]>([]);
   const [isPerformanceModalOpen, setIsPerformanceModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [completedResults, setCompletedResults] = useState<StoredExamResult[]>([]);
+  const [selectedReviewRecord, setSelectedReviewRecord] = useState<OlympiadResultRecord | null>(null);
+
+  useEffect(() => {
+    setCompletedResults(getCompletedExamResults());
+  }, []);
 
   // Sync local filter when parent-driven initialFilterTab changes (React-recommended render adjustment).
   if (initialFilterTab !== prevInitialFilterTab) {
@@ -50,11 +64,27 @@ export default function OlympiadPanel({
     showToast(`Successfully registered for ${registeredExam?.title || "Olympiad"}!`);
   };
 
-  const filteredExams = OLYMPIAD_EXAMS.filter((exam) => {
+  const allOlympiads = useMemo(() => {
+    const mappedCompleted = completedResults.map(mapStoredResultToOlympiadExam);
+    return [...mappedCompleted, ...OLYMPIAD_EXAMS];
+  }, [completedResults]);
+
+  const filteredExams = allOlympiads.filter((exam) => {
     if (filterTab === "all") return true;
     if (filterTab === "registered") return registeredExamIds.includes(exam.id);
     return exam.status === filterTab;
   });
+
+  const handleOpenResults = (exam: OlympiadExam) => {
+    if (exam.status === "completed") {
+      const match = completedResults.find((r) => r.title === exam.title) || completedResults[0];
+      if (match) {
+        setSelectedReviewRecord(mapStoredResultToOlympiadResultRecord(match));
+        return;
+      }
+    }
+    setIsPerformanceModalOpen(true);
+  };
 
   return (
     <StudentPanelChrome activeTab={activeTab} onSelectTab={onSelectTab}>
@@ -81,6 +111,7 @@ export default function OlympiadPanel({
               filterTab={filterTab}
               onSelectTab={setFilterTab}
               registeredCount={registeredExamIds.length}
+              completedCount={completedResults.length}
             />
 
             {/* List of Olympiad Exams */}
@@ -93,7 +124,7 @@ export default function OlympiadPanel({
                     isRegistered={registeredExamIds.includes(exam.id)}
                     cyberCountdown={cyberCountdown}
                     onRegister={setSelectedExamForRegistration}
-                    onViewResults={() => setIsPerformanceModalOpen(true)}
+                    onViewResults={() => handleOpenResults(exam)}
                   />
                 ))}
               </div>
@@ -144,6 +175,14 @@ export default function OlympiadPanel({
       <PerformanceModal
         isOpen={isPerformanceModalOpen}
         onClose={() => setIsPerformanceModalOpen(false)}
+      />
+
+      {/* Detailed Question Review & Scorecard Modal */}
+      <OlympiadScorecardModal
+        isOpen={selectedReviewRecord !== null}
+        onClose={() => setSelectedReviewRecord(null)}
+        result={selectedReviewRecord}
+        initialTab="review"
       />
     </div>
       )}
