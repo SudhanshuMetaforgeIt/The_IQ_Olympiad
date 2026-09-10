@@ -128,7 +128,7 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
   };
 
   return (
-    <header className="flex items-center justify-between gap-2 sm:gap-3 py-2.5 sm:py-3 px-3 sm:px-4 md:px-6 bg-transparent shrink-0 w-full max-w-full min-w-0 overflow-x-hidden box-border">
+    <header className="relative z-50 flex items-center justify-between gap-2 sm:gap-3 py-2.5 sm:py-3 px-3 sm:px-4 md:px-6 bg-[#F8FAFC] shrink-0 w-full max-w-full min-w-0 overflow-visible box-border">
       {/* Welcome Title */}
       <div className="min-w-0 flex-1 overflow-hidden">
         <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500">Welcome back,</span>
@@ -142,9 +142,9 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+      <div className="relative z-50 flex items-center gap-2 sm:gap-3 shrink-0">
         {/* Notification Bell with Dropdown */}
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative z-50" ref={dropdownRef}>
           <button
             type="button"
             onClick={() => {
@@ -167,7 +167,7 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
 
           {/* 5 Notifications Dropdown Popover */}
           {isOpen && (
-            <div className="absolute right-0 top-12 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-200/90 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="absolute right-0 top-12 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-200/90 z-[100] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
               {/* Popover Header */}
               <div className="p-4 px-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
                 <div className="flex items-center gap-2">
@@ -251,7 +251,7 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
         </div>
 
         {/* User Profile with Dropdown */}
-        <div className="relative" ref={profileDropdownRef}>
+        <div className="relative z-50" ref={profileDropdownRef}>
           <button
             type="button"
             onClick={() => {
@@ -300,7 +300,7 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
 
           {/* Profile Dropdown Menu */}
           {isProfileOpen && (
-            <div className="absolute right-0 mt-2 w-64 sm:w-72 bg-white rounded-2xl shadow-xl border border-slate-200/90 py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+            <div className="absolute right-0 mt-2 w-64 sm:w-72 bg-white rounded-2xl shadow-xl border border-slate-200/90 py-2 z-[100] animate-in fade-in zoom-in-95 duration-150">
               {/* User Identity Header */}
               <div className="px-4 py-3 border-b border-slate-100 flex items-center gap-3">
                 {avatarUrl ? (
