@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { StudentPanelChrome } from "../Common/StudentPanelChrome";
 import { Sidebar } from "../Common/Sidebar";
 import { HeaderBar } from "../Common/HeaderBar";
@@ -18,6 +18,11 @@ import {
   type OlympiadResultRecord,
   type PracticeResultRecord,
 } from "./Results/index";
+import {
+  getCompletedExamResults,
+  mapStoredResultToOlympiadResultRecord,
+  type StoredExamResult,
+} from "../../lib/examResultsStorage";
 
 interface ResultsPanelProps {
   activeTab?: string;
@@ -33,13 +38,23 @@ export default function ResultsPanel({
   const [selectedPracticeResult, setSelectedPracticeResult] = useState<PracticeResultRecord | null>(null);
   const [isPracticeModalOpen, setIsPracticeModalOpen] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState("All Subjects");
+  const [completedResults, setCompletedResults] = useState<StoredExamResult[]>([]);
+
+  useEffect(() => {
+    setCompletedResults(getCompletedExamResults());
+  }, []);
+
+  const allOlympiadResults = useMemo(() => {
+    const mapped = completedResults.map(mapStoredResultToOlympiadResultRecord);
+    return [...mapped, ...OLYMPIAD_RESULTS_DATA];
+  }, [completedResults]);
 
   // Filtered Olympiad Results based on selected subject
   const filteredOlympiadResults = useMemo(() => {
     if (selectedSubject === "All Subjects") {
-      return OLYMPIAD_RESULTS_DATA;
+      return allOlympiadResults;
     }
-    return OLYMPIAD_RESULTS_DATA.filter((item) => {
+    return allOlympiadResults.filter((item) => {
       if (selectedSubject === "Science") return item.iconType === "science" || item.subjectSlug === "science";
       if (selectedSubject === "Mathematics") return item.iconType === "math" || item.subjectSlug === "math" || item.subjectSlug === "mathematics";
       if (selectedSubject === "English") return item.iconType === "english" || item.subjectSlug === "english";
@@ -48,7 +63,7 @@ export default function ResultsPanel({
       if (selectedSubject === "Logical Reasoning") return item.iconType === "reasoning" || item.subjectSlug.includes("reasoning") || item.name.toLowerCase().includes("reasoning");
       return true;
     });
-  }, [selectedSubject]);
+  }, [selectedSubject, allOlympiadResults]);
 
   const handleSelectOlympiadResult = (result: OlympiadResultRecord) => {
     setSelectedOlympiadResult(result);
@@ -121,6 +136,7 @@ export default function ResultsPanel({
         isOpen={selectedOlympiadResult !== null}
         onClose={() => setSelectedOlympiadResult(null)}
         result={selectedOlympiadResult}
+        initialTab="review"
       />
 
       {/* Practice Results Modal Popup */}

@@ -2,7 +2,9 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import type { StudentProfile } from "../../types";
-import { BellIcon } from "./icons";
+import { BellIcon, UserIcon, SettingsIcon, LogoutIcon } from "./icons";
+import { clearAccessToken } from "@/lib/auth/token-storage";
+import { LogoutConfirmModal } from "./LogoutConfirmModal";
 
 interface HeaderBarProps {
   student: StudentProfile;
@@ -23,9 +25,12 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [];
 
 export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
   const [avatarUrl, setAvatarUrl] = useState<string>(student.avatarUrl);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
 
   const studentName =
     student.name === "Harshith Bantu" || !student.name || student.name === "Student"
@@ -50,20 +55,33 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
     };
   }, [student.avatarUrl]);
 
-  // Click outside to close dropdown
+  // Click outside to close dropdowns
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
     };
-    if (isOpen) {
+    if (isOpen || isProfileOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, isProfileOpen]);
+
+  const handleConfirmLogout = () => {
+    setIsLogoutModalOpen(false);
+    if (typeof window !== "undefined") {
+      clearAccessToken();
+      localStorage.removeItem("student_active_tab");
+      localStorage.setItem("student_sidebar_open", "true");
+      window.location.href = "/";
+    }
+  };
 
   const handleMarkAllRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, isUnread: false })));
@@ -128,7 +146,10 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
         <div className="relative" ref={dropdownRef}>
           <button
             type="button"
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => {
+              setIsOpen((prev) => !prev);
+              setIsProfileOpen(false);
+            }}
             aria-label="View notifications"
             className={`relative p-2.5 rounded-2xl border transition-all cursor-pointer shadow-xs ${isOpen
                 ? "bg-violet-50 border-violet-300 text-violet-700 shadow-md shadow-violet-500/10"
@@ -228,36 +249,158 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
           )}
         </div>
 
-        {/* User Profile (Clickable to navigate to Profile) */}
-        <button
-          type="button"
-          onClick={() => onSelectTab?.("profile")}
-          className="flex items-center gap-3 p-1 sm:pr-2.5 rounded-2xl hover:bg-white hover:shadow-xs transition-all cursor-pointer border border-transparent hover:border-slate-200/80 group text-left"
-          title="View Student Profile"
-        >
-          {avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={avatarUrl}
-              alt={studentName}
-              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-white shadow-sm ring-2 ring-violet-500/20 group-hover:ring-violet-500/60 transition-all"
-            />
-          ) : (
-            <div className="size-10 sm:size-11 rounded-full bg-violet-600 text-white font-black flex items-center justify-center text-sm border-2 border-white shadow-sm ring-2 ring-violet-500/20">
-              {studentName.charAt(0)}
+        {/* User Profile with Dropdown */}
+        <div className="relative" ref={profileDropdownRef}>
+          <button
+            type="button"
+            onClick={() => {
+              setIsProfileOpen((prev) => !prev);
+              setIsOpen(false);
+            }}
+            className={`flex items-center gap-3 p-1 sm:pr-2.5 rounded-2xl transition-all cursor-pointer border text-left group ${
+              isProfileOpen
+                ? "bg-white shadow-xs border-slate-200/90 ring-2 ring-violet-500/10"
+                : "border-transparent hover:bg-white hover:shadow-xs hover:border-slate-200/80"
+            }`}
+            title="User menu"
+            aria-expanded={isProfileOpen}
+            aria-haspopup="true"
+          >
+            {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={avatarUrl}
+                alt={studentName}
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-white shadow-sm ring-2 ring-violet-500/20 group-hover:ring-violet-500/60 transition-all"
+              />
+            ) : (
+              <div className="size-10 sm:size-11 rounded-full bg-violet-600 text-white font-black flex items-center justify-center text-sm border-2 border-white shadow-sm ring-2 ring-violet-500/20">
+                {studentName.charAt(0)}
+              </div>
+            )}
+            <div className="hidden sm:block text-left">
+              <div className="flex items-center gap-1 font-extrabold text-slate-900 text-sm group-hover:text-violet-700 transition-colors">
+                <span>{studentName}</span>
+                <svg
+                  className={`w-4 h-4 text-slate-600 transition-transform duration-200 ${
+                    isProfileOpen ? "rotate-180 text-violet-700" : "group-hover:text-violet-700"
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </div>
+              <p className="text-xs font-semibold text-slate-400">{student.grade || "Student"}</p>
+            </div>
+          </button>
+
+          {/* Profile Dropdown Menu */}
+          {isProfileOpen && (
+            <div className="absolute right-0 mt-2 w-64 sm:w-72 bg-white rounded-2xl shadow-xl border border-slate-200/90 py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+              {/* User Identity Header */}
+              <div className="px-4 py-3 border-b border-slate-100 flex items-center gap-3">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={avatarUrl}
+                    alt={studentName}
+                    className="w-10 h-10 rounded-full object-cover border border-slate-200 ring-2 ring-violet-500/20 shrink-0"
+                  />
+                ) : (
+                  <div className="size-10 rounded-full bg-gradient-to-tr from-violet-600 to-indigo-600 text-white font-black text-sm flex items-center justify-center shadow-xs shrink-0">
+                    {studentName.charAt(0)}
+                  </div>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-extrabold text-slate-900 truncate">
+                    {studentName}
+                  </p>
+                  <p className="text-xs font-medium text-slate-500 truncate">
+                    {student.school || student.grade || "Student Account"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Navigation Items */}
+              <div className="p-1.5 space-y-0.5">
+                {/* Profile */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsProfileOpen(false);
+                    onSelectTab?.("profile");
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:text-violet-700 hover:bg-violet-50/70 transition-all cursor-pointer group"
+                >
+                  <div className="size-8 rounded-lg bg-slate-100 group-hover:bg-violet-100/80 text-slate-600 group-hover:text-violet-600 flex items-center justify-center transition-colors">
+                    <UserIcon className="w-4.5 h-4.5" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <span className="block font-bold leading-tight">Profile</span>
+                    <span className="text-[11px] font-normal text-slate-400 group-hover:text-slate-500">
+                      Personal & academic details
+                    </span>
+                  </div>
+                </button>
+
+                {/* Settings */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsProfileOpen(false);
+                    onSelectTab?.("settings");
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:text-violet-700 hover:bg-violet-50/70 transition-all cursor-pointer group"
+                >
+                  <div className="size-8 rounded-lg bg-slate-100 group-hover:bg-violet-100/80 text-slate-600 group-hover:text-violet-600 flex items-center justify-center transition-colors">
+                    <SettingsIcon className="w-4.5 h-4.5" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <span className="block font-bold leading-tight">Settings</span>
+                    <span className="text-[11px] font-normal text-slate-400 group-hover:text-slate-500">
+                      Preferences & security
+                    </span>
+                  </div>
+                </button>
+              </div>
+
+              <div className="my-1 border-t border-slate-100" />
+
+              {/* Logout Option */}
+              <div className="p-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsProfileOpen(false);
+                    setIsLogoutModalOpen(true);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50/70 transition-all cursor-pointer group"
+                >
+                  <div className="size-8 rounded-lg bg-rose-50 group-hover:bg-rose-100 text-rose-600 flex items-center justify-center transition-colors">
+                    <LogoutIcon className="w-4.5 h-4.5" />
+                  </div>
+                  <div className="text-left flex-1">
+                    <span className="block font-bold leading-tight">Logout</span>
+                    <span className="text-[11px] font-normal text-rose-400 group-hover:text-rose-500">
+                      Sign out of student portal
+                    </span>
+                  </div>
+                </button>
+              </div>
             </div>
           )}
-          <div className="hidden sm:block text-left">
-            <div className="flex items-center gap-1 font-extrabold text-slate-900 text-sm group-hover:text-violet-700 transition-colors">
-              <span>{studentName}</span>
-              <svg className="w-4 h-4 text-slate-600 group-hover:text-violet-700 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path d="M6 9l6 6 6-6" />
-              </svg>
-            </div>
-            <p className="text-xs font-semibold text-slate-400">{student.grade}</p>
-          </div>
-        </button>
+        </div>
       </div>
+
+      {/* Logout Confirmation Dialog Modal */}
+      <LogoutConfirmModal
+        isOpen={isLogoutModalOpen}
+        onConfirm={handleConfirmLogout}
+        onCancel={() => setIsLogoutModalOpen(false)}
+      />
     </header>
   );
 }

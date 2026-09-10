@@ -7,12 +7,14 @@ interface OlympiadTabsProps {
   filterTab: FilterTab;
   onSelectTab: (tab: FilterTab) => void;
   registeredCount?: number;
+  completedCount?: number;
 }
 
 export function OlympiadTabs({
   filterTab,
   onSelectTab,
   registeredCount = 1,
+  completedCount = 0,
 }: OlympiadTabsProps) {
   const tabs: { id: FilterTab; label: string; badge?: number; icon: React.ReactNode }[] = [
     {
@@ -60,6 +62,7 @@ export function OlympiadTabs({
     {
       id: "completed",
       label: "Completed",
+      badge: completedCount > 0 ? completedCount : undefined,
       icon: (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />

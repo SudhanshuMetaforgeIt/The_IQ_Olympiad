@@ -1,3 +1,5 @@
+import type { QuestionReviewItem, SectionScoreSummary } from "../../../lib/examResultsStorage";
+
 export interface OlympiadResultRecord {
   id: string;
   name: string;
@@ -11,6 +13,8 @@ export interface OlympiadResultRecord {
   medal: "gold" | "silver" | "bronze" | "none";
   resultStatus: "Qualified" | "Participation" | "Not Qualified";
   iconType: "science" | "math" | "english" | "cyber" | "reasoning" | "iq";
+  questions?: QuestionReviewItem[];
+  sectionBreakdown?: SectionScoreSummary[];
 }
 
 export interface PracticeResultRecord {
