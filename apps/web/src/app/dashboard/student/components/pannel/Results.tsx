@@ -90,69 +90,69 @@ export default function ResultsPanel({
   return (
     <StudentPanelChrome activeTab={activeTab} onSelectTab={onSelectTab}>
       {({ student, activeTab, onSelectTab }) => (
-    <div className="flex h-screen overflow-hidden bg-[#F8FAFC] font-sans antialiased text-slate-900">
-      {/* Sidebar Navigation */}
-      <Sidebar
-        student={student}
-        activeTab={activeTab}
-        onSelectTab={onSelectTab}
-      />
+        <div className="flex h-screen overflow-hidden bg-[#F8FAFC] font-sans antialiased text-slate-900">
+          {/* Sidebar Navigation */}
+          <Sidebar
+            student={student}
+            activeTab={activeTab}
+            onSelectTab={onSelectTab}
+          />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
-        <HeaderBar student={student} onSelectTab={onSelectTab} />
+          {/* Main Content Area */}
+          <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
+            <HeaderBar student={student} onSelectTab={onSelectTab} />
 
-        <main className="flex-1 p-4 md:p-6 space-y-4 sm:space-y-5">
-          {/* Top 3 Metric Cards */}
-          <ResultsTopStats />
+            <main className="flex-1 p-4 md:p-6 space-y-4 sm:space-y-5">
+              {/* Top 3 Metric Cards */}
+              <ResultsTopStats />
 
-          {/* Middle 2-Column Grid: Olympiads Results & Practice Results */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-5 items-stretch">
-            <OlympiadsResultsTable
-              results={filteredOlympiadResults}
-              selectedSubject={selectedSubject}
-              onSelectSubject={setSelectedSubject}
-              onViewAll={handleViewAllOlympiadResults}
-              onSelectResult={handleSelectOlympiadResult}
-            />
+              {/* Middle 2-Column Grid: Olympiads Results & Practice Results */}
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-5 items-stretch">
+                <OlympiadsResultsTable
+                  results={filteredOlympiadResults}
+                  selectedSubject={selectedSubject}
+                  onSelectSubject={setSelectedSubject}
+                  onViewAll={handleViewAllOlympiadResults}
+                  onSelectResult={handleSelectOlympiadResult}
+                />
 
-            <PracticeResultsTable
-              results={PRACTICE_RESULTS_DATA}
-              onViewAll={handleViewAllPractice}
-              onSelectPractice={handleSelectPracticeRow}
-            />
+                <PracticeResultsTable
+                  results={PRACTICE_RESULTS_DATA}
+                  onViewAll={handleViewAllPractice}
+                  onSelectPractice={handleSelectPracticeRow}
+                />
+              </div>
+
+              {/* Full-width Student Analytics */}
+              <StudentAnalyticsCard />
+
+              {/* Bottom Banner Strip */}
+              <ResultsBottomBanner />
+            </main>
           </div>
 
-          {/* Full-width Student Analytics */}
-          <StudentAnalyticsCard />
+          {/* Specific Subject Olympiad Scorecard Modal Popup */}
+          <OlympiadScorecardModal
+            isOpen={selectedOlympiadResult !== null}
+            onClose={() => setSelectedOlympiadResult(null)}
+            result={selectedOlympiadResult}
+            initialTab="review"
+          />
 
-          {/* Bottom Banner Strip */}
-          <ResultsBottomBanner />
-        </main>
-      </div>
+          {/* Practice Results Modal Popup */}
+          <PracticeResultsModal
+            isOpen={isPracticeModalOpen}
+            onClose={() => setIsPracticeModalOpen(false)}
+            results={PRACTICE_RESULTS_DATA}
+            selectedPractice={selectedPracticeResult}
+          />
 
-      {/* Specific Subject Olympiad Scorecard Modal Popup */}
-      <OlympiadScorecardModal
-        isOpen={selectedOlympiadResult !== null}
-        onClose={() => setSelectedOlympiadResult(null)}
-        result={selectedOlympiadResult}
-        initialTab="review"
-      />
-
-      {/* Practice Results Modal Popup */}
-      <PracticeResultsModal
-        isOpen={isPracticeModalOpen}
-        onClose={() => setIsPracticeModalOpen(false)}
-        results={PRACTICE_RESULTS_DATA}
-        selectedPractice={selectedPracticeResult}
-      />
-
-      {/* Overall Performance Modal Popup */}
-      <PerformanceModal
-        isOpen={isOverallPerformanceModalOpen}
-        onClose={() => setIsOverallPerformanceModalOpen(false)}
-      />
-    </div>
+          {/* Overall Performance Modal Popup */}
+          <PerformanceModal
+            isOpen={isOverallPerformanceModalOpen}
+            onClose={() => setIsOverallPerformanceModalOpen(false)}
+          />
+        </div>
       )}
     </StudentPanelChrome>
   );
