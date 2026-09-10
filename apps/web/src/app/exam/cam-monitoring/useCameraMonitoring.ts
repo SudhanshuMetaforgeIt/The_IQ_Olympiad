@@ -82,6 +82,7 @@ export function useCameraMonitoring(options: UseCameraMonitoringOptions = {}) {
     screenshotAttemptCount: 0,
     phoneDetectedCount: 0,
     cameraDisconnectedCount: 0,
+    microphoneOffCount: 0,
     fullscreenExitCount: 0,
     totalStandardWarnings: 0,
     totalSeriousWarnings: 0,
@@ -93,6 +94,9 @@ export function useCameraMonitoring(options: UseCameraMonitoringOptions = {}) {
 
   const isTerminatedRef = useRef(false);
   isTerminatedRef.current = isTerminated;
+
+  const activeWarningRef = useRef<ProctoringViolationEvent | null>(null);
+  activeWarningRef.current = activeWarning;
 
   const [isExamStartedState, setIsExamStartedState] = useState<boolean>(isExamStarted);
   const isExamStartedRef = useRef(isExamStartedState);
@@ -190,7 +194,13 @@ export function useCameraMonitoring(options: UseCameraMonitoringOptions = {}) {
       const snapshot = captureSnapshot();
       const eventId = `iq-violation-${type}-${wallClock}-${Math.random().toString(36).substring(2, 7)}`;
 
-      const maxStrikes = (type === "PHONE_DETECTED" || type === "MULTIPLE_FACES" || type === "AUDIO_VIOLATION") ? 3 : 4; // 1st & 2nd warning, 3rd direct termination
+      const maxStrikes =
+        type === "PHONE_DETECTED" ||
+        type === "MULTIPLE_FACES" ||
+        type === "AUDIO_VIOLATION" ||
+        type === "MICROPHONE_OFF"
+          ? 3
+          : 4; // 1st & 2nd warning, 3rd direct termination
       let currentStrike = 1;
 
       // Update ref synchronously so strike counts and 4-strike termination checks are 100% accurate
@@ -244,6 +254,12 @@ export function useCameraMonitoring(options: UseCameraMonitoringOptions = {}) {
           currentStrike = updatedCounters.cameraDisconnectedCount;
           break;
 
+        case "MICROPHONE_OFF":
+          updatedCounters.microphoneOffCount += 1;
+          updatedCounters.totalSeriousWarnings += 1;
+          currentStrike = updatedCounters.microphoneOffCount;
+          break;
+
         default:
           updatedCounters.totalStandardWarnings += 1;
           currentStrike = updatedCounters.totalStandardWarnings;
@@ -280,9 +296,13 @@ export function useCameraMonitoring(options: UseCameraMonitoringOptions = {}) {
         return Math.max(0, prev - penalty);
       });
 
-      // Termination Policy: 3rd strike terminates for phone, multiple faces, audio, or max strikes reached
+      // Termination Policy: 3rd strike terminates for phone, multiple faces, audio, mic off, or max strikes reached
       const isDirectThirdStrikeTermination =
-        (type === "PHONE_DETECTED" || type === "MULTIPLE_FACES" || type === "AUDIO_VIOLATION") && currentStrike >= 3;
+        (type === "PHONE_DETECTED" ||
+          type === "MULTIPLE_FACES" ||
+          type === "AUDIO_VIOLATION" ||
+          type === "MICROPHONE_OFF") &&
+        currentStrike >= 3;
       const shouldTerminate =
         isDirectThirdStrikeTermination ||
         currentStrike >= maxStrikes ||
@@ -295,6 +315,7 @@ export function useCameraMonitoring(options: UseCameraMonitoringOptions = {}) {
         if (type === "PHONE_DETECTED") termMsg = config.phoneDetected.terminationMessage;
         else if (type === "MULTIPLE_FACES") termMsg = config.multipleFaces.terminationMessage;
         else if (type === "AUDIO_VIOLATION") termMsg = config.audioMonitoring.terminationMessage;
+        else if (type === "MICROPHONE_OFF") termMsg = config.microphoneOff.terminationMessage;
         else if (type === "FACE_MISSING") termMsg = config.faceMissing.terminationMessage;
         else if (type === "TAB_SWITCHING") termMsg = config.tabSwitching.terminationMessage;
         else if (type === "FULLSCREEN_EXIT") termMsg = config.fullscreenExit.terminationMessage;
@@ -324,6 +345,7 @@ export function useCameraMonitoring(options: UseCameraMonitoringOptions = {}) {
     phoneDetected: IncidentTracker;
     audioViolation: IncidentTracker;
     cameraDisconnected: IncidentTracker;
+    microphoneOff: IncidentTracker;
     tabSwitching: IncidentTracker;
     fullscreenExit: IncidentTracker;
   } | null>(null);
@@ -354,6 +376,16 @@ export function useCameraMonitoring(options: UseCameraMonitoringOptions = {}) {
         "CAMERA_DISCONNECTED",
         { confirmationDurationMs: 1000, recoveryDurationMs: 800, isSerious: true },
         { onConfirmed: (t, d) => commitViolationRef.current(t, d) }
+      ),
+      microphoneOff: new IncidentTracker(
+        "MICROPHONE_OFF",
+        {
+          confirmationDurationMs: config.microphoneOff.confirmationDurationMs,
+          recoveryDurationMs: 600,
+          cooldownDurationMs: config.microphoneOff.cooldownDurationMs,
+          isSerious: true,
+        },
+        { onConfirmed: (t, d) => commitViolationRef.current(t, d, undefined, "Microphone muted or disabled") }
       ),
       tabSwitching: new IncidentTracker(
         "TAB_SWITCHING",
@@ -456,6 +488,68 @@ export function useCameraMonitoring(options: UseCameraMonitoringOptions = {}) {
 
     return "live";
   }, []);
+
+  // Evaluate Microphone Health (keyboard mute / enabled=false / ended / missing)
+  const evaluateMicrophoneHealth = useCallback((): "live" | "muted" | "ended" | "unavailable" => {
+    const stream = streamRef.current;
+    if (!stream) return "unavailable";
+
+    const audioTrack = stream.getAudioTracks()[0];
+    if (!audioTrack) return "unavailable";
+
+    if (audioTrack.readyState === "ended") {
+      return "ended";
+    }
+
+    // Software mute / browser track disable
+    if (!audioTrack.enabled) {
+      return "ended";
+    }
+
+    // Hardware / OS / keyboard mute
+    if (audioTrack.muted) {
+      return "muted";
+    }
+
+    return "live";
+  }, []);
+
+  // Listen for mic mute / unmute / ended events (keyboard mute often fires these)
+  useEffect(() => {
+    const stream = activeMediaStream || streamRef.current;
+    if (!stream || !enableAudioMonitoring) return;
+
+    const audioTracks = stream.getAudioTracks();
+    if (audioTracks.length === 0) return;
+
+    const onMicStateChanged = () => {
+      const trackers = incidentTrackersRef.current;
+      if (!trackers || isTerminatedRef.current || !isExamStartedRef.current) return;
+      // Give the student time to read/fix while the mic-off warning is open
+      if (activeWarningRef.current?.type === "MICROPHONE_OFF") return;
+      const micState = evaluateMicrophoneHealth();
+      const isMicDead = micState !== "live";
+      trackers.microphoneOff.update(isMicDead, Date.now());
+    };
+
+    audioTracks.forEach((track) => {
+      track.addEventListener("mute", onMicStateChanged);
+      track.addEventListener("unmute", onMicStateChanged);
+      track.addEventListener("ended", onMicStateChanged);
+    });
+
+    // Poll enabled flag (no event fires when track.enabled is toggled)
+    const pollId = window.setInterval(onMicStateChanged, 500);
+
+    return () => {
+      audioTracks.forEach((track) => {
+        track.removeEventListener("mute", onMicStateChanged);
+        track.removeEventListener("unmute", onMicStateChanged);
+        track.removeEventListener("ended", onMicStateChanged);
+      });
+      window.clearInterval(pollId);
+    };
+  }, [activeMediaStream, enableAudioMonitoring, evaluateMicrophoneHealth]);
 
   // Enumerate cameras
   const refreshDevices = useCallback(async () => {
@@ -823,6 +917,14 @@ export function useCameraMonitoring(options: UseCameraMonitoringOptions = {}) {
         // Camera Disconnected: track ended/muted/unavailable for 1.0 second
         const isCamDead = cameraTrackState !== "live";
         trackers.cameraDisconnected.update(isCamDead, wallClock);
+
+        // Microphone Off: keyboard/OS mute, track disabled, ended, or missing
+        // Pause escalation while the mic-off warning modal is open so accidental mute can be fixed
+        if (enableAudioMonitoring && activeWarningRef.current?.type !== "MICROPHONE_OFF") {
+          const micState = evaluateMicrophoneHealth();
+          const isMicDead = micState !== "live";
+          trackers.microphoneOff.update(isMicDead, wallClock);
+        }
       }
 
       // Trust recovery on continuous compliance
@@ -841,6 +943,7 @@ export function useCameraMonitoring(options: UseCameraMonitoringOptions = {}) {
     drawOverlays,
     enableAudioMonitoring,
     evaluateCameraHealth,
+    evaluateMicrophoneHealth,
   ]);
 
   useEffect(() => {
@@ -866,14 +969,30 @@ export function useCameraMonitoring(options: UseCameraMonitoringOptions = {}) {
   }, [autoStart, existingStream, isLoadingModel, modelError, selectedDeviceId, startCamera, stopCamera]);
 
   const dismissWarning = useCallback(() => {
+    const warningType = activeWarningRef.current?.type;
     setActiveWarning(null);
-    // Immediately reset tracker state to IDLE so repeated violations are tracked without dead-zone delay
-    if (incidentTrackersRef.current) {
-      Object.values(incidentTrackersRef.current).forEach((tracker) => {
-        tracker.resetToIdle();
+
+    if (!incidentTrackersRef.current) return;
+
+    // Mic-off: enter long cooldown so an accidental mute can be fixed before the next strike
+    if (warningType === "MICROPHONE_OFF") {
+      incidentTrackersRef.current.microphoneOff.forceCooldown(
+        Date.now(),
+        config.microphoneOff.cooldownDurationMs
+      );
+      Object.entries(incidentTrackersRef.current).forEach(([key, tracker]) => {
+        if (key !== "microphoneOff") {
+          tracker.resetToIdle();
+        }
       });
+      return;
     }
-  }, []);
+
+    // Other warnings: reset trackers so repeated violations are tracked without dead-zone delay
+    Object.values(incidentTrackersRef.current).forEach((tracker) => {
+      tracker.resetToIdle();
+    });
+  }, [config.microphoneOff.cooldownDurationMs]);
 
   const triggerViolation = useCallback(
     (type: ViolationType, customDetails?: string) => {
@@ -901,6 +1020,7 @@ export function useCameraMonitoring(options: UseCameraMonitoringOptions = {}) {
       screenshotAttemptCount: 0,
       phoneDetectedCount: 0,
       cameraDisconnectedCount: 0,
+      microphoneOffCount: 0,
       fullscreenExitCount: 0,
       totalStandardWarnings: 0,
       totalSeriousWarnings: 0,

@@ -6,6 +6,7 @@ export type CoreViolationType =
   | "SCREENSHOT_ATTEMPT"
   | "PHONE_DETECTED"
   | "CAMERA_DISCONNECTED"
+  | "MICROPHONE_OFF"
   | "FULLSCREEN_EXIT";
 
 export type AuxiliaryViolationType =
@@ -103,6 +104,7 @@ export interface IncidentCounter {
   screenshotAttemptCount: number;
   phoneDetectedCount: number;
   cameraDisconnectedCount: number;
+  microphoneOffCount: number;
   fullscreenExitCount: number;
   totalStandardWarnings: number;
   totalSeriousWarnings: number;

@@ -153,6 +153,20 @@ export class IncidentTracker {
     this.pendingMeta = null;
   }
 
+  /** Enter cooldown without resolving — used after warning dismiss so student has time to fix. */
+  public forceCooldown(timestamp: number = Date.now(), cooldownDurationMs?: number): void {
+    if (typeof cooldownDurationMs === "number" && cooldownDurationMs >= 0) {
+      this.options.cooldownDurationMs = cooldownDurationMs;
+    }
+    this.pendingStartTime = 0;
+    this.pendingDropSince = null;
+    this.confirmedTime = 0;
+    this.recoveryStartTime = null;
+    this.pendingMeta = null;
+    this.cooldownStartTime = timestamp;
+    this.setState("COOLDOWN");
+  }
+
   public reset(): void {
     this.resetToIdle();
   }

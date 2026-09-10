@@ -29,16 +29,13 @@ export default function MyExamsPanel({ activeTab = "exams", onSelectTab, examId 
   return (
     <StudentPanelChrome activeTab={activeTab} onSelectTab={onSelectTab}>
       {({ student, activeTab, onSelectTab }) => (
-        <div className="flex h-screen overflow-hidden bg-[#F8FAFC] font-sans antialiased text-slate-900">
-          {/* Sidebar Navigation */}
+        <div className="flex h-dvh w-full max-w-[100dvw] overflow-x-hidden overflow-y-hidden bg-[#F8FAFC] font-sans antialiased text-slate-900 box-border">
           <Sidebar student={student} activeTab={activeTab} onSelectTab={onSelectTab} />
 
-          {/* Main Container */}
-          <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
+          <div className="flex-1 flex flex-col h-dvh min-w-0 max-w-full overflow-x-hidden overflow-y-auto box-border">
             <HeaderBar student={student} onSelectTab={onSelectTab} />
 
-            {/* Main Area */}
-            <main className="flex-1 p-4 md:p-6 flex flex-col">
+            <main className="flex-1 p-2.5 sm:p-3 md:p-4 flex flex-col min-w-0 max-w-full overflow-x-hidden box-border">
               <ExamInstructionsStep onStartExam={handleStartExam} />
             </main>
           </div>

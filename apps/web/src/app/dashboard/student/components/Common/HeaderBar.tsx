@@ -128,20 +128,21 @@ export function HeaderBar({ student, onSelectTab }: HeaderBarProps) {
   };
 
   return (
-    <header className="flex items-center justify-between py-3 px-4 sm:px-6 bg-transparent shrink-0">
+    <header className="flex items-center justify-between gap-2 sm:gap-3 py-2.5 sm:py-3 px-3 sm:px-4 md:px-6 bg-transparent shrink-0 w-full max-w-full min-w-0 overflow-x-hidden box-border">
       {/* Welcome Title */}
-      <div>
-        <span className="text-[11px] font-semibold text-slate-500">Welcome back,</span>
-        <h1 className="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-1.5 tracking-tight leading-tight">
-          {studentName} <span className="animate-bounce inline-block text-base">👋</span>
+      <div className="min-w-0 flex-1 overflow-hidden">
+        <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500">Welcome back,</span>
+        <h1 className="text-sm sm:text-lg font-black text-slate-900 flex items-center gap-1 tracking-tight leading-tight min-w-0">
+          <span className="truncate">{studentName}</span>
+          <span className="animate-bounce inline-block text-sm shrink-0">👋</span>
         </h1>
-        <p className="text-[11px] font-semibold text-slate-400 mt-0.5">
+        <p className="text-[10px] sm:text-[11px] font-semibold text-slate-400 mt-0.5 truncate">
           {student.grade} • {student.school}
         </p>
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {/* Notification Bell with Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button

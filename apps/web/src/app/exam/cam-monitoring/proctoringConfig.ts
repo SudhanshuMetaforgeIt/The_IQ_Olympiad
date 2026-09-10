@@ -58,6 +58,9 @@ export interface GlobalProctoringConfig {
   // 7. FULLSCREEN_EXIT
   fullscreenExit: ViolationRuleConfig;
 
+  // 8. MICROPHONE_OFF (keyboard mute / track disabled / permission revoked)
+  microphoneOff: ViolationRuleConfig;
+
   // Pre-exam camera health
   cameraHealth: {
     gracePeriodMs: number;
@@ -164,9 +167,9 @@ export const DEFAULT_PROCTORING_CONFIG: GlobalProctoringConfig = {
     maxViolationsBeforeTermination: 4, // 1st-3rd: warning, 4th: terminate
     clearClipboardOnPrintScreen: true,
     interceptDevToolsKeys: true,
-    userWarningMessage: "Screen capture attempt detected. Taking screenshots, recording, or printing the exam questions is strictly prohibited.",
-    actionRequired: "Refrain from pressing screenshot, snipping, or print shortcut keys.",
-    terminationMessage: "Exam terminated: Repeated unauthorized screen capture attempts detected.",
+    userWarningMessage: "Screen capture attempt detected. Screenshots of the exam are blanked out and screen sharing is not allowed.",
+    actionRequired: "Do not take screenshots or share your screen. Exam content is protected and will appear black in captures.",
+    terminationMessage: "Exam terminated: Repeated unauthorized screen capture or share attempts detected.",
   },
 
   // Rule 6: PHONE DETECTION
@@ -195,6 +198,25 @@ export const DEFAULT_PROCTORING_CONFIG: GlobalProctoringConfig = {
     userWarningMessage: "Full screen mode exited. The examination requires strict continuous full-screen view.",
     actionRequired: "Re-enter full screen mode immediately to continue your exam.",
     terminationMessage: "Exam terminated: Candidate repeatedly exited full-screen mode.",
+  },
+
+  // Rule 8: MICROPHONE OFF
+  // Keyboard mute, OS mute, track disabled, or mic permission revoked.
+  // Accidental mute gets recovery time: sustained mute before 1st warning,
+  // then a long grace after acknowledging before strike 2 can count.
+  // 1st & 2nd: Warning, 3rd: DIRECT TERMINATION.
+  microphoneOff: {
+    name: "Microphone Turned Off",
+    isSerious: true,
+    confirmationDurationMs: 8000, // 8s continuous mute before a warning (accidental mute recovery)
+    cooldownDurationMs: 25000, // 25s grace after dismiss/fix before next strike
+    maxViolationsBeforeTermination: 3, // 1st & 2nd: warning, 3rd: terminate
+    userWarningMessage:
+      "Your microphone was turned off or muted. The exam requires an active microphone at all times for proctoring.",
+    actionRequired:
+      "Unmute your microphone immediately (keyboard mic key / system mute / browser permission) and keep it on for the rest of the exam.",
+    terminationMessage:
+      "Exam terminated: Microphone was turned off or muted repeatedly during the exam.",
   },
 
   cameraHealth: {

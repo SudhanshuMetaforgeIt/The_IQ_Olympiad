@@ -81,8 +81,8 @@ export function Sidebar({ activeTab = "dashboard", onSelectTab }: SidebarProps) 
 
   return (
     <aside
-        className={`bg-[#090E24] text-white flex flex-col justify-between shrink-0 h-screen select-none border-r border-slate-800/60 transition-all duration-300 ease-in-out relative ${
-          isOpen ? "w-60 p-4" : "w-[72px] p-2.5"
+        className={`bg-[#090E24] text-white flex flex-col justify-between shrink-0 h-dvh select-none border-r border-slate-800/60 transition-all duration-300 ease-in-out relative ${
+          isOpen ? "w-56 sm:w-60 p-3 sm:p-4" : "w-[64px] sm:w-[72px] p-2 sm:p-2.5"
         } sticky top-0 left-0 z-40`}
       >
         {/* Border Docked Circular Toggle Button */}

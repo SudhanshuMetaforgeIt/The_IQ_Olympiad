@@ -61,10 +61,10 @@ export function InExamProctorWidget({
 
       {/* Picture-in-Picture Mini Proctor Viewport */}
       <div
-        className={`relative w-28 sm:w-36 h-20 sm:h-24 rounded-2xl bg-slate-950 border-2 overflow-hidden shadow-lg flex items-center justify-center shrink-0 transition-colors ${currentFrameResult?.detectedPhone
-            ? "border-rose-500 ring-2 ring-rose-500/50"
+        className={`relative w-16 h-12 sm:w-24 sm:h-16 lg:w-28 lg:h-20 rounded-lg sm:rounded-xl bg-slate-950 border-2 overflow-hidden shadow-md flex items-center justify-center shrink-0 transition-colors ${currentFrameResult?.detectedPhone
+            ? "border-rose-500 ring-1 ring-rose-500/50"
             : (currentFrameResult?.faceCount ?? 1) !== 1
-              ? "border-amber-500 ring-2 ring-amber-500/30"
+              ? "border-amber-500 ring-1 ring-amber-500/30"
               : "border-violet-500/80"
           } ${className}`}
       >

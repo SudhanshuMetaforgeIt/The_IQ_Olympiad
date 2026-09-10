@@ -8,7 +8,9 @@ export default function StudentDashboardLayout({
 }) {
   return (
     <StudentMeProvider>
-      <main>{children}</main>
+      <main className="w-full max-w-[100dvw] min-w-0 overflow-x-hidden">
+        {children}
+      </main>
     </StudentMeProvider>
   );
 }

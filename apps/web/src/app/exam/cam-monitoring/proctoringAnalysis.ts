@@ -301,6 +301,14 @@ export function getViolationDetails(type: ViolationType): {
         isSerious: true,
       };
 
+    case "MICROPHONE_OFF":
+      return {
+        message: DEFAULT_PROCTORING_CONFIG.microphoneOff.userWarningMessage,
+        actionRequired: DEFAULT_PROCTORING_CONFIG.microphoneOff.actionRequired,
+        category: "serious",
+        isSerious: true,
+      };
+
     case "FULLSCREEN_EXIT":
       return {
         message: DEFAULT_PROCTORING_CONFIG.fullscreenExit.userWarningMessage,
