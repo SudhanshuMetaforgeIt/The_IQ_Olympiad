@@ -40,6 +40,9 @@ export default function Footer() {
           <Link href="/faq" className="hover:text-purple-400 transition-colors">
             Help
           </Link>
+          <Link href="/dashboard/super-admin" className="hover:text-purple-400 transition-colors">
+            Super Admin
+          </Link>
         </div>
       </div>
     </footer>
