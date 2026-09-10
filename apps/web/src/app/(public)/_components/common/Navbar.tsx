@@ -2,10 +2,14 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const isOlympiads = pathname?.startsWith("/olympiads");
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-purple-100/50 bg-white/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-purple-100/50 bg-white/95 backdrop-blur-md">
       <div className="mx-auto flex h-20 w-full max-w-[1920px] items-center justify-between px-4 sm:px-6 lg:px-10 xl:px-12">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-3 cursor-pointer group">
@@ -28,19 +32,26 @@ export default function Navbar() {
         <nav className="hidden items-center gap-8 md:flex">
           <Link
             href="/olympiads"
-            className="text-xs sm:text-sm font-extrabold text-slate-700 hover:text-purple-700 transition-colors cursor-pointer"
+            className={`text-xs sm:text-sm font-extrabold transition-colors cursor-pointer relative py-2 ${
+              isOlympiads
+                ? "text-purple-700 font-black"
+                : "text-slate-700 hover:text-purple-700"
+            }`}
           >
             Olympiads
+            {isOlympiads && (
+              <span className="absolute -bottom-1.5 left-0 right-0 h-[2.5px] rounded-full bg-purple-600" />
+            )}
           </Link>
           <Link
             href="/subjects"
-            className="text-xs sm:text-sm font-extrabold text-slate-700 hover:text-purple-700 transition-colors cursor-pointer"
+            className="text-xs sm:text-sm font-extrabold text-slate-700 hover:text-purple-700 transition-colors cursor-pointer py-2"
           >
             Subjects
           </Link>
           <Link
             href="/how-it-works"
-            className="text-xs sm:text-sm font-extrabold text-slate-700 hover:text-purple-700 transition-colors cursor-pointer"
+            className="text-xs sm:text-sm font-extrabold text-slate-700 hover:text-purple-700 transition-colors cursor-pointer py-2"
           >
             How It Works
           </Link>
