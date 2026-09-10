@@ -1,17 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { ApiError, submitDemoExamAnswers, type DemoExamResult } from "@/lib/api";
 import { getExamPartLabel, type ExamDetails } from "../_data/examQuestions";
 import { InExamProctorWidget } from "../cam-monitoring";
-import type { TerminationEvent, ProctoringViolationEvent } from "../cam-monitoring/types";
-import {
-  saveCompletedExamResult,
-  type StoredExamResult,
-  type QuestionReviewItem,
-  type SectionScoreSummary,
-  mapStoredResultToOlympiadResultRecord,
-} from "@/app/dashboard/student/lib/examResultsStorage";
-import { OlympiadScorecardModal } from "@/app/dashboard/student/components/pannel/Results/OlympiadScorecardModal";
+import type { TerminationEvent } from "../cam-monitoring/types";
 
 interface ExamLiveWorkspaceProps {
   exam: ExamDetails;
@@ -33,8 +26,9 @@ export function ExamLiveWorkspace({
   const [overallSecondsRemaining, setOverallSecondsRemaining] = useState(OVERALL_TOTAL_SECONDS);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [savedResult, setSavedResult] = useState<StoredExamResult | null>(null);
+  const [isSubmittingResult, setIsSubmittingResult] = useState(false);
+  const [result, setResult] = useState<DemoExamResult | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [fullscreenWarning, setFullscreenWarning] = useState(false);
 
   // Strict Proctoring Termination state
@@ -133,14 +127,18 @@ export function ExamLiveWorkspace({
     return () => clearInterval(overallTimer);
   }, [isSubmitted, isTerminated, OVERALL_TOTAL_SECONDS]);
 
+  const selectedAnswersRef = useRef(selectedAnswers);
+  selectedAnswersRef.current = selectedAnswers;
+  const hasRequestedSubmitRef = useRef(false);
+
   const currentQ = exam.questions[currentQIndex];
 
   // Selecting an option: stays on the question so student can change or clear response during the 1 minute
-  const handleSelectOption = (opt: string) => {
+  const handleSelectOption = (optionId: string) => {
     if (!currentQ || isSubmitted || isTerminated) return;
     setSelectedAnswers((prev) => ({
       ...prev,
-      [currentQ.id]: opt,
+      [currentQ.id]: optionId,
     }));
   };
 
@@ -160,27 +158,41 @@ export function ExamLiveWorkspace({
     return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
-  // Score calculation: 100 marks total (2 marks per question)
-  const calculateResults = useCallback(() => {
-    let score = 0;
-    let correctCount = 0;
-    exam.questions.forEach((q) => {
-      if (selectedAnswers[q.id] === q.answer) {
-        score += q.marks; // +2 marks
-        correctCount += 1;
+  const submitAnswersToBackend = useCallback(async () => {
+    setIsSubmittingResult(true);
+    setSubmitError(null);
+
+    const answers = Object.entries(selectedAnswersRef.current).map(
+      ([questionId, optionId]) => ({
+        questionId,
+        selectedOptionIds: [optionId],
+      }),
+    );
+
+    try {
+      const payload = await submitDemoExamAnswers(answers);
+      setResult(payload);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setSubmitError(error.message);
+      } else if (error instanceof Error) {
+        setSubmitError(error.message);
+      } else {
+        setSubmitError("Failed to submit exam answers. Please try again.");
       }
-    });
-    const attempted = Object.keys(selectedAnswers).length;
-    const accuracy = attempted > 0 ? Math.round((correctCount / attempted) * 100) : 0;
-    return {
-      score,
-      totalPossibleMarks: exam.totalMarks, // 100
-      correctCount,
-      attempted,
-      accuracy,
-      unattempted: TOTAL_QUESTIONS - attempted,
-    };
-  }, [exam, selectedAnswers, TOTAL_QUESTIONS]);
+      hasRequestedSubmitRef.current = false;
+    } finally {
+      setIsSubmittingResult(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isSubmitted || hasRequestedSubmitRef.current) {
+      return;
+    }
+    hasRequestedSubmitRef.current = true;
+    void submitAnswersToBackend();
+  }, [isSubmitted, submitAnswersToBackend]);
 
   // Clean up camera stream and exit fullscreen only when exam is submitted and student returns to dashboard
   const handleExitToDashboard = () => {
@@ -197,314 +209,188 @@ export function ExamLiveWorkspace({
     onFinishExam();
   };
 
-  const hasSavedRef = useRef(false);
-
-  useEffect(() => {
-    if (!isSubmitted || hasSavedRef.current) return;
-    hasSavedRef.current = true;
-
-    const stats = calculateResults();
-    const percentage = Number(((stats.score / (exam.totalMarks || 100)) * 100).toFixed(2));
-    const now = new Date();
-    const dateStr = now.toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" });
-    const timeStr = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-
-    // Build question review items
-    const questionReviewItems: QuestionReviewItem[] = exam.questions.map((q, idx) => {
-      const userAnswer = selectedAnswers[q.id];
-      const isAttempted = Boolean(userAnswer);
-      const isCorrect = isAttempted && userAnswer === q.answer;
-      return {
-        questionId: q.id,
-        questionNumber: idx + 1,
-        section: q.subject,
-        question: q.question,
-        options: q.options.map((o) => ({ id: o.id, text: o.text })),
-        userAnswer,
-        correctAnswer: q.answer || "A",
-        isCorrect,
-        isAttempted,
-        marks: q.marks,
-        earnedMarks: isCorrect ? q.marks : 0,
-        explanation: q.explanation,
-      };
-    });
-
-    // Build section breakdown
-    const sectionMap: Record<string, { totalQ: number; attempted: number; correct: number; score: number; totalMarks: number }> = {};
-    questionReviewItems.forEach((q) => {
-      if (!sectionMap[q.section]) {
-        sectionMap[q.section] = { totalQ: 0, attempted: 0, correct: 0, score: 0, totalMarks: 0 };
-      }
-      const s = sectionMap[q.section];
-      s.totalQ += 1;
-      s.totalMarks += q.marks;
-      if (q.isAttempted) s.attempted += 1;
-      if (q.isCorrect) {
-        s.correct += 1;
-        s.score += q.marks;
-      }
-    });
-
-    const sectionBreakdown: SectionScoreSummary[] = Object.entries(sectionMap).map(([section, s]) => ({
-      section,
-      totalQuestions: s.totalQ,
-      attempted: s.attempted,
-      correct: s.correct,
-      wrong: s.attempted - s.correct,
-      score: s.score,
-      totalMarks: s.totalMarks,
-      accuracy: s.attempted > 0 ? Math.round((s.correct / s.attempted) * 100) : 0,
-    }));
-
-    let medal: "gold" | "silver" | "bronze" | "none" = "none";
-    if (percentage >= 90) medal = "gold";
-    else if (percentage >= 75) medal = "silver";
-    else if (percentage >= 60) medal = "bronze";
-
-    const nationalRank = Math.max(1, Math.floor((100 - percentage) * 25) + 18);
-
-    const storedResult: StoredExamResult = {
-      id: `result_${exam.id || "demo"}`,
-      examId: exam.id || "68d123abc",
-      title: exam.title || "The IQ Olympiad",
-      subjectSlug: "math",
-      iconType: "math",
-      date: dateStr,
-      time: timeStr,
-      submittedAt: now.toISOString(),
-      score: stats.score,
-      totalScore: exam.totalMarks || 100,
-      percentage,
-      passingMarks: exam.passingMarks || 50,
-      totalQuestions: TOTAL_QUESTIONS,
-      attempted: stats.attempted,
-      unattempted: stats.unattempted,
-      correctCount: stats.correctCount,
-      wrongCount: stats.attempted - stats.correctCount,
-      accuracy: stats.accuracy,
-      nationalRank,
-      medal,
-      resultStatus: stats.score >= (exam.passingMarks || 50) ? "Qualified" : "Participation",
-      sectionBreakdown,
-      questions: questionReviewItems,
-    };
-
-    setSavedResult(storedResult);
-    saveCompletedExamResult(storedResult);
-  }, [isSubmitted, calculateResults, exam, selectedAnswers, TOTAL_QUESTIONS]);
-
-  // RESULT SCORECARD: Clean White Theme (rendered after completing 50 questions)
   if (isSubmitted) {
-    const stats = calculateResults();
-    const isPassed = stats.score >= exam.passingMarks;
-
-    return (
-      <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex items-center justify-center p-4 sm:p-6 font-sans antialiased">
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-12 max-w-xl w-full text-center space-y-6 shadow-xl animate-in zoom-in-95">
-          <div className="size-20 rounded-full bg-emerald-100 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto text-3xl font-black shadow-sm">
-            ✓
-          </div>
-
-          <div className="space-y-1.5">
-            <span className="text-xs font-bold text-violet-600 uppercase tracking-wider">
-              {exam.title || "IMO Olympiad"} • {exam.totalMarks || 100} Marks Total
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              Exam Completed & Submitted!
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500">
-              {isPassed
-                ? "Congratulations! You have successfully completed the examination."
-                : "Your examination submission has been verified and recorded."}
+    if (isSubmittingResult && !result) {
+      return (
+        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex items-center justify-center p-4 sm:p-6 font-sans antialiased">
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-8 sm:p-12 max-w-md w-full text-center space-y-4 shadow-xl">
+            <div className="mx-auto size-10 rounded-full border-2 border-violet-200 border-t-violet-600 animate-spin" />
+            <h2 className="text-xl font-black text-slate-900">Submitting your answers</h2>
+            <p className="text-sm text-slate-500">
+              Calculating your score securely on the server…
             </p>
           </div>
+        </div>
+      );
+    }
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-3 gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200">
-            <div className="p-3">
-              <span className="text-[10px] font-bold text-slate-500 uppercase block">Total Score</span>
-              <span className="text-2xl font-black text-violet-600 mt-1 block">
-                {stats.score} / {stats.totalPossibleMarks}
-              </span>
-            </div>
-            <div className="p-3 border-x border-slate-200">
-              <span className="text-[10px] font-bold text-slate-500 uppercase block">Attempted</span>
-              <span className="text-2xl font-black text-indigo-600 mt-1 block">
-                {stats.attempted} / {TOTAL_QUESTIONS}
-              </span>
-            </div>
-            <div className="p-3">
-              <span className="text-[10px] font-bold text-slate-500 uppercase block">Accuracy</span>
-              <span className="text-2xl font-black text-emerald-600 mt-1 block">
-                {stats.accuracy}%
-              </span>
+    if (submitError && !result) {
+      return (
+        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex items-center justify-center p-4 sm:p-6 font-sans antialiased">
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-8 sm:p-12 max-w-md w-full text-center space-y-5 shadow-xl">
+            <h2 className="text-xl font-black text-slate-900">Unable to submit exam</h2>
+            <p className="text-sm text-slate-500">{submitError}</p>
+            <div className="flex flex-col gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  hasRequestedSubmitRef.current = true;
+                  void submitAnswersToBackend();
+                }}
+                disabled={isSubmittingResult}
+                className="w-full py-3.5 rounded-2xl bg-violet-600 text-white font-extrabold cursor-pointer disabled:opacity-60"
+              >
+                {isSubmittingResult ? "Retrying…" : "Retry submission"}
+              </button>
+              <button
+                type="button"
+                onClick={handleExitToDashboard}
+                className="w-full py-3.5 rounded-2xl border border-slate-200 text-slate-700 font-bold cursor-pointer"
+              >
+                Return to Dashboard
+              </button>
             </div>
           </div>
+        </div>
+      );
+    }
 
-          {/* Action Buttons: Review Answers & Return to Dashboard */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-2">
-            <button
-              type="button"
-              onClick={() => setIsReviewModalOpen(true)}
-              className="flex-1 py-3.5 px-5 rounded-2xl border-2 border-emerald-400 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-extrabold text-sm shadow-sm hover:scale-[1.01] active:scale-[0.99] transition cursor-pointer flex items-center justify-center gap-2"
-            >
-              <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-              <span>Review Answers</span>
-            </button>
+    if (result) {
+      const domainSections = result.sectionScores.filter((section) => section.maxScore > 0);
+
+      return (
+        <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex items-center justify-center p-4 sm:p-6 font-sans antialiased">
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-12 max-w-xl w-full text-center space-y-6 shadow-xl animate-in zoom-in-95">
+            <div className="size-20 rounded-full bg-emerald-100 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto text-3xl font-black shadow-sm">
+              ✓
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="text-xs font-bold text-violet-600 uppercase tracking-wider">
+                The IQ Olympiad • {result.totalMarks} Marks Total
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Exam Completed!
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500">
+                Your score was calculated securely on the server. Correct answers are not shown in the browser.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-violet-50 border border-violet-100">
+              <span className="text-[10px] font-bold text-violet-600 uppercase block">Score</span>
+              <span className="text-4xl font-black text-violet-700 mt-1 block">
+                {result.totalScore}
+                <span className="text-lg text-violet-400 font-bold"> / {result.totalMarks}</span>
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+              <div className="p-2">
+                <span className="text-[10px] font-bold text-slate-500 uppercase block">Correct</span>
+                <span className="text-xl font-black text-emerald-600 mt-1 block">
+                  {result.correctAnswers}
+                </span>
+              </div>
+              <div className="p-2">
+                <span className="text-[10px] font-bold text-slate-500 uppercase block">Incorrect</span>
+                <span className="text-xl font-black text-rose-600 mt-1 block">
+                  {result.incorrectAnswers}
+                </span>
+              </div>
+              <div className="p-2">
+                <span className="text-[10px] font-bold text-slate-500 uppercase block">Attempted</span>
+                <span className="text-xl font-black text-indigo-600 mt-1 block">
+                  {result.attempted}
+                </span>
+              </div>
+              <div className="p-2">
+                <span className="text-[10px] font-bold text-slate-500 uppercase block">Unattempted</span>
+                <span className="text-xl font-black text-slate-700 mt-1 block">
+                  {result.unattempted}
+                </span>
+              </div>
+            </div>
+
+            {domainSections.length > 0 && (
+              <div className="text-left space-y-2">
+                <h3 className="text-xs font-black text-slate-500 uppercase tracking-wider px-1">
+                  Section scores
+                </h3>
+                <div className="space-y-2">
+                  {domainSections.map((section) => (
+                    <div
+                      key={section.cognitiveDomain}
+                      className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3"
+                    >
+                      <div>
+                        <p className="text-sm font-bold text-slate-900">
+                          {section.cognitiveDomain}
+                        </p>
+                        <p className="text-[11px] text-slate-500">
+                          {section.correct} correct · {section.attempted} attempted
+                        </p>
+                      </div>
+                      <p className="text-sm font-black text-violet-700 tabular-nums">
+                        {section.score}/{section.maxScore}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <button
               type="button"
               onClick={handleExitToDashboard}
-              className="flex-1 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:from-violet-700 hover:to-indigo-700 text-white font-extrabold text-sm shadow-xl shadow-violet-600/25 hover:scale-[1.01] active:scale-[0.99] transition cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 text-white font-extrabold text-base shadow-xl shadow-violet-600/25 hover:scale-[1.01] active:scale-[0.99] transition cursor-pointer"
             >
-              <span>Return to Dashboard</span>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
+              Return to Dashboard
             </button>
           </div>
-
-          {/* Modal popup to review all questions and solutions */}
-          {savedResult && (
-            <OlympiadScorecardModal
-              isOpen={isReviewModalOpen}
-              onClose={() => setIsReviewModalOpen(false)}
-              result={mapStoredResultToOlympiadResultRecord(savedResult)}
-              initialTab="review"
-            />
-          )}
         </div>
-      </div>
-    );
+      );
+    }
   }
 
   const currentAnswer = currentQ ? selectedAnswers[currentQ.id] : undefined;
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans antialiased select-none">
-      {/* Sticky Top Header with Integrated Question Timer (Stays Visible When Scrolling) */}
-      <header className="bg-white border-b border-slate-200/90 sticky top-0 z-30 shadow-xs">
-        {/* Upper Header Row: Olympiad Title, Total Time, Submit Exam & Proctoring */}
-        <div className="px-4 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between border-b border-slate-100">
-          <div className="flex items-center gap-3">
-            <div className="size-9 sm:size-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white flex items-center justify-center font-black text-xs sm:text-sm shadow-md shadow-violet-600/25">
-              IQO
-            </div>
-            <div>
-              <h1 className="text-sm sm:text-base font-black text-slate-900 leading-tight">
-                {exam.title || "The IQ Olympiad"}
-              </h1>
-              <p className="text-[11px] font-semibold text-slate-500">
-                Official Examination • {exam.totalMarks || 100} Marks Total
-              </p>
-            </div>
+      {/* Top Header Bar: Clean White Theme with IMO Olympiad Title, Total Time, Mini Proctor Cam, and NO Exit Button */}
+      <header className="bg-white border-b border-slate-200/90 px-6 sm:px-10 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+        <div className="flex items-center gap-3.5">
+          <div className="size-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white flex items-center justify-center font-black text-sm shadow-md shadow-violet-600/25">
+            IMO
           </div>
-
-          {/* Right: Total Time & Mini Live Proctoring */}
-          <div className="flex items-center gap-2 sm:gap-3.5">
-            {/* Overall Remaining Total Exam Time */}
-            <div className="flex items-center gap-2 px-3 py-1.5 sm:py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold shadow-2xs">
-              <svg className="w-3.5 h-3.5 text-violet-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
-              <span className="text-slate-500 font-medium hidden sm:inline text-[11px]">Total Time:</span>
-              <span className="font-mono font-black text-slate-900 text-xs sm:text-sm">{formatTimer(overallSecondsRemaining)}</span>
-            </div>
-
-            {/* In-Exam AI Proctoring Widget */}
-            <InExamProctorWidget
-              stream={cameraStream}
-              onExamTerminated={handleExamTerminated}
-              onReturnToDashboard={handleExitToDashboard}
-              className="shadow-sm"
-            />
+          <div>
+            <h1 className="text-base sm:text-lg font-black text-slate-900 leading-tight">
+              IMO Olympiad
+            </h1>
+            <p className="text-xs font-semibold text-slate-500">
+              Question {currentQIndex + 1} of {TOTAL_QUESTIONS} • 100 Marks Total
+            </p>
           </div>
         </div>
 
-        {/* Lower Header Row: Question Info & Question Timer (Always Visible on Scroll) */}
-        <div className="px-4 sm:px-8 py-2 sm:py-2.5 flex flex-wrap items-center justify-between gap-2.5 bg-slate-50/70">
-          {/* Left: Question metadata */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
-            <span className="px-3 py-1 rounded-xl bg-violet-600 text-white font-black text-xs shadow-xs">
-              Question {currentQIndex + 1} of {TOTAL_QUESTIONS}
-            </span>
-            <span className="px-2.5 py-1 rounded-xl bg-white text-slate-700 text-xs font-bold border border-slate-200/90 shadow-2xs">
-              {currentQ?.subject || getExamPartLabel(currentQIndex + 1)}
-            </span>
-            <span className="text-xs font-bold text-slate-400 hidden sm:inline">
-              • +{currentQ?.marks || 2} Marks
-            </span>
+        {/* Right: Total Time & Mini Live Proctoring (Question Time moved above the question, NO Exit button) */}
+        <div className="flex items-center gap-3 sm:gap-6">
+          {/* Overall Remaining Total Exam Time */}
+          <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold shadow-2xs">
+            <svg className="w-4 h-4 text-violet-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <span className="text-slate-500 font-medium">Total Time:</span>
+            <span className="font-mono font-black text-slate-900 text-sm">{formatTimer(overallSecondsRemaining)}</span>
           </div>
 
-          {/* Right: Question Timer (Always Sticky in Header) */}
-          <div className={`flex items-center gap-2.5 sm:gap-3 px-3 py-1.5 rounded-xl bg-white border shadow-2xs transition-all ${
-            questionTimeLeft <= 10
-              ? "border-rose-300 bg-rose-50/70 shadow-rose-500/10 ring-2 ring-rose-500/20"
-              : "border-slate-200/90"
-          }`}>
-            <div className={`size-7 sm:size-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 border transition-all ${
-              questionTimeLeft <= 10
-                ? "bg-rose-100 text-rose-600 border-rose-200"
-                : "bg-violet-50 text-violet-700 border-violet-200"
-            }`}>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
-            </div>
-
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[11px] font-black uppercase tracking-wider text-slate-800">
-                  Question Timer
-                </span>
-                <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-500 font-bold">
-                  1m Limit
-                </span>
-              </div>
-
-              {/* Mini Progress Bar */}
-              <div className="w-24 sm:w-32 h-1 rounded-full bg-slate-100 overflow-hidden mt-0.5">
-                <div
-                  className={`h-full transition-all duration-1000 ${
-                    questionTimeLeft <= 10
-                      ? "bg-rose-500"
-                      : "bg-gradient-to-r from-violet-600 to-indigo-600"
-                  }`}
-                  style={{ width: `${(questionTimeLeft / SECONDS_PER_QUESTION) * 100}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Countdown Badge */}
-            <div className={`px-2.5 py-0.5 rounded-lg border flex items-center gap-1 shrink-0 transition-all ${
-              questionTimeLeft <= 10
-                ? "bg-rose-50 border-rose-300 text-rose-600 animate-pulse font-black"
-                : "bg-violet-50 border-violet-200 text-violet-800 font-black"
-            }`}>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide hidden md:inline">
-                Time Left:
-              </span>
-              <span className="text-xs sm:text-sm font-mono font-black">
-                {formatTimer(questionTimeLeft)}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Dynamic Countdown Progress Bar running full-width along the bottom of the sticky header */}
-        <div className="w-full h-1 bg-slate-100 overflow-hidden">
-          <div
-            className={`h-full transition-all duration-1000 ${
-              questionTimeLeft <= 10
-                ? "bg-rose-500"
-                : "bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600"
-            }`}
-            style={{ width: `${(questionTimeLeft / SECONDS_PER_QUESTION) * 100}%` }}
+          {/* In-Exam AI Proctoring Widget */}
+          <InExamProctorWidget
+            stream={cameraStream}
+            onExamTerminated={handleExamTerminated}
+            onReturnToDashboard={handleExitToDashboard}
+            className="shadow-sm"
           />
         </div>
       </header>
@@ -531,31 +417,91 @@ export function ExamLiveWorkspace({
         </div>
       )}
 
-      {/* Main Workspace: Full width without side panels */}
-      <main className={`flex-1 w-full px-4 sm:px-6 lg:px-8 py-5 flex flex-col ${isTerminated ? "pointer-events-none opacity-40 select-none" : ""}`}>
+      {/* Main Single Workspace: Fixed top-aligned, clean, locked when terminated */}
+      <main className={`flex-1 max-w-4xl w-full mx-auto p-4 sm:p-8 flex flex-col ${isTerminated ? "pointer-events-none opacity-40 select-none" : ""}`}>
+        {/* Dedicated 1-Minute Question Timer Banner - Placed Directly Above The Question */}
+        <div className="mb-4 bg-white border border-slate-200/90 rounded-2xl p-4 sm:px-6 sm:py-3.5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className={`size-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 border transition-all ${
+              questionTimeLeft <= 10
+                ? "bg-rose-50 text-rose-600 border-rose-200"
+                : "bg-violet-50 text-violet-700 border-violet-200"
+            }`}>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black uppercase tracking-wider text-slate-800">
+                  Question {currentQIndex + 1} Timer
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold">
+                  1 Minute Limit
+                </span>
+              </div>
+            </div>
+          </div>
 
-        {/* Question Card: Full-width, starting from the left side */}
-        <div className="w-full bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 lg:p-10 flex flex-col justify-between space-y-8 shadow-sm">
+          <div className="flex items-center gap-3.5 w-full sm:w-auto justify-between sm:justify-end">
+            {/* Visual Countdown Progress Bar */}
+            <div className="w-28 sm:w-36 h-2 rounded-full bg-slate-100 border border-slate-200 overflow-hidden">
+              <div
+                className={`h-full transition-all duration-1000 ${
+                  questionTimeLeft <= 10
+                    ? "bg-rose-500"
+                    : "bg-gradient-to-r from-violet-600 to-indigo-600"
+                }`}
+                style={{ width: `${(questionTimeLeft / SECONDS_PER_QUESTION) * 100}%` }}
+              />
+            </div>
+
+            {/* Countdown Display Badge */}
+            <div className={`px-3.5 py-1.5 rounded-xl border flex items-center gap-2 shrink-0 transition-all ${
+              questionTimeLeft <= 10
+                ? "bg-rose-50 border-rose-300 text-rose-600 animate-pulse font-black"
+                : "bg-violet-50 border-violet-200 text-violet-800 font-black"
+            }`}>
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Time Left:</span>
+              <span className="text-base font-mono font-black">
+                {formatTimer(questionTimeLeft)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Question Card */}
+        <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-10 flex flex-col justify-between space-y-8 shadow-sm">
           {currentQ ? (
             <div className="space-y-6">
+              {/* Question Metadata Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div className="flex items-center gap-2.5">
+                  <span className="px-3 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-200/80 text-xs font-black">
+                    Question {currentQIndex + 1} of {TOTAL_QUESTIONS}
+                  </span>
+                  <span className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
+                    {currentQ.subject || getExamPartLabel(currentQIndex + 1)}
+                  </span>
+                </div>
+              </div>
+
               {/* Question Text */}
-              <div className="text-lg sm:text-xl font-bold text-slate-900 leading-relaxed whitespace-pre-line">
+              <div className="text-lg sm:text-xl font-bold text-slate-900 leading-relaxed pt-1">
                 {currentQ.question}
               </div>
 
-              {/* Options List */}
-              <div className="space-y-3.5 pt-2">
-                {currentQ.options.map((opt, idx) => {
-                  const optionId = typeof opt === "string" ? opt : opt.id;
-                  const optionText = typeof opt === "string" ? opt : opt.text;
-                  const letter = optionId || String.fromCharCode(65 + idx); // A, B, C, D
-                  const isSelected = currentAnswer === optionId;
+              {/* Options List: Click to select, student stays on question until 1 minute ends */}
+              <div className="space-y-3 pt-2">
+                {currentQ.options.map((opt) => {
+                  const isSelected = currentAnswer === opt.id;
 
                   return (
                     <button
-                      key={optionId}
+                      key={opt.id}
                       type="button"
-                      onClick={() => handleSelectOption(optionId)}
+                      onClick={() => handleSelectOption(opt.id)}
                       className={`w-full text-left p-4 sm:p-4.5 rounded-2xl border-2 transition-all flex items-center gap-4 cursor-pointer transform active:scale-[0.99] ${
                         isSelected
                           ? "bg-violet-50/90 border-violet-600 text-violet-950 shadow-sm ring-2 ring-violet-500/20 font-bold"
@@ -567,10 +513,10 @@ export function ExamLiveWorkspace({
                           ? "bg-violet-600 text-white border-violet-600 shadow-sm shadow-violet-600/30"
                           : "bg-slate-100 text-slate-600 border-slate-200"
                       }`}>
-                        {letter}
+                        {opt.id}
                       </div>
                       <span className="text-sm sm:text-base font-semibold flex-1 leading-snug">
-                        {optionText}
+                        {opt.text}
                       </span>
                       {isSelected && (
                         <span className="size-2.5 rounded-full bg-emerald-500 animate-ping" />
@@ -586,8 +532,9 @@ export function ExamLiveWorkspace({
             </div>
           )}
 
-          {/* Bottom Bar: Clear Response button & Action buttons */}
-          <div className="pt-6 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4 text-xs">
+          {/* Bottom Bar: Clear Response button */}
+          <div className="pt-6 border-t border-slate-100 flex items-center justify-start text-xs">
+            {/* Clear Response Button */}
             <button
               type="button"
               disabled={!currentAnswer}
@@ -603,13 +550,6 @@ export function ExamLiveWorkspace({
               </svg>
               <span>Clear Response</span>
             </button>
-
-            <div className="flex items-center gap-2 text-slate-400 text-xs font-medium">
-              <svg className="w-3.5 h-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              <span>Responses are auto-saved • Auto-advances every 1 min</span>
-            </div>
           </div>
         </div>
       </main>
