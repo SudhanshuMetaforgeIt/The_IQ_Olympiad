@@ -2,8 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+  const pathname = usePathname();
   return (
     <header className="sticky top-0 z-50 w-full border-b border-purple-100/50 bg-white/90 backdrop-blur-md">
       <div className="mx-auto flex h-20 w-full max-w-[1920px] items-center justify-between px-4 sm:px-8 lg:px-16 xl:px-24">
@@ -26,24 +28,26 @@ export default function Navbar() {
 
         {/* Center Nav Links */}
         <nav className="hidden items-center gap-8 md:flex">
-          <Link
-            href="/olympiads"
-            className="text-xs sm:text-sm font-extrabold text-slate-700 hover:text-purple-700 transition-colors cursor-pointer"
-          >
-            Olympiads
-          </Link>
-          <Link
-            href="/subjects"
-            className="text-xs sm:text-sm font-extrabold text-slate-700 hover:text-purple-700 transition-colors cursor-pointer"
-          >
-            Subjects
-          </Link>
-          <Link
-            href="/how-it-works"
-            className="text-xs sm:text-sm font-extrabold text-slate-700 hover:text-purple-700 transition-colors cursor-pointer"
-          >
-            How It Works
-          </Link>
+          {[
+            { label: "Olympiads", href: "/olympiads" },
+            { label: "Subjects", href: "/subjects" },
+            { label: "How It Works", href: "/how-it-works" },
+          ].map((link) => {
+            const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-xs sm:text-sm transition-all cursor-pointer pb-1 border-b-2 ${
+                  isActive
+                    ? "text-purple-700 font-black border-purple-700"
+                    : "text-slate-700 font-extrabold border-transparent hover:text-purple-700"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Right CTA Actions */}

@@ -55,6 +55,16 @@ const SUBJECTS_CATALOG = [
     textAccent: "text-pink-700",
     description: "Machine learning basics, neural networks, ethics in AI, prompt engineering, and Python logic.",
   },
+  {
+    title: "IQ",
+    slug: "iq",
+    icon: "🧠",
+    level: "Classes 7–12",
+    accent: "from-violet-600 to-indigo-700",
+    bg: "bg-violet-50/60 border-violet-100",
+    textAccent: "text-violet-700",
+    description: "Cognitive assessment, pattern recognition, spatial visualization, mental agility, and speed aptitude.",
+  },
 ];
 
 export default function SubjectsPage() {
