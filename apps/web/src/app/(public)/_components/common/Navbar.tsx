@@ -6,9 +6,10 @@ import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const pathname = usePathname();
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-purple-100/50 bg-white/90 backdrop-blur-md">
-      <div className="mx-auto flex h-20 w-full max-w-[1920px] items-center justify-between px-4 sm:px-8 lg:px-16 xl:px-24">
+    <header className="sticky top-0 z-50 w-full border-b border-purple-100/50 bg-white/95 backdrop-blur-md">
+      <div className="mx-auto flex h-20 w-full max-w-[1920px] items-center justify-between px-4 sm:px-6 lg:px-10 xl:px-12">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-3 cursor-pointer group">
           <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-purple-700 via-purple-600 to-fuchsia-500 text-white shadow-md shadow-purple-500/25 group-hover:scale-105 transition-transform">
@@ -33,18 +34,21 @@ export default function Navbar() {
             { label: "Subjects", href: "/subjects" },
             { label: "How It Works", href: "/how-it-works" },
           ].map((link) => {
-            const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
+            const isActive = pathname === link.href || pathname?.startsWith(`${link.href}/`);
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-xs sm:text-sm transition-all cursor-pointer pb-1 border-b-2 ${
+                className={`text-xs sm:text-sm font-extrabold transition-colors cursor-pointer relative py-2 ${
                   isActive
-                    ? "text-purple-700 font-black border-purple-700"
-                    : "text-slate-700 font-extrabold border-transparent hover:text-purple-700"
+                    ? "text-purple-700 font-black"
+                    : "text-slate-700 hover:text-purple-700"
                 }`}
               >
                 {link.label}
+                {isActive && (
+                  <span className="absolute -bottom-1.5 left-0 right-0 h-[2.5px] rounded-full bg-purple-600" />
+                )}
               </Link>
             );
           })}
