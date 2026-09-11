@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const isOlympiads = pathname?.startsWith("/olympiads");
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-purple-100/50 bg-white/95 backdrop-blur-md">
@@ -30,31 +29,29 @@ export default function Navbar() {
 
         {/* Center Nav Links */}
         <nav className="hidden items-center gap-8 md:flex">
-          <Link
-            href="/olympiads"
-            className={`text-xs sm:text-sm font-extrabold transition-colors cursor-pointer relative py-2 ${
-              isOlympiads
-                ? "text-purple-700 font-black"
-                : "text-slate-700 hover:text-purple-700"
-            }`}
-          >
-            Olympiads
-            {isOlympiads && (
-              <span className="absolute -bottom-1.5 left-0 right-0 h-[2.5px] rounded-full bg-purple-600" />
-            )}
-          </Link>
-          <Link
-            href="/subjects"
-            className="text-xs sm:text-sm font-extrabold text-slate-700 hover:text-purple-700 transition-colors cursor-pointer py-2"
-          >
-            Subjects
-          </Link>
-          <Link
-            href="/how-it-works"
-            className="text-xs sm:text-sm font-extrabold text-slate-700 hover:text-purple-700 transition-colors cursor-pointer py-2"
-          >
-            How It Works
-          </Link>
+          {[
+            { label: "Olympiads", href: "/olympiads" },
+            { label: "Subjects", href: "/subjects" },
+            { label: "How It Works", href: "/how-it-works" },
+          ].map((link) => {
+            const isActive = pathname === link.href || pathname?.startsWith(`${link.href}/`);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-xs sm:text-sm font-extrabold transition-colors cursor-pointer relative py-2 ${
+                  isActive
+                    ? "text-purple-700 font-black"
+                    : "text-slate-700 hover:text-purple-700"
+                }`}
+              >
+                {link.label}
+                {isActive && (
+                  <span className="absolute -bottom-1.5 left-0 right-0 h-[2.5px] rounded-full bg-purple-600" />
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Right CTA Actions */}

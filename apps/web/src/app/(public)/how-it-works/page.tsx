@@ -1,12 +1,18 @@
-/**
- * How It Works Page
- *
- * Public route: /how-it-works
- *
- * Explains the complete Olympiad participation journey,
- * from registration and preparation to examination,
- * results, rankings, and certification.
- */
+"use client";
+
+import React from "react";
+import HowItWorksHero from "./HowItWorksHero";
+import OlympiadJourneySteps from "./OlympiadJourneySteps";
+import WhyChooseUsSection from "./WhyChooseUsSection";
+import HowItWorksCta from "./HowItWorksCta";
+
 export default function HowItWorksPage() {
-  return <h1>How It Works</h1>;
+  return (
+    <div className="w-full bg-white pb-20 font-sans">
+      <HowItWorksHero />
+      <OlympiadJourneySteps />
+      <WhyChooseUsSection />
+      <HowItWorksCta />
+    </div>
+  );
 }
