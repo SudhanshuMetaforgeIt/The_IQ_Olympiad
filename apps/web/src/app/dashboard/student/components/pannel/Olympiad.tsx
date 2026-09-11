@@ -1,0 +1,188 @@
+"use client";
+
+import React, { useState, useEffect, useMemo } from "react";
+import { StudentPanelChrome } from "../Common/StudentPanelChrome";
+import { Sidebar } from "../Common/Sidebar";
+import { HeaderBar } from "../Common/HeaderBar";
+import { ExamRegistrationModal, ExamRegistrationData } from "../Common/ExamRegistrationModal";
+import { PerformanceModal } from "../Common/PerformanceModal";
+import { OlympiadTabs } from "./Olympiad/OlympiadTabs";
+import { OlympiadCard } from "./Olympiad/OlympiadCard";
+import { OlympiadBottomBanner } from "./Olympiad/OlympiadBottomBanner";
+import type { FilterTab, OlympiadExam } from "./Olympiad/types";
+import {
+  getCompletedExamResults,
+  mapStoredResultToOlympiadExam,
+  mapStoredResultToOlympiadResultRecord,
+  type StoredExamResult,
+} from "../../lib/examResultsStorage";
+import { OlympiadScorecardModal } from "./Results/OlympiadScorecardModal";
+import type { OlympiadResultRecord } from "./Results/types";
+
+interface PanelProps {
+  activeTab?: string;
+  initialFilterTab?: FilterTab;
+  onSelectTab?: (tabId: string, subtabId?: string) => void;
+}
+
+export default function OlympiadPanel({
+  activeTab = "olympiad",
+  initialFilterTab = "all",
+  onSelectTab,
+}: PanelProps) {
+  const [filterTab, setFilterTab] = useState<FilterTab>(initialFilterTab || "all");
+  const [prevInitialFilterTab, setPrevInitialFilterTab] = useState(initialFilterTab);
+  const cyberCountdown = "—";
+  const [selectedExamForRegistration, setSelectedExamForRegistration] = useState<ExamRegistrationData | null>(null);
+  const [registeredExamIds, setRegisteredExamIds] = useState<number[]>([]);
+  const [isPerformanceModalOpen, setIsPerformanceModalOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [completedResults, setCompletedResults] = useState<StoredExamResult[]>([]);
+  const [selectedReviewRecord, setSelectedReviewRecord] = useState<OlympiadResultRecord | null>(null);
+
+  useEffect(() => {
+    setCompletedResults(getCompletedExamResults());
+  }, []);
+
+  // Sync local filter when parent-driven initialFilterTab changes (React-recommended render adjustment).
+  if (initialFilterTab !== prevInitialFilterTab) {
+    setPrevInitialFilterTab(initialFilterTab);
+    if (initialFilterTab) {
+      setFilterTab(initialFilterTab);
+    }
+  }
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const handleCompleteRegistration = (examId: number) => {
+    setRegisteredExamIds((prev) => (prev.includes(examId) ? prev : [...prev, examId]));
+    showToast("Successfully registered for Olympiad!");
+  };
+
+  const allOlympiads = useMemo(() => {
+    return completedResults.map(mapStoredResultToOlympiadExam);
+  }, [completedResults]);
+
+  const filteredExams = allOlympiads.filter((exam) => {
+    if (filterTab === "all") return true;
+    if (filterTab === "registered") return registeredExamIds.includes(exam.id);
+    return exam.status === filterTab;
+  });
+
+  const handleOpenResults = (exam: OlympiadExam) => {
+    if (exam.status === "completed") {
+      const match = completedResults.find((r) => r.title === exam.title) || completedResults[0];
+      if (match) {
+        setSelectedReviewRecord(mapStoredResultToOlympiadResultRecord(match));
+        return;
+      }
+    }
+    setIsPerformanceModalOpen(true);
+  };
+
+  return (
+    <StudentPanelChrome activeTab={activeTab} onSelectTab={onSelectTab}>
+      {({ student, activeTab, onSelectTab }) => (
+        <div className="flex h-screen overflow-hidden bg-[#F8FAFC] font-sans antialiased text-slate-900">
+          <Sidebar student={student} activeTab={activeTab} onSelectTab={onSelectTab} />
+
+          <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
+            <HeaderBar student={student} onSelectTab={onSelectTab} />
+
+            <main className="flex-1 p-4 md:p-6 space-y-4 sm:space-y-5">
+              {/* Toast Notification */}
+              {toastMessage && (
+                <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-xl border border-slate-700 text-xs sm:text-sm font-bold flex items-center gap-2.5 animate-fade-in">
+                  <span className="text-emerald-400 text-base">✓</span>
+                  <span>{toastMessage}</span>
+                </div>
+              )}
+
+              {/* Main White Card Container */}
+              <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs p-4 sm:p-6 space-y-4 sm:space-y-5">
+                {/* Header Filter Tabs Row */}
+                <OlympiadTabs
+                  filterTab={filterTab}
+                  onSelectTab={setFilterTab}
+                  registeredCount={registeredExamIds.length}
+                  completedCount={completedResults.length}
+                />
+
+                {/* List of Olympiad Exams */}
+                {filteredExams.length > 0 ? (
+                  <div className="divide-y divide-slate-100">
+                    {filteredExams.map((exam) => (
+                      <OlympiadCard
+                        key={exam.id}
+                        exam={exam}
+                        isRegistered={registeredExamIds.includes(exam.id)}
+                        cyberCountdown={cyberCountdown}
+                        onRegister={setSelectedExamForRegistration}
+                        onViewResults={() => handleOpenResults(exam)}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-12 text-center space-y-3">
+                    <div className="size-12 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center mx-auto text-xl">
+                      🎯
+                    </div>
+                    <h3 className="text-base font-black text-slate-900">
+                      {filterTab === "registered"
+                        ? "No registered exams yet"
+                        : filterTab === "upcoming" || filterTab === "ongoing"
+                          ? "No upcoming exams"
+                          : "No olympiads available"}
+                    </h3>
+                    <p className="text-xs font-semibold text-slate-400 max-w-sm mx-auto">
+                      {filterTab === "registered"
+                        ? "Browse through upcoming Olympiad challenges and register to appear on this list."
+                        : "Olympiad exams will appear here when they are available."}
+                    </p>
+                    {filterTab !== "all" && (
+                      <button
+                        type="button"
+                        onClick={() => setFilterTab("all")}
+                        className="px-4 py-2 rounded-xl bg-violet-600 text-white font-bold text-xs hover:bg-violet-700 transition cursor-pointer shadow-2xs"
+                      >
+                        Browse All Olympiads
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Bottom Notification Bar */}
+              <OlympiadBottomBanner />
+            </main>
+          </div>
+
+          {/* Registration Modal Popup */}
+          <ExamRegistrationModal
+            isOpen={!!selectedExamForRegistration}
+            onClose={() => setSelectedExamForRegistration(null)}
+            exam={selectedExamForRegistration}
+            onCompleteRegistration={handleCompleteRegistration}
+          />
+
+          {/* Performance & Results Modal Popup */}
+          <PerformanceModal
+            isOpen={isPerformanceModalOpen}
+            onClose={() => setIsPerformanceModalOpen(false)}
+          />
+
+          {/* Detailed Question Review & Scorecard Modal */}
+          <OlympiadScorecardModal
+            isOpen={selectedReviewRecord !== null}
+            onClose={() => setSelectedReviewRecord(null)}
+            result={selectedReviewRecord}
+            initialTab="review"
+          />
+        </div>
+      )}
+    </StudentPanelChrome>
+  );
+}

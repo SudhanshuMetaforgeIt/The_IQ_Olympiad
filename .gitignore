@@ -26,9 +26,10 @@ coverage/
 .DS_Store
 Thumbs.db
 
-# IDE
+# IDE & Agent Rules
 .vscode/
 .idea/
+.agents/
 
 # Python
 __pycache__/

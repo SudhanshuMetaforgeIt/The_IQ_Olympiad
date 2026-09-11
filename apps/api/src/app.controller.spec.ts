@@ -15,8 +15,16 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return welcome message', () => {
+      expect(appController.getHello()).toBe(
+        'Welcome to Backend: The IQ Olympiad',
+      );
+    });
+  });
+
+  describe('health', () => {
+    it('should return ok status', () => {
+      expect(appController.health()).toEqual({ status: 'ok' });
     });
   });
 });

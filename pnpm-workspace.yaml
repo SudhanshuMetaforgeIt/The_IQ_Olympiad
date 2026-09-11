@@ -2,4 +2,9 @@ packages:
   - "apps/*"
   - "packages/*"
 allowBuilds:
+  argon2: false
+  pnpm: false
   unrs-resolver: false
+peerDependencyRules:
+  allowedVersions:
+    "@nestjs/schematics>typescript": "5.9.3"

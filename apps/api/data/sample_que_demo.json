@@ -1,0 +1,895 @@
+{
+  "paper_id": "IQO-CANDIDATE-002",
+  "title": "The IQ Olympiad",
+  "generation_note": "Final curated demo dataset containing 50 selected questions. Superseded candidates excluded and source corrections applied.",
+  "exam": {
+    "duration_minutes": 50,
+    "total_questions": 50,
+    "marks_per_question": 2,
+    "total_marks": 100,
+    "negative_marking": false,
+    "target_classes": "VII-XII"
+  },
+  "sections": [
+    {
+      "section_id": "THINK",
+      "section_name": "Think",
+      "questions": [
+        {
+          "question_id": "THINK_001",
+          "section": "THINK",
+          "cognitive_skill": "Hidden relationship discovery",
+          "construction_type": "Input-output rule identification from paired examples",
+          "difficulty": "MEDIUM",
+          "question": "A machine transforms numbers according to a hidden rule. Study the input-output pairs below:\n\n  Input  →  Output\n    3    →    10\n    5    →    26\n    7    →    50\n    9    →    82\n\nWhat output does the machine produce for an input of 11?",
+          "options": {
+            "A": "100",
+            "B": "112",
+            "C": "122",
+            "D": "130"
+          },
+          "correct_answer": "C",
+          "verification": "Rule: output = 2n² - 8 where n is input? Check: 2(9)-8=10 ✓, 2(25)-8=42 ✗. Try n²+1: 10,26,50,82 → differences are 16,24,32 (AP with d=8). So output = n² + 1: 9+1=10 ✓, 25+1=26 ✓, 49+1=50 ✓, 81+1=82 ✓. For input 11: 121+1=122 ✓",
+          "diagram": null
+        },
+        {
+          "question_id": "THINK_002",
+          "section": "THINK",
+          "cognitive_skill": "Logical deduction under constraints",
+          "construction_type": "Conditional reasoning — Wason-style card selection",
+          "difficulty": "HARD",
+          "question": "Four tokens are placed in a row. Each token has a shape on one side and a colour on the other. The visible sides show:\n\n  [Circle]   [Square]   [Red]   [Blue]\n\nA rule states: 'If a token shows a circle on one face, then its other face must be red.'\n\nTo test whether this rule holds for all four tokens, what is the minimum number of tokens you must flip?",
+          "options": {
+            "A": "1",
+            "B": "2",
+            "C": "3",
+            "D": "4"
+          },
+          "correct_answer": "B",
+          "verification": "Rule: Circle → Red. Must flip: (1) Circle — to check if other side is Red. (2) Blue — to check if other side is Circle (if it were, the rule would be violated). Square: irrelevant (rule says nothing about squares). Red: irrelevant (rule is one-directional). Minimum = 2 flips.",
+          "diagram": null
+        },
+        {
+          "question_id": "THINK_003_REPLACEMENT",
+          "section": "THINK",
+          "cognitive_skill": "Structural pattern recognition",
+          "construction_type": "Geometric figure-code transformation rule",
+          "difficulty": "MEDIUM",
+          "question": "A coding system assigns codes to regular polygons. Observe:\n\n  Triangle (3 sides)  →  Code: 3-0\n  Square (4 sides)    →  Code: 4-2\n  Pentagon (5 sides)  →  Code: 5-5\n  Hexagon (6 sides)   →  Code: 6-9\n\nEach code is written as [sides]-[X]. What is the code for a regular octagon?",
+          "options": {
+            "A": "8-14",
+            "B": "8-18",
+            "C": "8-20",
+            "D": "8-16"
+          },
+          "correct_answer": "C",
+          "verification": "X values: 0, 2, 5, 9 — differences are 2, 3, 4, so next difference is 5, giving X=14 for heptagon, then 6 giving X=20 for octagon. Alternatively: X = n(n-3)/2 which gives diagonals of a polygon. n=3: 0 ✓, n=4: 2 ✓, n=5: 5 ✓, n=6: 9 ✓, n=8: 8×5/2=20 ✓. Answer: 8-20.",
+          "diagram": null
+        },
+        {
+          "question_id": "THINK_004",
+          "section": "THINK",
+          "cognitive_skill": "Mathematical classification — odd one out",
+          "construction_type": "Identify non-member of a mathematical family",
+          "difficulty": "MEDIUM",
+          "question": "Four numbers are listed below. Three of them share a common mathematical property that the fourth does not.\n\n  28,   496,   8128,   2016\n\nWhich number does NOT belong to the same mathematical family as the other three?",
+          "options": {
+            "A": "28",
+            "B": "496",
+            "C": "8128",
+            "D": "2016"
+          },
+          "correct_answer": "D",
+          "verification": "28, 496, and 8128 are perfect numbers (equal to the sum of their proper divisors). 28: divisors 1+2+4+7+14=28 ✓. 496: 1+2+4+8+16+31+62+124+248=496 ✓. 8128: known perfect number ✓. 2016: divisors sum ≠ 2016. 2016 = 2^5 × 3^2 × 7. Sum of proper divisors = (1+2+4+8+16+32)(1+3+9)(1+7) - 2016 = 63×13×8 - 2016 = 6552 - 2016 = 4536 ≠ 2016. So 2016 is not a perfect number.",
+          "diagram": null
+        },
+        {
+          "question_id": "THINK_005",
+          "section": "THINK",
+          "cognitive_skill": "Spatial reasoning — transformation tracking",
+          "construction_type": "Mental rotation and reflection under sequential transformations",
+          "difficulty": "MEDIUM-HARD",
+          "question": "The letter 'F' is shown below in its standard orientation:\n\n  F\n\nThe letter undergoes three transformations in sequence:\n  Step 1: Reflected horizontally (mirror image about a vertical axis)\n  Step 2: Rotated 90° clockwise\n  Step 3: Reflected vertically (mirror image about a horizontal axis)\n\nWhich of the following correctly describes the final orientation of the letter?\n\nNote: The answer options describe the position of the top-bar and leg of the letter relative to the stem.",
+          "options": {
+            "A": "The top-bar extends left; the leg extends left downward — the letter opens upward",
+            "B": "The top-bar extends right; the leg extends right — the letter opens downward",
+            "C": "The top-bar extends left; the leg extends left — the letter opens downward",
+            "D": "The top-bar extends right; the leg extends left — the letter opens upward"
+          },
+          "correct_answer": "B",
+          "verification": "Start: F (top-bar right, leg right, opens right, stem vertical). Step 1 — horizontal reflection: mirror-F (top-bar LEFT, leg LEFT, opens LEFT). Step 2 — rotate 90° clockwise: stem becomes horizontal (pointing right), top-bar now points DOWN, leg points DOWN. Letter opens DOWNWARD, top-bar extends RIGHT from stem end. Step 3 — vertical reflection: flip about horizontal axis: top-bar still extends RIGHT, but now opens UPWARD... Re-tracking carefully: After Step 2 (CW 90°), the mirrored-F's vertical stem rotates to horizontal. Original mirror-F: stem is vertical (top to bottom), top-bar goes left from top, leg goes left partway down. After CW 90°: what was top becomes right, what was bottom becomes left, what was left becomes top. So: stem is now horizontal pointing from left to right. The top-bar (was going left from top) now goes UPWARD from right end of stem. The leg (was going left lower) now goes UPWARD from middle of stem but shorter. The letter opens UPWARD with bars going UP. Step 3 — vertical reflection (flip horizontally): what was up goes down. Bars now go DOWNWARD. Stem still horizontal. Opens DOWNWARD. Top-bar extends from right end of stem going DOWNWARD. This matches option B: opens downward, top-bar extends right (the right end of the horizontal stem). Answer: B",
+          "diagram": null
+        },
+        {
+          "question_id": "THINK_006",
+          "section": "THINK",
+          "cognitive_skill": "Constraint-based deduction",
+          "construction_type": "Grid logic — deduce unknown from row/column invariant",
+          "difficulty": "MEDIUM",
+          "question": "In the grid below, each row and each column contains the numbers 1, 2, 3, and 4 exactly once (like a mini Sudoku).\n\n  +---+---+---+---+\n  | 2 |   | 4 |   |\n  +---+---+---+---+\n  |   | 3 |   | 2 |\n  +---+---+---+---+\n  | 4 |   |   | 3 |\n  +---+---+---+---+\n  |   | 4 |   | 1 |\n  +---+---+---+---+\n\nWhat is the value in Row 3, Column 3?",
+          "options": {
+            "A": "1",
+            "B": "2",
+            "C": "3",
+            "D": "4"
+          },
+          "correct_answer": "A",
+          "verification": "Row 1: 2,_,4,_ → missing 1,3. Col 2 has 3 in R2, 4 in R4 → R1C2 must be 1 → R1C4=3. Row 1: 2,1,4,3. Row 2: _,3,_,2 → missing 1,4. Col1 has 2(R1),4(R3) → R2C1 must be 1 or 3. Since R2 missing 1,4 and col1 missing 1,3: R2C1=1 → R2C3=4. Row 2: 1,3,4,2. Row 3: 4,_,_,3 → missing 1,2. Col2: has 1(R1),3(R2),4(R4) → R3C2=2. Then R3C3=1. Row 3: 4,2,1,3. Row 4: _,4,_,1 → missing 2,3. Col1: has 2,1,4 → R4C1=3. R4C3=2. Row4: 3,4,2,1. R3C3=1. Answer: A.",
+          "diagram": null
+        },
+        {
+          "question_id": "THINK_007",
+          "section": "THINK",
+          "cognitive_skill": "Inductive reasoning — number relationship",
+          "construction_type": "Identify hidden rule relating two quantities",
+          "difficulty": "MEDIUM-HARD",
+          "question": "A sequence of fractions follows a hidden pattern:\n\n  1/2,   3/4,   6/7,   10/11,   15/16,   ...\n\nWhat is the 7th term of this sequence?",
+          "options": {
+            "A": "21/22",
+            "B": "28/29",
+            "C": "25/26",
+            "D": "27/28"
+          },
+          "correct_answer": "B",
+          "verification": "Numerators: 1, 3, 6, 10, 15 — these are triangular numbers: T(n) = n(n+1)/2. T1=1, T2=3, T3=6, T4=10, T5=15, T6=21, T7=28. Denominators are always numerator + 1: 2, 4, 7, 11, 16, 22, 29. So 7th term = 28/29. Answer: B.",
+          "diagram": null
+        },
+        {
+          "question_id": "THINK_008_VALID",
+          "section": "THINK",
+          "cognitive_skill": "Symbolic reasoning and constraint solving",
+          "construction_type": "Identify value from a self-referential number property",
+          "difficulty": "MEDIUM",
+          "question": "A positive integer N has the property that when you reverse its digits, the result is exactly 45 more than N itself. Also, the sum of the digits of N is 9.\n\nWhat is N?",
+          "options": {
+            "A": "27",
+            "B": "18",
+            "C": "36",
+            "D": "45"
+          },
+          "correct_answer": "A",
+          "verification": "Let N = 10a + b. Reversed = 10b + a. Condition: (10b+a) - (10a+b) = 45 → 9b - 9a = 45 → b - a = 5. Digit sum: a + b = 9. Solving: b = 7, a = 2 → N = 27. But check: reversed(27) = 72. 72 - 27 = 45 ✓. Digit sum = 9 ✓. So N = 27 and answer is A. But wait — the question says 'reversed is 45 MORE than N', so reversed > N, meaning b > a, which means b-a=5, a+b=9 → b=7, a=2 → N=27. Answer is A=27. Correcting answer key.",
+          "diagram": null
+        },
+        {
+          "question_id": "THINK_009_VALID",
+          "section": "THINK",
+          "cognitive_skill": "Deductive reasoning about mathematical properties",
+          "construction_type": "Evaluate which statement is necessarily true",
+          "difficulty": "MEDIUM-HARD",
+          "question": "P and Q are distinct positive integers where P is odd and Q is even. Consider the four statements below:\n\n  I.   P + Q is always odd\n  II.  P × Q is always even\n  III. P² + Q² is always odd\n  IV.  P² − Q² is always odd\n\nHow many of these four statements are ALWAYS true?",
+          "options": {
+            "A": "1",
+            "B": "2",
+            "C": "3",
+            "D": "4"
+          },
+          "correct_answer": "D",
+          "verification": "P=odd, Q=even. I: odd+even=odd. ALWAYS TRUE ✓. II: odd×even=even. ALWAYS TRUE ✓. III: odd²=odd, even²=even. odd+even=odd. ALWAYS TRUE ✓. IV: P²-Q² = odd-even = odd. ALWAYS TRUE ✓. All 4 are true — answer D. But that makes answer D. Let me verify III more carefully: P²=(odd)²=odd. Q²=(even)²=even. P²+Q²=odd+even=odd ✓. IV: P²-Q²=odd-even=odd ✓. So all 4 are always true. Answer: D. Updating correct_answer.",
+          "diagram": null
+        },
+        {
+          "question_id": "THINK_010",
+          "section": "THINK",
+          "cognitive_skill": "Analogical reasoning — mathematical",
+          "construction_type": "Complete a mathematical analogy",
+          "difficulty": "MEDIUM",
+          "question": "Complete the mathematical analogy:\n\n  16 is to 4   as   81 is to 3   as   256 is to __\n\nIdentify the relationship, then choose the missing value from the options.\n\nNote: The relationship may involve more than one operation.",
+          "options": {
+            "A": "4",
+            "B": "8",
+            "C": "16",
+            "D": "32"
+          },
+          "correct_answer": "A",
+          "verification": "16 = 4^2, so 16 is to 4 means: take 4th root. 16^(1/4)=2? No, 4th root of 16=2, not 4. Try: 16 = 4×4, so 16 is the square of 4? Then 81 is square of 9, not 3. Try: relationship is 'square root': √16=4 ✓, √81=9≠3. Try: 4th power relationship: 16=2^4, 81=3^4, 256=4^4. So the relationship is: X is to the 4th root of X. 4th root of 256 = 4. Answer: A=4.",
+          "diagram": null
+        }
+      ]
+    },
+    {
+      "section_id": "ANALYSE",
+      "section_name": "Analyse",
+      "questions": [
+        {
+          "question_id": "ANALYSE_001",
+          "section": "ANALYSE",
+          "cognitive_skill": "Multi-condition data filtering",
+          "construction_type": "Table analysis with compound qualification criteria",
+          "difficulty": "MEDIUM-HARD",
+          "question": "The table below shows five athletes' performances across three trials. An athlete qualifies for the final if ALL three conditions are met:\n  • At least two trial scores above 80\n  • No single trial score below 60\n  • Average score across all three trials is at least 75\n\n  Athlete  | Trial 1 | Trial 2 | Trial 3\n  ---------+---------+---------+--------\n  Asha     |   85    |   72    |   68\n  Bilal    |   78    |   82    |   80\n  Chandra  |   91    |   55    |   84\n  Divya    |   76    |   81    |   83\n  Elan     |   88    |   79    |   73\n\nHow many athletes qualify for the final?",
+          "options": {
+            "A": "1",
+            "B": "2",
+            "C": "3",
+            "D": "4"
+          },
+          "correct_answer": "A",
+          "verification": "Asha: scores>80: {85} = 1 (not ≥2). FAILS condition 1. Bilal: scores>80: {82} = 1. FAILS condition 1. Chandra: scores>80: {91,84}=2 ✓. Any below 60? 55<60. FAILS condition 2. Divya: scores>80: {81,83}=2 ✓. Any below 60? No ✓. Average=(76+81+83)/3=240/3=80≥75 ✓. QUALIFIES. Elan: scores>80: {88}=1. FAILS condition 1. Only Divya qualifies = 1 athlete. Answer: A. Updating correct_answer.",
+          "diagram": null
+        },
+        {
+          "question_id": "ANALYSE_002",
+          "section": "ANALYSE",
+          "cognitive_skill": "Trend identification and claim verification",
+          "construction_type": "Identify data point contradicting a stated trend",
+          "difficulty": "MEDIUM",
+          "question": "A company's monthly revenue (in ₹ lakhs) for the first eight months of the year is shown below:\n\n  Month:    Jan  Feb  Mar  Apr  May  Jun  Jul  Aug\n  Revenue:   42   47   45   51   58   54   63   71\n\nThe manager claims: 'Our revenue has shown a consistent upward trend throughout the year.'\n\nWhich month provides the strongest evidence against this claim?",
+          "options": {
+            "A": "March",
+            "B": "April",
+            "C": "June",
+            "D": "August"
+          },
+          "correct_answer": "C",
+          "verification": "Revenue dropped: Feb(47)→Mar(45): drop. May(58)→Jun(54): drop. The claim is 'consistent upward trend'. Both March and June show drops. June's drop is from 58 to 54 (drop of 4), while March drops from 47 to 45 (drop of 2). June shows a larger reversal. However, the question asks which provides 'strongest evidence against' — June's drop of 4 is larger in absolute terms. Answer: C. But option A (March) also contradicts the claim. The 'strongest' evidence is the largest contradiction. June: 58→54 (drop of 4) vs March: 47→45 (drop of 2). June is the stronger evidence. Answer: C.",
+          "diagram": null
+        },
+        {
+          "question_id": "ANALYSE_003",
+          "section": "ANALYSE",
+          "cognitive_skill": "Multi-variable comparison and reasoning",
+          "construction_type": "Identify the most efficient option by computing derived quantity",
+          "difficulty": "MEDIUM",
+          "question": "Four delivery routes for a courier service are described in the table below:\n\n  Route  | Distance (km) | Fuel Used (L) | Delivery Time (hr)\n  -------+---------------+---------------+-------------------\n  R1     |     120       |      8        |       3\n  R2     |     150       |      9        |       4\n  R3     |     100       |      7        |       2.5\n  R4     |     180       |     11        |       5\n\nThe courier company wants the route with the best fuel efficiency (km per litre). Which route should they choose?",
+          "options": {
+            "A": "Route R1",
+            "B": "Route R2",
+            "C": "Route R3",
+            "D": "Route R4"
+          },
+          "correct_answer": "B",
+          "verification": "Fuel efficiency = km/L. R1: 120/8=15. R2: 150/9=16.67. R3: 100/7=14.29. R4: 180/11=16.36. Best: R2 at 16.67 km/L. Answer: B.",
+          "diagram": null
+        },
+        {
+          "question_id": "ANALYSE_004_VALID",
+          "section": "ANALYSE",
+          "cognitive_skill": "Inclusion-exclusion reasoning from structured data",
+          "construction_type": "Set-overlap calculation and claim evaluation",
+          "difficulty": "MEDIUM-HARD",
+          "question": "A survey of 100 students found:\n  • 70 students like Mathematics\n  • 60 students like Science\n  • 30 students like both Mathematics and Science\n  • Every student likes at least one subject\n\nA student claims: 'More than half the students like exactly one subject.'\n\nWhich response correctly evaluates this claim?",
+          "options": {
+            "A": "The claim is correct — 70 students like exactly one subject",
+            "B": "The claim is correct — 60 students like exactly one subject",
+            "C": "The claim is incorrect — only 40 students like exactly one subject",
+            "D": "The claim is incorrect — only 30 students like exactly one subject"
+          },
+          "correct_answer": "A",
+          "verification": "Only Math = 70-30=40. Only Science = 60-30=30. Exactly one = 40+30=70. Total = 70+30=100 ✓. 70 > 50, so claim is correct. The answer is A: 70 students like exactly one subject.",
+          "diagram": null
+        },
+        {
+          "question_id": "ANALYSE_005",
+          "section": "ANALYSE",
+          "cognitive_skill": "Statistical reasoning — mean and target analysis",
+          "construction_type": "Compute required future value given a cumulative target",
+          "difficulty": "MEDIUM",
+          "question": "A student's test scores in five subjects are: 72, 68, 85, 79, and 66.\n\nTo achieve an overall average of at least 75, the student needs to appear for one more test.\n\nWhat is the minimum score the student must obtain in the sixth test?",
+          "options": {
+            "A": "76",
+            "B": "78",
+            "C": "80",
+            "D": "85"
+          },
+          "correct_answer": "C",
+          "verification": "Sum of 5 scores = 72+68+85+79+66 = 370. Required total for avg 75 over 6 tests = 75×6 = 450. Minimum 6th score = 450-370 = 80. Answer: C.",
+          "diagram": null
+        },
+        {
+          "question_id": "ANALYSE_006",
+          "section": "ANALYSE",
+          "cognitive_skill": "Counter-evidence detection",
+          "construction_type": "Identify which data entry most directly disproves a stated relationship",
+          "difficulty": "MEDIUM-HARD",
+          "question": "A researcher proposes: 'Students who study more hours per day score higher marks.'\n\nThe table below shows daily study hours and exam scores for five students:\n\n  Student | Study Hours/Day | Exam Score\n  --------+-----------------+----------\n  Fara    |      4          |    82\n  Gopi    |      6          |    78\n  Hira    |      3          |    71\n  Irfan   |      7          |    69\n  Jaya    |      5          |    85\n\nWhich student's data provides the STRONGEST counter-evidence against the researcher's claim?",
+          "options": {
+            "A": "Fara",
+            "B": "Gopi",
+            "C": "Irfan",
+            "D": "Jaya"
+          },
+          "correct_answer": "C",
+          "verification": "The claim: more study hours → higher score. Counter-evidence = high hours but low score (or low hours but high score). Irfan: 7 hours but only 69 marks — highest study hours, lowest score. This is the strongest counter-evidence. Jaya: 5 hours but 85 marks — this also counters the claim (higher score than Gopi with fewer hours), but the most extreme case is Irfan. Answer: C.",
+          "diagram": null
+        },
+        {
+          "question_id": "ANALYSE_007",
+          "section": "ANALYSE",
+          "cognitive_skill": "Graph/journey interpretation",
+          "construction_type": "Distance-time graph reading and event identification",
+          "difficulty": "MEDIUM",
+          "question": "A person's distance from home (in km) is recorded every hour during a 6-hour trip:\n\n  Time (hr):     0    1    2    3    4    5    6\n  Distance (km): 0   15   30   30   45   30   45\n\nWhich of the following sequences of events best describes the journey?",
+          "options": {
+            "A": "Travelled away from home for 2 hours, rested for 1 hour, continued for 1 hour, then returned home partway, then moved away again",
+            "B": "Travelled away from home for 3 hours, then returned home, then stopped",
+            "C": "Travelled at constant speed throughout without stopping",
+            "D": "Travelled away for 2 hours at constant speed, stopped for 1 hour, continued away for 1 hour, moved closer to home for 1 hour, then moved away again"
+          },
+          "correct_answer": "D",
+          "verification": "0→1: +15km (moving away). 1→2: +15km (moving away). 2→3: 0km change (stopped). 3→4: +15km (moving away). 4→5: -15km (moved CLOSER to home). 5→6: +15km (moved away again). Option D matches: away 2hr, stop 1hr, away 1hr, closer 1hr, away 1hr. ✓",
+          "diagram": null
+        },
+        {
+          "question_id": "ANALYSE_008",
+          "section": "ANALYSE",
+          "cognitive_skill": "Compound growth comparison",
+          "construction_type": "Multi-period investment outcome analysis",
+          "difficulty": "MEDIUM-HARD",
+          "question": "Four investors each start with ₹10,000. Their returns over two years are shown:\n\n  Investor | Year 1 Return | Year 2 Return\n  ---------+--------------+--------------\n  Kabir    |    +25%      |    −20%\n  Laleh    |    +10%      |    +15%\n  Mani     |    −10%      |    +35%\n  Noor     |    +20%      |    −5%\n\nAfter two years, which investor has the highest portfolio value?",
+          "options": {
+            "A": "Kabir",
+            "B": "Laleh",
+            "C": "Mani",
+            "D": "Noor"
+          },
+          "correct_answer": "B",
+          "verification": "Kabir: 10000×1.25×0.80 = 10000. Laleh: 10000×1.10×1.15 = 12650. Mani: 10000×0.90×1.35 = 12150. Noor: 10000×1.20×0.95 = 11400. Highest: Laleh at 12650. Answer: B. Updating correct_answer.",
+          "diagram": null
+        },
+        {
+          "question_id": "ANALYSE_009",
+          "section": "ANALYSE",
+          "cognitive_skill": "Cross-table intersection analysis",
+          "construction_type": "Identify agreement/disagreement across multiple respondent records",
+          "difficulty": "MEDIUM",
+          "question": "Three judges scored five contestants (marked as P, Q, R, S, T). Each judge marked each contestant as PASS (✓) or FAIL (✗):\n\n  Judge   |  P  |  Q  |  R  |  S  |  T\n  --------+-----+-----+-----+-----+----\n  Judge 1 |  ✓  |  ✗  |  ✓  |  ✓  |  ✗\n  Judge 2 |  ✓  |  ✓  |  ✗  |  ✓  |  ✗\n  Judge 3 |  ✗  |  ✓  |  ✓  |  ✓  |  ✗\n\nA contestant advances only if ALL THREE judges gave a PASS.\n\nHow many contestants advance?",
+          "options": {
+            "A": "1",
+            "B": "2",
+            "C": "3",
+            "D": "0"
+          },
+          "correct_answer": "A",
+          "verification": "P: ✓✓✗ — not all pass. Q: ✗✓✓ — not all pass. R: ✓✗✓ — not all pass. S: ✓✓✓ — ALL PASS ✓. T: ✗✗✗ — none pass. Only S advances. Answer: A.",
+          "diagram": null
+        },
+        {
+          "question_id": "ANALYSE_010",
+          "section": "ANALYSE",
+          "cognitive_skill": "Production rate and defect analysis",
+          "construction_type": "Compute net output from rates and percentages, then compare",
+          "difficulty": "MEDIUM",
+          "question": "Three machines produce identical components per hour. Their production rates and defect rates are:\n\n  Machine | Output/Hour | Defect Rate\n  --------+-------------+------------\n  M1      |    200      |     4%\n  M2      |    150      |     2%\n  M3      |    240      |     5%\n\nThe factory wants to maximise non-defective output per hour. Which machine should they prioritise, and what is its non-defective output per hour?",
+          "options": {
+            "A": "M1 with 192 non-defective items",
+            "B": "M2 with 147 non-defective items",
+            "C": "M3 with 228 non-defective items",
+            "D": "M1 and M3 are equal"
+          },
+          "correct_answer": "C",
+          "verification": "M1: 200×0.96=192. M2: 150×0.98=147. M3: 240×0.95=228. Highest: M3 with 228. Answer: C.",
+          "diagram": null
+        }
+      ]
+    },
+    {
+      "section_id": "SOLVE",
+      "section_name": "Solve",
+      "questions": [
+        {
+          "question_id": "SOLVE_001",
+          "section": "SOLVE",
+          "cognitive_skill": "Work-rate problem solving",
+          "construction_type": "Partial collaboration followed by solo completion",
+          "difficulty": "MEDIUM-HARD",
+          "question": "Pipe A fills a tank in 12 hours. Pipe B fills the same tank in 8 hours. Both pipes are opened together. After 3 hours, Pipe A is closed. How many more hours does Pipe B need to fill the remaining tank?",
+          "options": {
+            "A": "2.5 hours",
+            "B": "3 hours",
+            "C": "3.5 hours",
+            "D": "4 hours"
+          },
+          "correct_answer": "B",
+          "verification": "Rate A = 1/12 per hour. Rate B = 1/8 per hour. Together for 3 hours: 3×(1/12+1/8) = 3×(2/24+3/24) = 3×5/24 = 15/24 = 5/8. Remaining = 1-5/8 = 3/8. B alone: (3/8)÷(1/8) = 3 hours. Answer: B=3 hours. Wait: 3/8 × 8 = 3. So answer is B. Updating.",
+          "diagram": null
+        },
+        {
+          "question_id": "SOLVE_002",
+          "section": "SOLVE",
+          "cognitive_skill": "Average speed reasoning",
+          "construction_type": "Harmonic mean application — round trip at different speeds",
+          "difficulty": "MEDIUM",
+          "question": "A cyclist travels from Town A to Town B at 20 km/h and returns from Town B to Town A at 30 km/h. The distance between the two towns is 60 km.\n\nWhat is the average speed for the entire round trip?",
+          "options": {
+            "A": "24 km/h",
+            "B": "25 km/h",
+            "C": "26 km/h",
+            "D": "27 km/h"
+          },
+          "correct_answer": "A",
+          "verification": "Time A→B = 60/20 = 3 hours. Time B→A = 60/30 = 2 hours. Total distance = 120 km. Total time = 5 hours. Average speed = 120/5 = 24 km/h. Answer: A.",
+          "diagram": null
+        },
+        {
+          "question_id": "SOLVE_003",
+          "section": "SOLVE",
+          "cognitive_skill": "Combinatorial counting — staircase problem",
+          "construction_type": "Fibonacci-type recurrence for step-climbing paths",
+          "difficulty": "HARD",
+          "question": "A staircase has 10 steps. A person can climb either 1 step or 2 steps at a time. In how many distinct ways can the person reach the top of the staircase?",
+          "options": {
+            "A": "55",
+            "B": "89",
+            "C": "76",
+            "D": "144"
+          },
+          "correct_answer": "B",
+          "verification": "Let f(n) = ways to reach step n. f(1)=1, f(2)=2, f(3)=3, f(4)=5, f(5)=8, f(6)=13, f(7)=21, f(8)=34, f(9)=55, f(10)=89. Answer: B.",
+          "diagram": null
+        },
+        {
+          "question_id": "SOLVE_004",
+          "section": "SOLVE",
+          "cognitive_skill": "Mixture and alligation",
+          "construction_type": "Replacement problem — compute fraction removed",
+          "difficulty": "HARD",
+          "question": "A container holds a mixture of milk and water in the ratio 5:2. A certain quantity of the mixture is removed and replaced with an equal quantity of pure water. The new ratio of milk to water is 5:4.\n\nWhat fraction of the original mixture was removed and replaced with water?",
+          "options": {
+            "A": "2/7",
+            "B": "3/7",
+            "C": "2/9",
+            "D": "1/3"
+          },
+          "correct_answer": "C",
+          "verification": "Original: M:W = 5:2. Say total = 7 units. Let fraction removed = f. After removal and replacement: milk remaining = 5(1-f). Water remaining = 2(1-f) + 7f = 2-2f+7f = 2+5f. New ratio: 5(1-f)/(2+5f) = 5/4. Cross multiply: 20(1-f) = 5(2+5f) → 20-20f = 10+25f → 10 = 45f → f = 10/45 = 2/9. Answer: C. Updating.",
+          "diagram": null
+        },
+        {
+          "question_id": "SOLVE_005",
+          "section": "SOLVE",
+          "cognitive_skill": "Perimeter-area algebraic setup",
+          "construction_type": "Relate two geometric quantities and solve a constraint",
+          "difficulty": "MEDIUM",
+          "question": "A rectangle's length is 4 times its breadth. When both the length and breadth are each increased by 3 cm, the area increases by 84 cm². What is the original breadth of the rectangle?",
+          "options": {
+            "A": "4 cm",
+            "B": "5 cm",
+            "C": "6 cm",
+            "D": "7 cm"
+          },
+          "correct_answer": "B",
+          "verification": "Let breadth = b. Length = 4b. Original area = 4b². New dimensions: (4b+3) × (b+3). New area = 4b²+12b+3b+9 = 4b²+15b+9. Increase = 15b+9 = 57 → 15b = 48 → b = 48/15 = 3.2. Not a whole number. Check: increase should be 57. Let me redo: new area - original area = (4b+3)(b+3) - 4b² = 4b²+12b+3b+9-4b² = 15b+9=57 → 15b=48 → b=3.2. Not integer. Redesign: Let increase=69: 15b+9=69 → b=4. Use increase=84: 15b+9=84→15b=75→b=5. Choose increase=84 and b=5 gives integer. Updating question.",
+          "diagram": null
+        },
+        {
+          "question_id": "SOLVE_006",
+          "section": "SOLVE",
+          "cognitive_skill": "Profit and loss — reverse reasoning",
+          "construction_type": "Multi-condition cost price deduction",
+          "difficulty": "HARD",
+          "question": "A shopkeeper sells an item at 20% profit. If the selling price were ₹24 less, the shopkeeper would make a 20% loss instead.\n\nWhat is the cost price of the item?",
+          "options": {
+            "A": "₹50",
+            "B": "₹60",
+            "C": "₹75",
+            "D": "₹80"
+          },
+          "correct_answer": "B",
+          "verification": "Let CP = c. SP at 20% profit = 1.2c. SP at 20% loss = 0.8c. Difference: 1.2c - 0.8c = 0.4c = 24 → c = 60. Answer: B.",
+          "diagram": null
+        },
+        {
+          "question_id": "SOLVE_007",
+          "section": "SOLVE",
+          "cognitive_skill": "Circular track — relative speed and meeting",
+          "construction_type": "Opposite-direction circular track meeting point",
+          "difficulty": "MEDIUM",
+          "question": "Two runners start from the same point on a circular track of length 800 m. They run in opposite directions at speeds of 6 m/s and 4 m/s.\n\nHow many seconds after the start do they meet for the SECOND time?",
+          "options": {
+            "A": "80 s",
+            "B": "120 s",
+            "C": "160 s",
+            "D": "100 s"
+          },
+          "correct_answer": "C",
+          "verification": "Relative speed (opposite directions) = 6+4 = 10 m/s. They meet every 800/10 = 80 seconds. Second meeting: 2×80 = 160 seconds. Answer: C.",
+          "diagram": null
+        },
+        {
+          "question_id": "SOLVE_008",
+          "section": "SOLVE",
+          "cognitive_skill": "Sequential fractional distribution — reverse calculation",
+          "construction_type": "Chain fraction prize distribution backward",
+          "difficulty": "MEDIUM",
+          "question": "A sum of money is divided among three people. The first person receives one-third of the total. The second person receives half of what remains after the first person's share. The third person receives the rest, which amounts to ₹600.\n\nWhat is the total sum of money?",
+          "options": {
+            "A": "₹1200",
+            "B": "₹1600",
+            "C": "₹1800",
+            "D": "₹2400"
+          },
+          "correct_answer": "C",
+          "verification": "Let total = T. First gets T/3. Remaining = T-T/3 = 2T/3. Second gets (1/2)(2T/3) = T/3. Third gets 2T/3 - T/3 = T/3 = 600. So T = 1800. Answer: C.",
+          "diagram": null
+        },
+        {
+          "question_id": "SOLVE_009",
+          "section": "SOLVE",
+          "cognitive_skill": "Resource allocation under constraints",
+          "construction_type": "Optimal tiling using GCD",
+          "difficulty": "MEDIUM-HARD",
+          "question": "A rectangular courtyard measures 1050 cm by 630 cm. Square paving stones of the largest possible size are to be used to cover the courtyard exactly, with no cutting of stones. How many paving stones are required?",
+          "options": {
+            "A": "15",
+            "B": "21",
+            "C": "18",
+            "D": "24"
+          },
+          "correct_answer": "A",
+          "verification": "GCD(1050,630): 1050=1×630+420. 630=1×420+210. 420=2×210+0. GCD=210. Stones: (1050/210)×(630/210)=5×3=15. Answer: A.",
+          "diagram": null
+        },
+        {
+          "question_id": "SOLVE_010",
+          "section": "SOLVE",
+          "cognitive_skill": "Age reasoning — algebraic setup",
+          "construction_type": "Present and future age relationship",
+          "difficulty": "MEDIUM",
+          "question": "The sum of the present ages of a father and his son is 55 years. Five years ago, the father's age was four times his son's age. What is the son's present age?",
+          "options": {
+            "A": "11 years",
+            "B": "13 years",
+            "C": "14 years",
+            "D": "15 years"
+          },
+          "correct_answer": "C",
+          "verification": "s+f=55, f-5=4(s-5) → (55-s)-5=4(s-5) → 50-s=4s-20 → 70=5s → s=14. Answer: C.",
+          "diagram": null
+        }
+      ]
+    },
+    {
+      "section_id": "DECIDE",
+      "section_name": "Decide",
+      "questions": [
+        {
+          "question_id": "DECIDE_001",
+          "section": "DECIDE",
+          "cognitive_skill": "Method evaluation — LCM vs product",
+          "construction_type": "Compare two solution methods for validity",
+          "difficulty": "MEDIUM-HARD",
+          "question": "Two students are finding the largest two-digit number divisible by both 6 and 9.\n\nStudent A says: 'The LCM of 6 and 9 is 18. The largest two-digit multiple of 18 is 90. Answer: 90.'\n\nStudent B says: 'I multiply 6 × 9 = 54. The largest two-digit multiple of 54 is 54. Answer: 54.'\n\nWhich student used a VALID method?",
+          "options": {
+            "A": "Student A only",
+            "B": "Student B only",
+            "C": "Both students used valid methods",
+            "D": "Neither student used a valid method"
+          },
+          "correct_answer": "A",
+          "verification": "To find the largest two-digit multiple of both 6 and 9, you need multiples of LCM(6,9)=18. Largest two-digit multiple of 18: 18×5=90 ✓. Student A's method is valid. Student B used 6×9=54 instead of LCM=18 — this works only when 6 and 9 are coprime (which they are not: GCD=3). 54 is not the only two-digit common multiple; 90 is also one and is larger. Student B's method is invalid. Answer: A.",
+          "diagram": null
+        },
+        {
+          "question_id": "DECIDE_002",
+          "section": "DECIDE",
+          "cognitive_skill": "Claim evaluation via counterexample",
+          "construction_type": "Evaluate a divisibility claim with a counterexample",
+          "difficulty": "MEDIUM",
+          "question": "A student claims: 'If a number is divisible by both 4 and 6, then it must be divisible by 24.'\n\nWhich response correctly evaluates this claim?",
+          "options": {
+            "A": "The claim is correct because LCM(4,6) = 24",
+            "B": "The claim is correct because 4 × 6 = 24",
+            "C": "The claim is incorrect; LCM(4,6) = 12, and 12 is divisible by both 4 and 6 but not by 24",
+            "D": "The claim is incorrect because divisibility by 4 and 6 separately cannot guarantee divisibility by any combined number"
+          },
+          "correct_answer": "C",
+          "verification": "LCM(4,6) = 12. A number divisible by both 4 and 6 is divisible by their LCM = 12. 12 is divisible by 4 (12/4=3) and by 6 (12/6=2) but 12/24 is not an integer. So 12 is a counterexample. Claim is false. Correct response: C.",
+          "diagram": null
+        },
+        {
+          "question_id": "DECIDE_003",
+          "section": "DECIDE",
+          "cognitive_skill": "Probability interpretation — claim validity",
+          "construction_type": "Evaluate multiple probability claims for validity",
+          "difficulty": "MEDIUM",
+          "question": "A bag contains only red and blue balls. The probability of picking a red ball is 2/5.\n\nThree students make statements:\n  Student P: 'There are exactly 2 red balls and 3 blue balls in the bag.'\n  Student Q: 'There could be 4 red balls and 6 blue balls in the bag.'\n  Student R: 'There must be exactly 10 balls in the bag.'\n\nWhich students' statements could be valid?",
+          "options": {
+            "A": "P and Q only",
+            "B": "Q only",
+            "C": "P, Q, and R",
+            "D": "P only"
+          },
+          "correct_answer": "A",
+          "verification": "P=2/5 means red/total = 2k/5k for any positive integer k. P's statement (2 red, 3 blue): 2/5 ✓ — valid. Q's statement (4 red, 6 blue): 4/10=2/5 ✓ — valid. R's statement: must be exactly 10 balls — FALSE (could be 2,5 or 4,10 or 6,15 etc.). So P and Q are valid, R is not. Answer: A.",
+          "diagram": null
+        },
+        {
+          "question_id": "DECIDE_004",
+          "section": "DECIDE",
+          "cognitive_skill": "Strategy efficiency evaluation — primality testing",
+          "construction_type": "Choose the most efficient valid algorithm",
+          "difficulty": "MEDIUM",
+          "question": "A student wants to determine whether N = 221 is a prime number WITHOUT a calculator. Four strategies are proposed:\n\n  Strategy 1: Check divisibility by every integer from 2 to 220.\n  Strategy 2: Check divisibility by every integer from 2 to √221 (approximately 14.8).\n  Strategy 3: Check divisibility only by prime numbers from 2 to 14.\n  Strategy 4: Check if 221 is odd and does not end in 0 or 5.\n\nWhich strategy is both VALID (guaranteed to give the correct answer) AND most EFFICIENT?",
+          "options": {
+            "A": "Strategy 1",
+            "B": "Strategy 2",
+            "C": "Strategy 3",
+            "D": "Strategy 4"
+          },
+          "correct_answer": "C",
+          "verification": "Strategy 1: Valid but highly inefficient. Strategy 2: Valid and more efficient than 1 — checks up to √221≈14.8 so integers 2..14. Strategy 3: Checks only primes up to 14 (2,3,5,7,11,13) — valid (any composite factor ≤√221 must have a prime factor ≤√221) and more efficient than Strategy 2. Strategy 4: Invalid — a number can be odd and not end in 0/5 but still be composite (e.g., 221=13×17). Strategy 3 is most efficient valid method. Answer: C. Note: 221=13×17, so it IS composite.",
+          "diagram": null
+        },
+        {
+          "question_id": "DECIDE_005",
+          "section": "DECIDE",
+          "cognitive_skill": "Error detection in counting argument",
+          "construction_type": "Identify flaw in inclusion-exclusion reasoning",
+          "difficulty": "MEDIUM",
+          "question": "A student calculates how many integers from 1 to 200 are divisible by 3 or 7:\n\n  'Divisible by 3: ⌊200/3⌋ = 66\n   Divisible by 7: ⌊200/7⌋ = 28\n   Total = 66 + 28 = 94'\n\nWhich evaluation is correct?",
+          "options": {
+            "A": "The method and answer are both correct",
+            "B": "The method is correct but the arithmetic is wrong",
+            "C": "The method is wrong because numbers divisible by both 3 and 7 (i.e., by 21) are counted twice and must be subtracted",
+            "D": "The method is wrong because divisibility by 3 and 7 should be multiplied, not added"
+          },
+          "correct_answer": "C",
+          "verification": "By inclusion-exclusion: |A∪B| = |A|+|B|-|A∩B|. |A∩B| = divisible by LCM(3,7)=21: ⌊200/21⌋=9. Correct answer = 66+28-9=85, not 94. The student forgot to subtract numbers divisible by both. Option C correctly identifies this error.",
+          "diagram": null
+        },
+        {
+          "question_id": "DECIDE_006",
+          "section": "DECIDE",
+          "cognitive_skill": "Geometric sufficiency of information",
+          "construction_type": "Determine which additional fact guarantees a specific quadrilateral type",
+          "difficulty": "HARD",
+          "question": "A quadrilateral is known to have all four sides equal (a rhombus). Which ONE additional piece of information is SUFFICIENT to conclude that the quadrilateral is a square?",
+          "options": {
+            "A": "The perimeter is greater than the sum of the diagonals",
+            "B": "The diagonals are equal in length",
+            "C": "Opposite sides are parallel",
+            "D": "All four angles are less than 180°"
+          },
+          "correct_answer": "B",
+          "verification": "A rhombus has all sides equal and opposite sides parallel (so C is already true for all rhombuses — it adds no new information). A: perimeter > sum of diagonals is a metric condition that doesn't uniquely force a square. D: all rhombus angles are less than 180° by definition. B: A rhombus with equal diagonals must be a square — this is a known theorem. In a rhombus, diagonals bisect each other perpendicularly. If diagonals are equal, all four triangles formed are congruent right isosceles triangles, making all angles 90°. So B is the correct answer.",
+          "diagram": null
+        },
+        {
+          "question_id": "DECIDE_007",
+          "section": "DECIDE",
+          "cognitive_skill": "Sequence property evaluation",
+          "construction_type": "Evaluate a claim about differences in geometric sequences",
+          "difficulty": "MEDIUM",
+          "question": "A geometric sequence has first term 3 and common ratio 2:\n  3,  6,  12,  24,  48,  ...\n\nA student claims: 'The differences between consecutive terms also form a geometric sequence with the same common ratio.'\n\nIs the student's claim valid?",
+          "options": {
+            "A": "Yes — the differences are 3, 6, 12, 24,... which is geometric with ratio 2",
+            "B": "No — the differences are constant, forming an arithmetic sequence",
+            "C": "No — the differences decrease as the sequence grows",
+            "D": "Yes — but only for geometric sequences with integer terms"
+          },
+          "correct_answer": "A",
+          "verification": "Terms: 3,6,12,24,48. Differences: 6-3=3, 12-6=6, 24-12=12, 48-24=24. Differences: 3,6,12,24 — this IS a geometric sequence with ratio 2! The student's claim is valid. Answer: A.",
+          "diagram": null
+        },
+        {
+          "question_id": "DECIDE_008",
+          "section": "DECIDE",
+          "cognitive_skill": "Statistical method evaluation",
+          "construction_type": "Evaluate a claim about when to remove outliers",
+          "difficulty": "MEDIUM-HARD",
+          "question": "A dataset of 7 exam scores is: {55, 60, 62, 65, 68, 70, 98}.\n\nStudent A calculates the mean of all 7 values = 68.3 (approx).\nStudent B removes 98 as an outlier and calculates the mean of the remaining 6 = 63.3 (approx).\n\nA teacher then says: 'Student B's method is always more accurate for finding a representative average.'\n\nWhich response best evaluates the teacher's claim?",
+          "options": {
+            "A": "The teacher is correct — outliers always distort the mean and should be removed",
+            "B": "The teacher is incorrect — whether to remove an outlier depends on whether it is a legitimate data point; removing it without justification can itself distort the result",
+            "C": "The teacher is correct — the median should always be used instead of the mean when outliers exist",
+            "D": "The teacher is incorrect — outliers should never be removed from any dataset under any circumstance"
+          },
+          "correct_answer": "B",
+          "verification": "Removing outliers is context-dependent. If 98 is a legitimate score (e.g., one student genuinely scored very high), removing it misrepresents the data. The teacher's absolute claim ('always more accurate') is false. B correctly identifies the flaw. C is wrong because it prescribes median as universal solution. D is too extreme. A is wrong for the same reason as the teacher.",
+          "diagram": null
+        },
+        {
+          "question_id": "DECIDE_009_VALID",
+          "section": "DECIDE",
+          "cognitive_skill": "Sufficiency of information evaluation",
+          "construction_type": "Determine which single condition guarantees an outcome",
+          "difficulty": "MEDIUM-HARD",
+          "question": "A student wants to determine whether an integer N is divisible by 15. They have access to the following tests:\n\n  Test I:   N is divisible by 5\n  Test II:  N is divisible by 3\n  Test III: N is divisible by both 3 and 5\n  Test IV:  N is odd and divisible by 5\n\nWhich single test, if passed, is SUFFICIENT to guarantee that N is divisible by 15?",
+          "options": {
+            "A": "Test I only",
+            "B": "Test II only",
+            "C": "Test III only",
+            "D": "Test IV only"
+          },
+          "correct_answer": "C",
+          "verification": "15 = 3 × 5, and GCD(3,5)=1, so N divisible by 15 iff divisible by both 3 and 5. Test I alone: could be 5, 10, 25 — not divisible by 15. Test II alone: could be 3, 6, 9 — not divisible by 15. Test III: divisible by both 3 and 5 → divisible by LCM(3,5)=15 ✓. Test IV: odd and divisible by 5 (e.g., 5, 25, 35) — not necessarily divisible by 3. Answer: C.",
+          "diagram": null
+        },
+        {
+          "question_id": "DECIDE_010_VALID",
+          "section": "DECIDE",
+          "cognitive_skill": "Reasoning validity evaluation",
+          "construction_type": "Identify valid vs invalid logical argument",
+          "difficulty": "HARD",
+          "question": "Four students present arguments about a positive integer N:\n\n  Student A: 'N² is even, therefore N must be even.'\n  Student B: 'N is even, therefore N² must be divisible by 4.'\n  Student C: 'N² is divisible by 9, therefore N must be divisible by 9.'\n  Student D: 'N is divisible by 4, therefore N² must be divisible by 16.'\n\nWhich students present VALID arguments?",
+          "options": {
+            "A": "A, B, and D only",
+            "B": "A and C only",
+            "C": "B, C, and D only",
+            "D": "All four students"
+          },
+          "correct_answer": "A",
+          "verification": "A: N²=even → N=even. If N odd → N² odd. So N must be even. VALID ✓. B: N=2k → N²=4k². Divisible by 4. VALID ✓. C: N²=9m. This means 3²|N². Since 3 is prime, 3|N. But does 9|N? Not necessarily. E.g., N=3: N²=9, divisible by 9, but N=3 is NOT divisible by 9. INVALID ✗. D: N=4k → N²=16k². Divisible by 16. VALID ✓. Valid arguments: A, B, D. Answer: A.",
+          "diagram": null
+        }
+      ]
+    },
+    {
+      "section_id": "CREATE",
+      "section_name": "Create",
+      "questions": [
+        {
+          "question_id": "CREATE_001_FINAL",
+          "section": "CREATE",
+          "cognitive_skill": "Multi-constraint set construction",
+          "construction_type": "Construct an integer set satisfying sum, distinctness, and ratio constraints",
+          "difficulty": "MEDIUM",
+          "question": "Construct a set of THREE distinct positive integers satisfying ALL of the following:\n  • Their sum is 24\n  • The largest number is exactly 3 times the smallest number\n  • All three numbers are different\n  • The middle number is not equal to the average of the other two\n\nWhich set satisfies ALL conditions?",
+          "options": {
+            "A": "{4, 8, 12}",
+            "B": "{3, 9, 12}",
+            "C": "{4, 10, 10}",
+            "D": "{3, 6, 15}"
+          },
+          "correct_answer": "B",
+          "verification": "A: {4,8,12}: sum=24 ✓, largest(12)=3×smallest(4) ✓, distinct ✓. Middle(8) = average of 4 and 12 = 8. Middle EQUALS average of other two. FAILS condition 4. B: {3,9,12}: sum=24 ✓, largest(12)=3×smallest(3) ✓, distinct ✓. Middle=9. Average of 3 and 12 = 7.5 ≠ 9. PASSES all conditions ✓. C: {4,10,10}: not distinct. FAILS. D: {3,6,15}: sum=24 ✓, largest(15)=5×smallest(3). 5≠3. FAILS condition 2. Answer: B.",
+          "diagram": null
+        },
+        {
+          "question_id": "CREATE_002",
+          "section": "CREATE",
+          "cognitive_skill": "Algebraic expression construction",
+          "construction_type": "Construct a difference of squares satisfying specific numeric constraints",
+          "difficulty": "MEDIUM",
+          "question": "Construct an expression of the form (a² − b²) where a and b are positive integers, a > b, such that:\n  • The value of the expression is 77\n  • Both a and b are single-digit numbers\n  • (a − b) is a prime number\n\nWhich pair (a, b) satisfies ALL conditions?",
+          "options": {
+            "A": "(9, 2)",
+            "B": "(9, 4)",
+            "C": "(8, 1)",
+            "D": "(7, 0)"
+          },
+          "correct_answer": "A",
+          "verification": "a²-b²=(a+b)(a-b)=77. 77=7×11=1×77. Options: A: (9,2): 81-4=77 ✓. a-b=7 (prime) ✓. Both single-digit ✓. B: (9,4): 81-16=65≠77. FAILS. C: (8,1): 64-1=63≠77. FAILS. D: b=0 is not a positive integer. FAILS. Answer: A.",
+          "diagram": null
+        },
+        {
+          "question_id": "CREATE_003",
+          "section": "CREATE",
+          "cognitive_skill": "Two-digit number construction from digit constraints",
+          "construction_type": "Construct a number from digit-sum and digit-reversal conditions",
+          "difficulty": "MEDIUM",
+          "question": "Construct a two-digit number N such that:\n  • When the digits of N are reversed, the result is 36 more than N\n  • The sum of the digits of N is 10\n\nWhat is N?",
+          "options": {
+            "A": "37",
+            "B": "28",
+            "C": "46",
+            "D": "55"
+          },
+          "correct_answer": "A",
+          "verification": "Let N=10a+b. Reversed=10b+a. (10b+a)-(10a+b)=36 → 9(b-a)=36 → b-a=4. Digit sum: a+b=10. So b=7,a=3 → N=37. Check: reversed=73. 73-37=36 ✓. Digit sum=10 ✓. N=37 = option A. But wait: b-a=4 and a+b=10 → 2b=14 → b=7, a=3. N=37. Answer: A. Options show A=37. Correct_answer should be A.",
+          "diagram": null
+        },
+        {
+          "question_id": "CREATE_004",
+          "section": "CREATE",
+          "cognitive_skill": "Triangle validity construction",
+          "construction_type": "Construct a valid scalene triangle satisfying perimeter and inequality constraints",
+          "difficulty": "MEDIUM-HARD",
+          "question": "Construct a triangle with integer side lengths a, b, c (where a < b < c) satisfying ALL of the following:\n  • The perimeter is exactly 20\n  • The triangle is scalene (all sides different)\n  • It satisfies the triangle inequality\n  • The largest side is less than the sum of the other two sides\n  • The difference between the largest and smallest sides is exactly 4\n\nWhich set of sides satisfies ALL conditions?",
+          "options": {
+            "A": "{4, 7, 9}",
+            "B": "{5, 6, 9}",
+            "C": "{4, 6, 10}",
+            "D": "{3, 8, 9}"
+          },
+          "correct_answer": "B",
+          "verification": "A: {4,7,9}: sum=20 ✓, scalene ✓, 4+7=11>9 ✓, c-a=9-4=5≠4. FAILS last condition. B: {5,6,9}: sum=20 ✓, scalene ✓, 5+6=11>9 ✓, c-a=9-5=4 ✓. ALL CONDITIONS MET ✓. C: {4,6,10}: sum=20 ✓, scalene ✓, 4+6=10, NOT >10. Triangle inequality FAILS (degenerate). D: {3,8,9}: sum=20 ✓, scalene ✓, 3+8=11>9 ✓, c-a=9-3=6≠4. FAILS last condition. Answer: B.",
+          "diagram": null
+        },
+        {
+          "question_id": "CREATE_005",
+          "section": "CREATE",
+          "cognitive_skill": "Fraction construction within bounds",
+          "construction_type": "Construct a fraction strictly between two given values with denominator constraint",
+          "difficulty": "MEDIUM",
+          "question": "Construct a fraction p/q (in its lowest terms) such that:\n  • p and q are positive integers\n  • p/q lies strictly between 2/5 and 1/2\n  • q ≤ 9\n  • p/q ≠ 3/7\n\nWhich fraction satisfies ALL conditions?",
+          "options": {
+            "A": "3/8",
+            "B": "2/4",
+            "C": "3/7",
+            "D": "4/9"
+          },
+          "correct_answer": "D",
+          "verification": "Range: 2/5=0.4 to 1/2=0.5. A: 3/8=0.375 < 0.4. FAILS (not strictly between). B: 2/4=1/2. Not in lowest terms AND equals the upper bound — not STRICTLY between. FAILS. C: 3/7≈0.4286: between 0.4 and 0.5 ✓, q=7≤9 ✓, lowest terms ✓. But condition says p/q ≠ 3/7. FAILS explicitly. D: 4/9≈0.444: between 0.4 and 0.5 ✓, q=9≤9 ✓, GCD(4,9)=1 so lowest terms ✓, ≠3/7 ✓. ALL CONDITIONS MET. Answer: D.",
+          "diagram": null
+        },
+        {
+          "question_id": "CREATE_006",
+          "section": "CREATE",
+          "cognitive_skill": "Rectangle dimension construction from area-perimeter equality",
+          "construction_type": "Construct integer rectangle dimensions satisfying perimeter = area numerically",
+          "difficulty": "HARD",
+          "question": "Construct a rectangle with integer dimensions (length L and breadth B, where L > B > 0) such that the numerical value of its perimeter equals the numerical value of its area.\n\nWhich pair (L, B) satisfies this condition?",
+          "options": {
+            "A": "(6, 3)",
+            "B": "(5, 4)",
+            "C": "(8, 2)",
+            "D": "(4, 4)"
+          },
+          "correct_answer": "A",
+          "verification": "Condition: 2(L+B) = L×B. A: (6,3): perimeter=18, area=18. 18=18 ✓. Also L>B ✓. B: (5,4): perimeter=18, area=20. 18≠20. FAILS. C: (8,2): perimeter=20, area=16. FAILS. D: (4,4): perimeter=16, area=16. 16=16 ✓ but L=B (not strictly greater). Also could argue it satisfies if condition just says L>B>0 strictly — fails since L=B. Answer: A.",
+          "diagram": null
+        },
+        {
+          "question_id": "CREATE_007_VALID",
+          "section": "CREATE",
+          "cognitive_skill": "Sequence rule construction",
+          "construction_type": "Identify the rule that generates a given value table",
+          "difficulty": "MEDIUM",
+          "question": "A function f(n) generates the following values:\n\n  n:     1    2    3    4    5\n  f(n):  2    6   12   20   30\n\nWhich rule correctly generates ALL values in the table?",
+          "options": {
+            "A": "f(n) = n² + 1",
+            "B": "f(n) = n(n + 1)",
+            "C": "f(n) = 2n + n",
+            "D": "f(n) = 3n − 1"
+          },
+          "correct_answer": "B",
+          "verification": "A: 1+1=2✓, 4+1=5≠6. FAILS. B: 1×2=2✓, 2×3=6✓, 3×4=12✓, 4×5=20✓, 5×6=30✓. VALID. C: 3n: 3,6,9,12,15 — matches n=2 but not others. FAILS. D: 3n-1: 2,5,8,11,14. FAILS. Answer: B.",
+          "diagram": null
+        },
+        {
+          "question_id": "CREATE_008",
+          "section": "CREATE",
+          "cognitive_skill": "Geometric sequence construction",
+          "construction_type": "Construct a strictly increasing sequence satisfying start, rule, and endpoint constraints",
+          "difficulty": "MEDIUM",
+          "question": "Construct a sequence of 6 positive integers satisfying ALL of the following:\n  • The sequence is strictly increasing\n  • The first term is 3\n  • Each term after the first is generated by a single consistent multiplicative or additive rule\n  • The 6th term is 96\n\nWhich sequence satisfies ALL conditions?",
+          "options": {
+            "A": "{3, 6, 12, 24, 48, 96}",
+            "B": "{3, 8, 16, 32, 64, 96}",
+            "C": "{3, 9, 18, 36, 72, 96}",
+            "D": "{3, 13, 23, 33, 43, 96}"
+          },
+          "correct_answer": "A",
+          "verification": "A: 3,6,12,24,48,96 — geometric ratio 2, starts at 3, ends at 96=3×2⁵ ✓. Strictly increasing ✓. Consistent rule (×2) ✓. ALL CONDITIONS MET. B: 3,8,16... — 3 to 8 is ×2.67, 8 to 16 is ×2 — not consistent. FAILS. C: 3,9,18,36,72,96 — 3×3=9 ✓, 9×2=18 ✓ — inconsistent rule. FAILS. D: 3,13,23,33,43,96 — +10 pattern but 43+10=53≠96. FAILS. Answer: A.",
+          "diagram": null
+        },
+        {
+          "question_id": "CREATE_009_VALID",
+          "section": "CREATE",
+          "cognitive_skill": "Equation construction satisfying conditions",
+          "construction_type": "Construct a linear equation from root and coefficient constraints",
+          "difficulty": "MEDIUM-HARD",
+          "question": "Construct a linear equation of the form ax + b = 0 (where a and b are integers) satisfying ALL of the following:\n  • The solution is x = 4\n  • a is a prime number\n  • b is negative\n  • |b| is between 10 and 20 (exclusive)\n\nWhich equation satisfies ALL conditions?",
+          "options": {
+            "A": "2x − 8 = 0",
+            "B": "3x − 12 = 0",
+            "C": "5x − 20 = 0",
+            "D": "7x − 28 = 0"
+          },
+          "correct_answer": "B",
+          "verification": "Condition: ax=−b, x=4 → b=−4a. a prime, b<0, 10<|b|<20 → 10<4a<20 → 2.5<a<5 → prime a=3. b=−12. Check: 3x−12=0 → x=4 ✓, a=3 prime ✓, b=−12<0 ✓, |b|=12 ∈ (10,20) ✓. A: |b|=8, not in (10,20). FAILS. C: a=5, |b|=20, not strictly less than 20. FAILS. D: a=7, |b|=28>20. FAILS. Only B satisfies all. Answer: B.",
+          "diagram": null
+        },
+        {
+          "question_id": "CREATE_010",
+          "section": "CREATE",
+          "cognitive_skill": "Arrangement construction under ordering constraints",
+          "construction_type": "Construct a valid ordering of items satisfying position and relative constraints",
+          "difficulty": "HARD",
+          "question": "Five students — Arya, Bea, Cal, Dev, and Eli — are to be seated in a row of 5 chairs (numbered 1 to 5 from left to right). The seating must satisfy ALL of the following:\n  • Arya sits in an odd-numbered chair\n  • Bea sits immediately to the right of Cal\n  • Dev does not sit in chair 1 or chair 5\n  • Eli sits in chair 5\n\nIn how many distinct arrangements do all conditions hold?",
+          "options": {
+            "A": "2",
+            "B": "3",
+            "C": "4",
+            "D": "6"
+          },
+          "correct_answer": "B",
+          "verification": "Eli=5. Dev ∈ {2,3,4}. Arya ∈ {1,3} (odd chairs, 5 taken by Eli). Bea is immediately right of Cal → (Cal,Bea) pairs occupying consecutive chairs. Case 1: Arya=1. Remaining chairs {2,3,4} for Cal,Bea,Dev. (Cal,Bea) consecutive in {2,3,4}: (2,3) or (3,4). Sub-case 1a: Cal=2,Bea=3. Dev=4 ∈{2,3,4} ✓. Valid. Sub-case 1b: Cal=3,Bea=4. Dev=2 ∈{2,3,4} ✓. Valid. Case 2: Arya=3. Remaining chairs {1,2,4} for Cal,Bea,Dev. (Cal,Bea) consecutive in {1,2,4}: (1,2) only (2,3 has 3 taken; 3,4 has 3 taken; 4,5 has 5 taken). Sub-case 2a: Cal=1,Bea=2. Dev=4 ✓. Valid. No other consecutive pairs available in {1,2,4} — (4,?) would need 5 which is Eli. Total: 3 valid arrangements. Answer: B.",
+          "diagram": null
+        }
+      ]
+    }
+  ]
+}

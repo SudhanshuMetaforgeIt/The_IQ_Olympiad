@@ -5,5 +5,5 @@ interface AuthLayoutProps {
 }
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
-  return <main>{children}</main>;
+  return <main className="h-dvh max-h-dvh overflow-hidden">{children}</main>;
 }

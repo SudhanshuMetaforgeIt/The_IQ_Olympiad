@@ -1,0 +1,135 @@
+"use client";
+
+import React, { useState } from "react";
+import { useStudentMe } from "../../StudentMeProvider";
+import {
+  UPCOMING_EXAM,
+  DASHBOARD_STATS,
+  RECENT_RESULTS,
+  PERFORMANCE_METRICS,
+  EXAM_TIP,
+} from "../Common/mockData";
+import type { ExamResultItem } from "../../types";
+import { StudentPanelChrome } from "../Common/StudentPanelChrome";
+import { Sidebar } from "../Common/Sidebar";
+import { HeaderBar } from "../Common/HeaderBar";
+import { UpcomingExamBanner } from "../Common/UpcomingExamBanner";
+import { StatsRow } from "../Common/StatsRow";
+import { RecentResults } from "../Common/RecentResults";
+import { PerformanceOverview } from "../Common/PerformanceOverview";
+import { AchievementsCard } from "../Common/AchievementsCard";
+import { ExamTipsBanner } from "../Common/ExamTipsBanner";
+import { PerformanceModal } from "../Common/PerformanceModal";
+import { EarnedBadgesModal } from "../Common/EarnedBadgesModal";
+import { SubjectResultModal } from "../Common/SubjectResultModal";
+
+interface StudentDashboardProps {
+  activeTab?: string;
+  onSelectTab?: (tabId: string, subtabId?: string) => void;
+}
+
+export default function StudentDashboard({ activeTab = "dashboard", onSelectTab }: StudentDashboardProps) {
+  const { data } = useStudentMe();
+  const profileCompletion = data?.profileCompletion;
+  const [isPerformanceModalOpen, setIsPerformanceModalOpen] = useState(false);
+  const [isBadgesModalOpen, setIsBadgesModalOpen] = useState(false);
+  const [selectedSubjectResult, setSelectedSubjectResult] = useState<ExamResultItem | null>(null);
+
+  return (
+    <StudentPanelChrome activeTab={activeTab} onSelectTab={onSelectTab}>
+      {({ student, activeTab, onSelectTab }) => (
+    <div className="flex h-screen overflow-hidden bg-[#F8FAFC] font-sans antialiased text-slate-900">
+      {/* Sidebar Navigation */}
+      <Sidebar student={student} activeTab={activeTab} onSelectTab={onSelectTab} />
+
+      {/* Main Dashboard Canvas */}
+      <div className="flex-1 flex flex-col h-screen overflow-y-auto min-w-0">
+        {/* Top Header */}
+        <HeaderBar student={student} onSelectTab={onSelectTab} />
+
+        {/* Scrollable Dashboard Body */}
+        <main className="flex-1 p-4 md:p-6 space-y-4 sm:space-y-5">
+          {profileCompletion && !profileCompletion.isComplete ? (
+            <div className="rounded-2xl border border-violet-200 bg-white px-4 py-4 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+              <div>
+                <p className="text-sm font-black text-slate-900">
+                  Complete your profile
+                </p>
+                <p className="text-[11px] font-medium text-slate-500 mt-0.5">
+                  Add your school and academic details to finish setup. {profileCompletion.percentage}% complete.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onSelectTab?.("profile")}
+                className="shrink-0 rounded-xl bg-violet-600 px-4 py-2.5 text-[11px] font-extrabold text-white hover:bg-violet-700 cursor-pointer"
+              >
+                Complete your profile
+              </button>
+            </div>
+          ) : null}
+
+          {/* Upcoming Exam Hero Banner */}
+          <UpcomingExamBanner
+            exam={UPCOMING_EXAM}
+            onViewDetails={() => setIsPerformanceModalOpen(true)}
+            onWriteExam={() => onSelectTab?.("exams", "upcoming")}
+          />
+
+          {/* Main Grid: Left Analytics & Right Achievements */}
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 sm:gap-5 items-stretch">
+            {/* Left 8 Columns */}
+            <div className="xl:col-span-8 space-y-4 sm:space-y-5">
+              {/* Quick Stats Grid */}
+              <StatsRow stats={DASHBOARD_STATS} onSelectTab={onSelectTab} />
+
+              {/* 2-Column Grid (Recent Results & Performance Overview) */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
+                <RecentResults
+                  results={RECENT_RESULTS}
+                  onViewAll={() => onSelectTab?.("results")}
+                  onSelectResult={(item) => setSelectedSubjectResult(item)}
+                />
+                <PerformanceOverview
+                  metrics={PERFORMANCE_METRICS}
+                  onViewDetails={() => setIsPerformanceModalOpen(true)}
+                />
+              </div>
+
+              {/* Exam Tips Banner */}
+              <ExamTipsBanner tip={EXAM_TIP} />
+            </div>
+
+            {/* Right 4 Columns: Achievements Sidebar */}
+            <div className="xl:col-span-4 h-full">
+              <AchievementsCard
+                onViewAll={() => onSelectTab?.("certificates", "badges")}
+              />
+            </div>
+          </div>
+        </main>
+      </div>
+
+      {/* Dedicated Subject-Specific Result Scorecard Modal */}
+      <SubjectResultModal
+        isOpen={!!selectedSubjectResult}
+        onClose={() => setSelectedSubjectResult(null)}
+        result={selectedSubjectResult}
+      />
+
+      {/* Overall Performance Modal */}
+      <PerformanceModal
+        isOpen={isPerformanceModalOpen}
+        onClose={() => setIsPerformanceModalOpen(false)}
+      />
+
+      {/* Earned Badges Popup Modal */}
+      <EarnedBadgesModal
+        isOpen={isBadgesModalOpen}
+        onClose={() => setIsBadgesModalOpen(false)}
+      />
+    </div>
+      )}
+    </StudentPanelChrome>
+  );
+}

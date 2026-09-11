@@ -5,5 +5,9 @@ export default function ExamLayout({
 }: {
   children: ReactNode;
 }) {
-  return <main>{children}</main>;
+  return (
+    <div className="exam-protected-content h-dvh w-full max-w-full overflow-x-clip overflow-y-auto">
+      {children}
+    </div>
+  );
 }
